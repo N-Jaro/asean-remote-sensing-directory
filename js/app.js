@@ -4,8 +4,20 @@
 
 import { CONFIG } from './config.js';
 import { SAMPLE_PARTICIPANTS, SAMPLE_LECTURERS } from './data.js';
-import { fetchLiveParticipants, fetchLiveLecturers, getCountryMeta } from './sheet-sync.js';
+import { fetchLiveParticipants, fetchLiveLecturers, getCountryMeta, getCountryFlagImg } from './sheet-sync.js';
 import { renderLanguageSwitcher, applyTranslations, t, getCurrentLang } from './i18n.js';
+
+export const SOCIAL_ICONS = {
+  mail: `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>`,
+  phone: `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`,
+  wechat: `<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M8.5 2C3.8 2 0 5.3 0 9.4c0 2.4 1.3 4.5 3.3 5.9-.2.8-.8 2.4-.9 2.6 0 .2.1.3.3.2 1.2-.7 2.7-1.7 3.3-2.1.8.2 1.6.3 2.5.3.3 0 .7 0 1-.1-.3-.8-.4-1.7-.4-2.6 0-4.4 4.3-8 9.5-8 .3 0 .6 0 1 .1C18.6 4.3 14 2 8.5 2zm-2.8 5.6c.7 0 1.3.6 1.3 1.3s-.6 1.3-1.3 1.3-1.3-.6-1.3-1.3.6-1.3 1.3-1.3zm5.6 0c.7 0 1.3.6 1.3 1.3s-.6 1.3-1.3 1.3-1.3-.6-1.3-1.3.6-1.3 1.3-1.3zm5.7 3.9c-4.4 0-8 3.1-8 6.9 0 3.8 3.6 6.9 8 6.9.7 0 1.4-.1 2.1-.3.5.4 1.7 1.1 2.6 1.6.2.1.3 0 .2-.1-.1-.2-.6-1.4-.7-2.1 1.7-1.1 2.8-2.8 2.8-4.7 0-3.8-3.6-6.9-8-6.9zm-2.6 4.8c-.6 0-1-.5-1-1s.4-1 1-1 1 .5 1 1-.4 1-1 1zm5.2 0c-.6 0-1-.5-1-1s.4-1 1-1 1 .5 1 1-.4 1-1 1z"/></svg>`,
+  line: `<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M22 10.4c0-4.6-4.5-8.4-10-8.4S2 5.8 2 10.4c0 4.1 3.6 7.6 8.5 8.2.3.1.8.2.9.6.1.3.1.8 0 1.2l-.3 1.6c-.1.5-.4 1.8 1.6 1 2-0.8 5.4-3.2 7.4-5.5 1.2-1.4 1.9-2.9 1.9-4.5z"/></svg>`,
+  whatsapp: `<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.669-.699c.969.586 1.761.884 2.791.884 3.179 0 5.767-2.587 5.767-5.766.001-3.18-2.585-5.77-5.767-5.77zm3.376 8.163c-.144.405-.837.774-1.17.824-.312.045-.694.079-2.007-.465-1.68-.696-2.766-2.42-2.85-2.531-.084-.111-.678-.902-.678-1.72 0-.819.43-1.222.583-1.389.153-.166.333-.208.444-.208.111 0 .222.001.319.005.102.004.238-.039.373.285.144.345.492 1.2.534 1.287.042.087.07.189.014.301-.055.111-.083.18-.166.278-.083.097-.174.218-.249.293-.083.083-.169.173-.073.338.096.165.426.703.914 1.137.627.558 1.155.731 1.32.815.166.083.264.07.362-.042.097-.111.417-.485.528-.652.111-.166.222-.139.374-.083.153.056.97.457 1.137.54.167.083.278.125.319.194.042.07.042.404-.102.809z"/></svg>`,
+  facebook: `<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>`,
+  linkedin: `<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>`
+};
+
+const iconLg = (svgStr) => svgStr.replace('w-3.5 h-3.5', 'w-4 h-4');
 
 class DirectoryApp {
   constructor() {
@@ -447,15 +459,16 @@ class DirectoryApp {
     if (!container) return;
 
     let html = `
-      <button data-country="ALL" class="country-filter-btn px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition bg-slate-900 text-white shadow-sm">
-        🌏 ${t('filterAllCountries')}
+      <button data-country="ALL" class="country-filter-btn px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition bg-slate-900 text-white shadow-sm inline-flex items-center gap-1.5">
+        <span class="text-sm">🌏</span> <span>${t('filterAllCountries')}</span>
       </button>
     `;
 
     CONFIG.countries.forEach(c => {
+      const flagImg = getCountryFlagImg(c.code, c.flag, 'w-4.5 h-3 object-cover rounded-[2px] shadow-xs inline-block align-middle');
       html += `
-        <button data-country="${c.code}" class="country-filter-btn px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300">
-          <span>${c.flag}</span> <span class="hidden sm:inline">${c.name}</span><span class="sm:hidden">${c.code}</span>
+        <button data-country="${c.code}" class="country-filter-btn px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 inline-flex items-center gap-1.5">
+          ${flagImg} <span class="hidden sm:inline">${c.name}</span><span class="sm:hidden">${c.code}</span>
         </button>
       `;
     });
@@ -635,7 +648,7 @@ class DirectoryApp {
           <!-- Top-Left Country Badge -->
           <div class="absolute top-3 left-3 z-10">
             <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-900/80 backdrop-blur-md text-white border border-white/20 shadow-sm">
-              <span>${countryMeta.flag}</span> <span class="tracking-wide">${countryMeta.name}</span>
+              ${countryMeta.flagHtml} <span class="tracking-wide">${countryMeta.name}</span>
             </span>
           </div>
 
@@ -678,14 +691,14 @@ class DirectoryApp {
           <div class="space-y-1.5 pt-2.5 border-t border-slate-100 text-xs">
             ${p.email ? `
               <a href="mailto:${p.email}" onclick="event.stopPropagation()" class="flex items-center gap-2 text-slate-600 hover:text-cyan-600 transition group/mail">
-                <i data-lucide="mail" class="w-3.5 h-3.5 text-slate-400 group-hover/mail:text-cyan-600 flex-shrink-0"></i>
+                <span class="text-slate-400 group-hover/mail:text-cyan-600 flex-shrink-0">${SOCIAL_ICONS.mail}</span>
                 <span class="truncate text-xs">${p.email}</span>
               </a>
             ` : ''}
 
             ${p.phone ? `
               <a href="tel:${p.phone}" onclick="event.stopPropagation()" class="flex items-center gap-2 text-slate-600 hover:text-cyan-600 transition group/phone">
-                <i data-lucide="phone" class="w-3.5 h-3.5 text-slate-400 group-hover/phone:text-cyan-600 flex-shrink-0"></i>
+                <span class="text-slate-400 group-hover/phone:text-cyan-600 flex-shrink-0">${SOCIAL_ICONS.phone}</span>
                 <span class="truncate text-xs">${p.phone}</span>
               </a>
             ` : ''}
@@ -694,27 +707,27 @@ class DirectoryApp {
               <div class="flex flex-wrap items-center gap-1.5 pt-1">
                 ${p.wechatId ? `
                   <button type="button" onclick="event.stopPropagation(); navigator.clipboard.writeText('${p.wechatId}'); alert('Copied WeChat ID: ${p.wechatId}');" title="WeChat ID: ${p.wechatId} (Click to copy)" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 transition cursor-pointer">
-                    <span class="font-bold text-[10px]">微</span> <span>${p.wechatId}</span>
+                    <span class="text-emerald-600 flex-shrink-0">${SOCIAL_ICONS.wechat}</span> <span>${p.wechatId}</span>
                   </button>
                 ` : ''}
                 ${p.lineId ? `
                   <a href="https://line.me/R/ti/p/~${p.lineId}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="LINE: ${p.lineId}" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-green-50 text-[#06c755] hover:bg-green-100 border border-green-200 transition">
-                    <i data-lucide="message-circle" class="w-3 h-3"></i> <span>LINE</span>
+                    <span class="text-[#06c755] flex-shrink-0">${SOCIAL_ICONS.line}</span> <span>LINE</span>
                   </a>
                 ` : ''}
                 ${p.whatsapp ? `
                   <a href="https://wa.me/${p.whatsapp.replace(/[^0-9]/g, '')}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="WhatsApp: ${p.whatsapp}" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-teal-50 text-[#25d366] hover:bg-teal-100 border border-teal-200 transition">
-                    <i data-lucide="phone-call" class="w-3 h-3"></i> <span>WhatsApp</span>
+                    <span class="text-[#25d366] flex-shrink-0">${SOCIAL_ICONS.whatsapp}</span> <span>WhatsApp</span>
                   </a>
                 ` : ''}
                 ${p.facebook ? `
                   <a href="${p.facebook.startsWith('http') ? p.facebook : 'https://facebook.com/' + p.facebook}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Facebook Profile" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-blue-50 text-[#1877f2] hover:bg-blue-100 border border-blue-200 transition">
-                    <i data-lucide="facebook" class="w-3 h-3"></i> <span>FB</span>
+                    <span class="text-[#1877f2] flex-shrink-0">${SOCIAL_ICONS.facebook}</span> <span>FB</span>
                   </a>
                 ` : ''}
                 ${p.linkedin ? `
                   <a href="${p.linkedin}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="LinkedIn Profile" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-sky-50 text-[#0077b5] hover:bg-sky-100 border border-sky-200 transition">
-                    <i data-lucide="linkedin" class="w-3 h-3"></i> <span>LinkedIn</span>
+                    <span class="text-[#0077b5] flex-shrink-0">${SOCIAL_ICONS.linkedin}</span> <span>LinkedIn</span>
                   </a>
                 ` : ''}
               </div>
@@ -800,7 +813,7 @@ class DirectoryApp {
           <!-- Top-Right Country Badge -->
           <div class="absolute top-3 right-3 z-10">
             <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-900/80 backdrop-blur-md text-white border border-white/20 shadow-sm">
-              <span>${countryMeta.flag}</span> <span class="tracking-wide">${countryMeta.name}</span>
+              ${countryMeta.flagHtml} <span class="tracking-wide">${countryMeta.name}</span>
             </span>
           </div>
         </div>
@@ -853,14 +866,14 @@ class DirectoryApp {
           <div class="space-y-1.5 pt-2.5 border-t border-slate-100 text-xs">
             ${l.email ? `
               <a href="mailto:${l.email}" onclick="event.stopPropagation()" class="flex items-center gap-2 text-slate-600 hover:text-cyan-600 transition group/mail">
-                <i data-lucide="mail" class="w-3.5 h-3.5 text-slate-400 group-hover/mail:text-cyan-600 flex-shrink-0"></i>
+                <span class="text-slate-400 group-hover/mail:text-cyan-600 flex-shrink-0">${SOCIAL_ICONS.mail}</span>
                 <span class="truncate text-xs">${l.email}</span>
               </a>
             ` : ''}
 
             ${l.phone ? `
               <a href="tel:${l.phone}" onclick="event.stopPropagation()" class="flex items-center gap-2 text-slate-600 hover:text-cyan-600 transition group/phone">
-                <i data-lucide="phone" class="w-3.5 h-3.5 text-slate-400 group-hover/phone:text-cyan-600 flex-shrink-0"></i>
+                <span class="text-slate-400 group-hover/phone:text-cyan-600 flex-shrink-0">${SOCIAL_ICONS.phone}</span>
                 <span class="truncate text-xs">${l.phone}</span>
               </a>
             ` : ''}
@@ -869,27 +882,27 @@ class DirectoryApp {
               <div class="flex flex-wrap items-center gap-1.5 pt-1">
                 ${l.wechatId ? `
                   <button type="button" onclick="event.stopPropagation(); navigator.clipboard.writeText('${l.wechatId}'); alert('Copied WeChat ID: ${l.wechatId}');" title="WeChat ID: ${l.wechatId} (Click to copy)" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 transition cursor-pointer">
-                    <span class="font-bold text-[10px]">微</span> <span>${l.wechatId}</span>
+                    <span class="text-emerald-600 flex-shrink-0">${SOCIAL_ICONS.wechat}</span> <span>${l.wechatId}</span>
                   </button>
                 ` : ''}
                 ${l.lineId ? `
                   <a href="https://line.me/R/ti/p/~${l.lineId}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="LINE: ${l.lineId}" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-green-50 text-[#06c755] hover:bg-green-100 border border-green-200 transition">
-                    <i data-lucide="message-circle" class="w-3 h-3"></i> <span>LINE</span>
+                    <span class="text-[#06c755] flex-shrink-0">${SOCIAL_ICONS.line}</span> <span>LINE</span>
                   </a>
                 ` : ''}
                 ${l.whatsapp ? `
                   <a href="https://wa.me/${l.whatsapp.replace(/[^0-9]/g, '')}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="WhatsApp: ${l.whatsapp}" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-teal-50 text-[#25d366] hover:bg-teal-100 border border-teal-200 transition">
-                    <i data-lucide="phone-call" class="w-3 h-3"></i> <span>WhatsApp</span>
+                    <span class="text-[#25d366] flex-shrink-0">${SOCIAL_ICONS.whatsapp}</span> <span>WhatsApp</span>
                   </a>
                 ` : ''}
                 ${l.facebook ? `
                   <a href="${l.facebook.startsWith('http') ? l.facebook : 'https://facebook.com/' + l.facebook}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Facebook Profile" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-blue-50 text-[#1877f2] hover:bg-blue-100 border border-blue-200 transition">
-                    <i data-lucide="facebook" class="w-3 h-3"></i> <span>FB</span>
+                    <span class="text-[#1877f2] flex-shrink-0">${SOCIAL_ICONS.facebook}</span> <span>FB</span>
                   </a>
                 ` : ''}
                 ${l.linkedin ? `
                   <a href="${l.linkedin}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="LinkedIn Profile" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-sky-50 text-[#0077b5] hover:bg-sky-100 border border-sky-200 transition">
-                    <i data-lucide="linkedin" class="w-3 h-3"></i> <span>LinkedIn</span>
+                    <span class="text-[#0077b5] flex-shrink-0">${SOCIAL_ICONS.linkedin}</span> <span>LinkedIn</span>
                   </a>
                 ` : ''}
               </div>
@@ -947,7 +960,7 @@ class DirectoryApp {
             <div class="flex-1 min-w-0 pt-1">
               <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-2">
                 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white/20 backdrop-blur-md border border-white/10">
-                  <span>${countryMeta.flag}</span> <span>${countryMeta.name}</span>
+                  ${countryMeta.flagHtml} <span>${countryMeta.name}</span>
                 </span>
                 ${item.nickname ? `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-cyan-400/20 text-cyan-200 border border-cyan-400/30">Nickname: ${item.nickname}</span>` : ''}
               </div>
@@ -1057,7 +1070,7 @@ class DirectoryApp {
               ${item.lineId ? `
                 <a href="https://line.me/R/ti/p/~${item.lineId}" target="_blank" rel="noopener" class="flex items-center gap-3 p-3 rounded-xl border border-green-300 bg-green-50/60 hover:bg-green-100/70 transition group">
                   <div class="w-9 h-9 rounded-lg bg-[#06c755] text-white flex items-center justify-center flex-shrink-0 shadow-sm">
-                    <i data-lucide="message-circle" class="w-4 h-4"></i>
+                    ${iconLg(SOCIAL_ICONS.line)}
                   </div>
                   <div class="min-w-0">
                     <p class="text-[11px] font-semibold text-green-800">LINE ID</p>
@@ -1069,7 +1082,7 @@ class DirectoryApp {
               ${item.whatsapp ? `
                 <a href="https://wa.me/${item.whatsapp.replace(/[^0-9]/g, '')}" target="_blank" rel="noopener" class="flex items-center gap-3 p-3 rounded-xl border border-teal-300 bg-teal-50/60 hover:bg-teal-100/70 transition group">
                   <div class="w-9 h-9 rounded-lg bg-[#25d366] text-white flex items-center justify-center flex-shrink-0 shadow-sm">
-                    <i data-lucide="phone-call" class="w-4 h-4"></i>
+                    ${iconLg(SOCIAL_ICONS.whatsapp)}
                   </div>
                   <div class="min-w-0">
                     <p class="text-[11px] font-semibold text-teal-800">WhatsApp</p>
@@ -1081,7 +1094,7 @@ class DirectoryApp {
               ${item.facebook ? `
                 <a href="${item.facebook.startsWith('http') ? item.facebook : 'https://facebook.com/' + item.facebook}" target="_blank" rel="noopener" class="flex items-center gap-3 p-3 rounded-xl border border-blue-300 bg-blue-50/60 hover:bg-blue-100/70 transition group">
                   <div class="w-9 h-9 rounded-lg bg-[#1877f2] text-white flex items-center justify-center flex-shrink-0 shadow-sm">
-                    <i data-lucide="facebook" class="w-4 h-4"></i>
+                    ${iconLg(SOCIAL_ICONS.facebook)}
                   </div>
                   <div class="min-w-0">
                     <p class="text-[11px] font-semibold text-blue-800">Facebook</p>
@@ -1092,8 +1105,8 @@ class DirectoryApp {
 
               ${item.linkedin ? `
                 <a href="${item.linkedin}" target="_blank" rel="noopener" class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:border-blue-400 hover:bg-blue-50/50 transition group">
-                  <div class="w-9 h-9 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-600 group-hover:text-white transition">
-                    <i data-lucide="linkedin" class="w-4 h-4"></i>
+                  <div class="w-9 h-9 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center flex-shrink-0 group-hover:bg-[#0077b5] group-hover:text-white transition">
+                    ${iconLg(SOCIAL_ICONS.linkedin)}
                   </div>
                   <div class="min-w-0">
                     <p class="text-[11px] font-medium text-slate-400">LinkedIn Profile</p>
@@ -1150,7 +1163,7 @@ class DirectoryApp {
                 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${roleBadgeClass} border">
                   ${roleBadgeText}
                 </span>
-                <span class="text-xs text-slate-300 bg-black/20 px-2.5 py-1 rounded-full border border-white/10"><span>${countryMeta.flag}</span> ${item.country}</span>
+                <span class="text-xs text-slate-300 bg-black/20 px-2.5 py-1 rounded-full border border-white/10 inline-flex items-center gap-1.5">${countryMeta.flagHtml} <span>${item.country}</span></span>
               </div>
               <h2 class="text-2xl sm:text-3xl font-extrabold text-white leading-tight tracking-tight">${item.nameEnglish}</h2>
               ${item.nameNative && item.nameNative !== item.nameEnglish ? `<p class="text-base sm:text-lg ${isTourLead ? 'text-emerald-200' : 'text-cyan-200'} mt-1 font-medium">${item.nameNative}</p>` : ''}
@@ -1210,13 +1223,13 @@ class DirectoryApp {
           <div class="border-t border-slate-100 pt-4">
             <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">${isTourLead ? 'Coordinator Contact' : 'Lecturer Contact'}</h4>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-              ${item.email ? `<p class="flex items-center gap-2 text-slate-700"><i data-lucide="mail" class="w-4 h-4 text-slate-400"></i> ${item.email}</p>` : ''}
-              ${item.phone ? `<p class="flex items-center gap-2 text-slate-700"><i data-lucide="phone" class="w-4 h-4 text-slate-400"></i> ${item.phone}</p>` : ''}
-              ${item.wechatId ? `<p class="flex items-center gap-2 text-emerald-800 font-semibold cursor-pointer" onclick="navigator.clipboard.writeText('${item.wechatId}'); alert('Copied WeChat ID: ${item.wechatId}');"><span class="w-4 h-4 rounded bg-emerald-600 text-white flex items-center justify-center text-[10px] font-bold">微</span> WeChat: ${item.wechatId}</p>` : ''}
-              ${item.lineId ? `<a href="https://line.me/R/ti/p/~${item.lineId}" target="_blank" class="flex items-center gap-2 text-[#06c755] hover:underline font-medium"><i data-lucide="message-circle" class="w-4 h-4 text-[#06c755]"></i> LINE: ${item.lineId}</a>` : ''}
-              ${item.whatsapp ? `<a href="https://wa.me/${item.whatsapp.replace(/[^0-9]/g, '')}" target="_blank" class="flex items-center gap-2 text-[#25d366] hover:underline font-medium"><i data-lucide="phone-call" class="w-4 h-4 text-[#25d366]"></i> WhatsApp: ${item.whatsapp}</a>` : ''}
-              ${item.facebook ? `<a href="${item.facebook.startsWith('http') ? item.facebook : 'https://facebook.com/' + item.facebook}" target="_blank" class="flex items-center gap-2 text-[#1877f2] hover:underline font-medium"><i data-lucide="facebook" class="w-4 h-4 text-[#1877f2]"></i> Facebook</a>` : ''}
-              ${item.linkedin ? `<a href="${item.linkedin}" target="_blank" class="flex items-center gap-2 text-blue-600 hover:underline"><i data-lucide="linkedin" class="w-4 h-4 text-blue-500"></i> LinkedIn Profile</a>` : ''}
+              ${item.email ? `<p class="flex items-center gap-2 text-slate-700"><span class="text-slate-400">${SOCIAL_ICONS.mail}</span> <span>${item.email}</span></p>` : ''}
+              ${item.phone ? `<p class="flex items-center gap-2 text-slate-700"><span class="text-slate-400">${SOCIAL_ICONS.phone}</span> <span>${item.phone}</span></p>` : ''}
+              ${item.wechatId ? `<p class="flex items-center gap-2 text-emerald-800 font-semibold cursor-pointer" onclick="navigator.clipboard.writeText('${item.wechatId}'); alert('Copied WeChat ID: ${item.wechatId}');"><span class="text-emerald-600">${SOCIAL_ICONS.wechat}</span> WeChat: ${item.wechatId}</p>` : ''}
+              ${item.lineId ? `<a href="https://line.me/R/ti/p/~${item.lineId}" target="_blank" class="flex items-center gap-2 text-[#06c755] hover:underline font-medium"><span class="text-[#06c755]">${SOCIAL_ICONS.line}</span> LINE: ${item.lineId}</a>` : ''}
+              ${item.whatsapp ? `<a href="https://wa.me/${item.whatsapp.replace(/[^0-9]/g, '')}" target="_blank" class="flex items-center gap-2 text-[#25d366] hover:underline font-medium"><span class="text-[#25d366]">${SOCIAL_ICONS.whatsapp}</span> WhatsApp: ${item.whatsapp}</a>` : ''}
+              ${item.facebook ? `<a href="${item.facebook.startsWith('http') ? item.facebook : 'https://facebook.com/' + item.facebook}" target="_blank" class="flex items-center gap-2 text-[#1877f2] hover:underline font-medium"><span class="text-[#1877f2]">${SOCIAL_ICONS.facebook}</span> Facebook</a>` : ''}
+              ${item.linkedin ? `<a href="${item.linkedin}" target="_blank" class="flex items-center gap-2 text-[#0077b5] hover:underline"><span class="text-[#0077b5]">${SOCIAL_ICONS.linkedin}</span> LinkedIn Profile</a>` : ''}
             </div>
           </div>
         </div>

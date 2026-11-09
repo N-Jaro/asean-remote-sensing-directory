@@ -86,28 +86,47 @@ export function formatDrivePhotoUrl(url) {
 }
 
 /**
+ * Country code to Flag CDN image helper
+ * Solves Windows OS limitation where country flag emojis render as 2-letter ISO text codes (e.g. BN, KH, TH)
+ */
+export function getCountryFlagImg(code, fallbackEmoji = '🌐', className = 'w-4.5 h-3 object-cover rounded-[2px] shadow-xs inline-block align-middle') {
+  if (!code || code === 'OTHER' || code === 'ALL') {
+    return `<span class="inline-block text-xs align-middle">${fallbackEmoji}</span>`;
+  }
+  const clean = code.toLowerCase().trim();
+  return `<img src="https://flagcdn.com/24x18/${clean}.png" srcset="https://flagcdn.com/48x36/${clean}.png 2x" class="${className}" alt="${code}" loading="lazy" onerror="this.outerHTML='<span class=\\'inline-block text-xs\\'>${fallbackEmoji}</span>'"/>`;
+}
+
+/**
  * Determine country code and flag from nationality / country name
  */
 export function getCountryMeta(countryStr) {
-  if (!countryStr) return { code: "OTHER", flag: "🌐", name: "International" };
+  if (!countryStr) {
+    const meta = { code: "OTHER", flag: "🌐", name: "International" };
+    meta.flagHtml = getCountryFlagImg(meta.code, meta.flag);
+    return meta;
+  }
   const s = countryStr.toLowerCase().trim();
 
-  if (s.includes('thai') || s.includes('ไทย') || s.includes('thailand')) return { code: 'TH', flag: '🇹🇭', name: 'Thailand' };
-  if (s.includes('cambod') || s.includes('khmer') || s.includes('กัมพูชา') || s.includes('កម្ពុជា')) return { code: 'KH', flag: '🇰🇭', name: 'Cambodia' };
-  if (s.includes('lao') || s.includes('ลาว') || s.includes('ລາວ')) return { code: 'LA', flag: '🇱🇦', name: 'Laos' };
-  if (s.includes('myan') || s.includes('burm') || s.includes('พม่า') || s.includes('မြန်မာ')) return { code: 'MM', flag: '🇲🇲', name: 'Myanmar' };
-  if (s.includes('china') || s.includes('chinese') || s.includes('中国') || s.includes('จีน')) return { code: 'CN', flag: '🇨🇳', name: 'China' };
-  if (s.includes('indonesia')) return { code: 'ID', flag: '🇮🇩', name: 'Indonesia' };
-  if (s.includes('philip') || s.includes('filipino')) return { code: 'PH', flag: '🇵🇭', name: 'Philippines' };
-  if (s.includes('viet')) return { code: 'VN', flag: '🇻🇳', name: 'Vietnam' };
-  if (s.includes('malay')) return { code: 'MY', flag: '🇲🇾', name: 'Malaysia' };
-  if (s.includes('singapor')) return { code: 'SG', flag: '🇸🇬', name: 'Singapore' };
-  if (s.includes('brunei')) return { code: 'BN', flag: '🇧🇳', name: 'Brunei Darussalam' };
-  if (s.includes('timor')) return { code: 'TL', flag: '🇹🇱', name: 'Timor-Leste' };
-  if (s.includes('japan')) return { code: 'OTHER', flag: '🇯🇵', name: 'Japan' };
-  if (s.includes('australia')) return { code: 'OTHER', flag: '🇦🇺', name: 'Australia' };
+  let res;
+  if (s.includes('thai') || s.includes('ไทย') || s.includes('thailand')) res = { code: 'TH', flag: '🇹🇭', name: 'Thailand' };
+  else if (s.includes('cambod') || s.includes('khmer') || s.includes('กัมพูชา') || s.includes('កម្ពុជា')) res = { code: 'KH', flag: '🇰🇭', name: 'Cambodia' };
+  else if (s.includes('lao') || s.includes('ลาว') || s.includes('ລາວ')) res = { code: 'LA', flag: '🇱🇦', name: 'Laos' };
+  else if (s.includes('myan') || s.includes('burm') || s.includes('พม่า') || s.includes('မြန်မာ')) res = { code: 'MM', flag: '🇲🇲', name: 'Myanmar' };
+  else if (s.includes('china') || s.includes('chinese') || s.includes('中国') || s.includes('จีน')) res = { code: 'CN', flag: '🇨🇳', name: 'China' };
+  else if (s.includes('indonesia')) res = { code: 'ID', flag: '🇮🇩', name: 'Indonesia' };
+  else if (s.includes('philip') || s.includes('filipino')) res = { code: 'PH', flag: '🇵🇭', name: 'Philippines' };
+  else if (s.includes('viet')) res = { code: 'VN', flag: '🇻🇳', name: 'Vietnam' };
+  else if (s.includes('malay')) res = { code: 'MY', flag: '🇲🇾', name: 'Malaysia' };
+  else if (s.includes('singapor')) res = { code: 'SG', flag: '🇸🇬', name: 'Singapore' };
+  else if (s.includes('brunei')) res = { code: 'BN', flag: '🇧🇳', name: 'Brunei Darussalam' };
+  else if (s.includes('timor')) res = { code: 'TL', flag: '🇹🇱', name: 'Timor-Leste' };
+  else if (s.includes('japan')) res = { code: 'OTHER', flag: '🇯🇵', name: 'Japan' };
+  else if (s.includes('australia')) res = { code: 'OTHER', flag: '🇦🇺', name: 'Australia' };
+  else res = { code: 'OTHER', flag: '🌐', name: countryStr };
 
-  return { code: 'OTHER', flag: '🌐', name: countryStr };
+  res.flagHtml = getCountryFlagImg(res.code, res.flag);
+  return res;
 }
 
 /**
