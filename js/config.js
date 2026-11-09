@@ -47,6 +47,7 @@ export const CONFIG = {
     { code: "TH", name: "Thailand", flag: "🇹🇭" },
     { code: "TL", name: "Timor-Leste", flag: "🇹🇱" },
     { code: "VN", name: "Vietnam", flag: "🇻🇳" },
+    { code: "CN", name: "China", flag: "🇨🇳" },
     { code: "OTHER", name: "International / Partner", flag: "🌐" }
   ],
 

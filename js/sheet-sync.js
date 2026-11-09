@@ -92,16 +92,17 @@ export function getCountryMeta(countryStr) {
   if (!countryStr) return { code: "OTHER", flag: "🌐", name: "International" };
   const s = countryStr.toLowerCase().trim();
 
-  if (s.includes('thai') || s.includes('ไทย')) return { code: 'TH', flag: '🇹🇭', name: 'Thailand' };
+  if (s.includes('thai') || s.includes('ไทย') || s.includes('thailand')) return { code: 'TH', flag: '🇹🇭', name: 'Thailand' };
+  if (s.includes('cambod') || s.includes('khmer') || s.includes('กัมพูชา') || s.includes('កម្ពុជា')) return { code: 'KH', flag: '🇰🇭', name: 'Cambodia' };
+  if (s.includes('lao') || s.includes('ลาว') || s.includes('ລາວ')) return { code: 'LA', flag: '🇱🇦', name: 'Laos' };
+  if (s.includes('myan') || s.includes('burm') || s.includes('พม่า') || s.includes('မြန်မာ')) return { code: 'MM', flag: '🇲🇲', name: 'Myanmar' };
+  if (s.includes('china') || s.includes('chinese') || s.includes('中国') || s.includes('จีน')) return { code: 'CN', flag: '🇨🇳', name: 'China' };
   if (s.includes('indonesia')) return { code: 'ID', flag: '🇮🇩', name: 'Indonesia' };
   if (s.includes('philip') || s.includes('filipino')) return { code: 'PH', flag: '🇵🇭', name: 'Philippines' };
   if (s.includes('viet')) return { code: 'VN', flag: '🇻🇳', name: 'Vietnam' };
   if (s.includes('malay')) return { code: 'MY', flag: '🇲🇾', name: 'Malaysia' };
   if (s.includes('singapor')) return { code: 'SG', flag: '🇸🇬', name: 'Singapore' };
-  if (s.includes('cambod') || s.includes('khmer')) return { code: 'KH', flag: '🇰🇭', name: 'Cambodia' };
-  if (s.includes('lao')) return { code: 'LA', flag: '🇱🇦', name: 'Laos' };
   if (s.includes('brunei')) return { code: 'BN', flag: '🇧🇳', name: 'Brunei Darussalam' };
-  if (s.includes('myan') || s.includes('burm')) return { code: 'MM', flag: '🇲🇲', name: 'Myanmar' };
   if (s.includes('timor')) return { code: 'TL', flag: '🇹🇱', name: 'Timor-Leste' };
   if (s.includes('japan')) return { code: 'OTHER', flag: '🇯🇵', name: 'Japan' };
   if (s.includes('australia')) return { code: 'OTHER', flag: '🇦🇺', name: 'Australia' };
