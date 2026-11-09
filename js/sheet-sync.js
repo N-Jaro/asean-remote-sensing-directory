@@ -130,15 +130,75 @@ export function getCountryMeta(countryStr) {
 }
 
 /**
- * Fuzzy header mapping helper
+ * Parse combined messaging channel strings (e.g. "WeChat: wxid_123 | LINE: myline | WhatsApp: +66... | FB: https://...")
+ * into clean separated key-value pairs
  */
-function findIndex(headers, matchers) {
+export function parseMessagingChannels(raw) {
+  const result = {
+    wechat: '',
+    line: '',
+    whatsapp: '',
+    facebook: ''
+  };
+
+  if (!raw) return result;
+  const str = String(raw).trim();
+  if (!str) return result;
+
+  // Check if it's a multi-channel concatenated string
+  if (str.includes('|') || /(?:wechat|line|whatsapp|wa|fb|facebook):/i.test(str)) {
+    const wechatMatch = str.match(/(?:wechat|weixin|微信号?)[:\s]+([^|]+)/i);
+    if (wechatMatch) result.wechat = wechatMatch[1].trim();
+
+    const lineMatch = str.match(/line(?:\s*id)?[:\s]+([^|]+)/i);
+    if (lineMatch) result.line = lineMatch[1].trim();
+
+    const waMatch = str.match(/(?:whatsapp|wa)[:\s]+([^|]+)/i);
+    if (waMatch) result.whatsapp = waMatch[1].trim();
+
+    const fbMatch = str.match(/(?:facebook|fb)(?:\s*profile|\s*url)?[:\s]+([^|]+)/i);
+    if (fbMatch) result.facebook = fbMatch[1].trim();
+  } else {
+    // Single-channel heuristics
+    const lower = str.toLowerCase();
+    if (lower.startsWith('wx') || lower.includes('wechat')) {
+      result.wechat = str.replace(/wechat[:\s]*/i, '').trim();
+    } else if (str.startsWith('+') || /^\d{8,15}$/.test(str.replace(/[\s-]/g, ''))) {
+      result.whatsapp = str;
+    } else if (lower.includes('facebook.com') || lower.includes('fb.com')) {
+      result.facebook = str;
+    } else {
+      result.line = str;
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Fuzzy header mapping helper with support for excluding specific keywords
+ */
+function findIndex(headers, matchers, excludedWords = []) {
   const normalized = headers.map(h => (h || '').toLowerCase().replace(/[^a-z0-9ก-๙]/g, ''));
+  const excludedClean = excludedWords.map(w => w.toLowerCase().replace(/[^a-z0-9ก-๙]/g, ''));
+
+  // 1. First priority: match target while ensuring none of the excluded words exist in header
+  for (const matcher of matchers) {
+    const target = matcher.toLowerCase().replace(/[^a-z0-9ก-๙]/g, '');
+    const idx = normalized.findIndex(h => {
+      if (!h.includes(target)) return false;
+      return !excludedClean.some(ex => h.includes(ex));
+    });
+    if (idx !== -1) return idx;
+  }
+
+  // 2. Fallback: match without exclusion
   for (const matcher of matchers) {
     const target = matcher.toLowerCase().replace(/[^a-z0-9ก-๙]/g, '');
     const idx = normalized.findIndex(h => h.includes(target));
     if (idx !== -1) return idx;
   }
+
   return -1;
 }
 
@@ -161,12 +221,16 @@ export function mapCsvToParticipants(rows) {
   const idxPhone = findIndex(headers, ['phone', 'tel', 'mobile', 'telephone', 'เบอร์โทร', 'เบอร์ติดต่อ']);
   const idxEmail = findIndex(headers, ['email', 'mail', 'อีเมล']);
   const idxLinkedin = findIndex(headers, ['linkedin', 'linkedinurl', 'ลิงก์linkedin']);
-  const idxWechat = findIndex(headers, ['wechat', 'wxid', 'weixin', '微信', 'wechatid']);
-  const idxLine = findIndex(headers, ['lineid', 'line', 'ไลน์', 'ไลน์ไอดี']);
-  const idxWhatsapp = findIndex(headers, ['whatsapp', 'wa', 'วอทส์แอพ']);
-  const idxFacebook = findIndex(headers, ['facebook', 'fb', 'เฟซบุ๊ก', 'เฟสบุ๊ค']);
-  const idxGenericChat = findIndex(headers, ['messaging', 'chat', 'contactapp', 'lineid/whatsapp/wechat/viber', 'line/whatsapp']);
-  const idxMessage = findIndex(headers, ['message', 'note', 'littlebit', 'ข้อความ', 'คำทักทาย', 'notetoother']);
+  
+  // Dedicated single-channel headers (explicitly exclude combined headers)
+  const idxWechat = findIndex(headers, ['wechatid', 'wechat', 'wxid', 'weixin', '微信']);
+  const idxLine = findIndex(headers, ['lineid', 'line', 'ไลน์', 'ไลน์ไอดี'], ['whatsapp', 'wechat']);
+  const idxWhatsapp = findIndex(headers, ['whatsappnumber', 'whatsapp', 'wa', 'วอทส์แอพ'], ['line', 'wechat']);
+  const idxFacebook = findIndex(headers, ['facebookprofile', 'facebook', 'fb', 'เฟซบุ๊ก', 'เฟสบุ๊ค']);
+  
+  // Generic / combined chat header (e.g. 'Line ID / WhatsApp' or 'Messaging')
+  const idxGenericChat = findIndex(headers, ['lineidwhatsapp', 'linewhatsapp', 'messaging', 'chat', 'contactapp', 'channels']);
+  const idxMessage = findIndex(headers, ['messagetoother', 'greeting', 'note', 'littlebit', 'ข้อความ', 'คำทักทาย', 'notetoother', 'message']);
   const idxPhoto = findIndex(headers, ['photo', 'picture', 'image', 'avatar', 'upload', 'รูปถ่าย', 'รูปภาพ']);
 
   const participants = [];
@@ -174,70 +238,78 @@ export function mapCsvToParticipants(rows) {
   for (let i = 1; i < rows.length; i++) {
     const row = rows[i];
     // Skip empty rows
-    if (!row || row.length === 0 || !row.some(val => val && val.trim() !== '')) continue;
+    if (!row || row.length === 0 || !row.some(val => val && String(val).trim() !== '')) continue;
 
-    const nameEnglish = (idxEnglish !== -1 && row[idxEnglish]) ? row[idxEnglish].trim() : (row[0] || 'Participant');
-    const nameNative = (idxNative !== -1 && row[idxNative]) ? row[idxNative].trim() : nameEnglish;
-    const nationalityRaw = (idxNationality !== -1 && row[idxNationality]) ? row[idxNationality].trim() : 'ASEAN';
+    const nameEnglish = (idxEnglish !== -1 && row[idxEnglish]) ? String(row[idxEnglish]).trim() : (String(row[0]) || 'Participant');
+    const nameNative = (idxNative !== -1 && row[idxNative]) ? String(row[idxNative]).trim() : nameEnglish;
+    const nationalityRaw = (idxNationality !== -1 && row[idxNationality]) ? String(row[idxNationality]).trim() : 'ASEAN';
     const countryMeta = getCountryMeta(nationalityRaw);
 
-    let wechatVal = (idxWechat !== -1 && row[idxWechat]) ? row[idxWechat].trim() : '';
-    let lineVal = (idxLine !== -1 && row[idxLine]) ? row[idxLine].trim() : '';
-    let whatsappVal = (idxWhatsapp !== -1 && row[idxWhatsapp]) ? row[idxWhatsapp].trim() : '';
-    let facebookVal = (idxFacebook !== -1 && row[idxFacebook]) ? row[idxFacebook].trim() : '';
+    let wechatVal = (idxWechat !== -1 && row[idxWechat]) ? String(row[idxWechat]).trim() : '';
+    let lineVal = (idxLine !== -1 && row[idxLine]) ? String(row[idxLine]).trim() : '';
+    let whatsappVal = (idxWhatsapp !== -1 && row[idxWhatsapp]) ? String(row[idxWhatsapp]).trim() : '';
+    let facebookVal = (idxFacebook !== -1 && row[idxFacebook]) ? String(row[idxFacebook]).trim() : '';
 
-    const combinedChat = (idxGenericChat !== -1 && row[idxGenericChat]) ? row[idxGenericChat].trim() : '';
-    if (combinedChat) {
-      if (!wechatVal && combinedChat.includes('WeChat:')) {
-        const m = combinedChat.match(/WeChat:\s*([^|]+)/i);
-        if (m) wechatVal = m[1].trim();
-      }
-      if (!lineVal && combinedChat.includes('LINE:')) {
-        const m = combinedChat.match(/LINE:\s*([^|]+)/i);
-        if (m) lineVal = m[1].trim();
-      }
-      if (!whatsappVal && combinedChat.includes('WhatsApp:')) {
-        const m = combinedChat.match(/WhatsApp:\s*([^|]+)/i);
-        if (m) whatsappVal = m[1].trim();
-      }
-      if (!facebookVal && (combinedChat.includes('FB:') || combinedChat.includes('Facebook:'))) {
-        const m = combinedChat.match(/(?:FB|Facebook):\s*([^|]+)/i);
-        if (m) facebookVal = m[1].trim();
-      }
-      if (!wechatVal && !lineVal && !whatsappVal && !facebookVal) {
-        if (combinedChat.toLowerCase().includes('wx') || combinedChat.toLowerCase().includes('wechat')) {
-          wechatVal = combinedChat.replace(/wechat[:\s]*/i, '');
-        } else if (combinedChat.startsWith('+') || /^\d{9,15}$/.test(combinedChat.replace(/\s+/g, ''))) {
-          whatsappVal = combinedChat;
-        } else if (combinedChat.includes('facebook') || combinedChat.includes('fb.com')) {
-          facebookVal = combinedChat;
-        } else {
-          lineVal = combinedChat;
-        }
-      }
+    // If any channel value contains concatenated multi-channel text (e.g. 'WeChat: ... | LINE: ...'), parse and extract each field
+    const rawToParse = [
+      (idxGenericChat !== -1 && row[idxGenericChat]) ? String(row[idxGenericChat]).trim() : '',
+      lineVal,
+      whatsappVal,
+      wechatVal
+    ].find(str => str && (str.includes('|') || /(?:wechat|line|whatsapp|wa|fb|facebook):/i.test(str)));
+
+    if (rawToParse) {
+      const parsed = parseMessagingChannels(rawToParse);
+      if (!wechatVal && parsed.wechat) wechatVal = parsed.wechat;
+      if (parsed.line) lineVal = parsed.line;
+      if (parsed.whatsapp) whatsappVal = parsed.whatsapp;
+      if (!facebookVal && parsed.facebook) facebookVal = parsed.facebook;
+    }
+
+    // Safety clean-up: Ensure lineVal and whatsappVal do NOT contain leftover concatenated strings
+    if (lineVal && (lineVal.includes('|') || /(?:wechat|whatsapp|fb):/i.test(lineVal))) {
+      const p = parseMessagingChannels(lineVal);
+      lineVal = p.line || '';
+      if (!wechatVal && p.wechat) wechatVal = p.wechat;
+      if (!whatsappVal && p.whatsapp) whatsappVal = p.whatsapp;
+      if (!facebookVal && p.facebook) facebookVal = p.facebook;
+    }
+
+    if (whatsappVal && (whatsappVal.includes('|') || /(?:wechat|line|fb):/i.test(whatsappVal))) {
+      const p = parseMessagingChannels(whatsappVal);
+      whatsappVal = p.whatsapp || '';
+      if (!wechatVal && p.wechat) wechatVal = p.wechat;
+      if (!lineVal && p.line) lineVal = p.line;
+      if (!facebookVal && p.facebook) facebookVal = p.facebook;
+    }
+
+    // If whatsapp is empty but phone looks like an international mobile number, provide it as WhatsApp fallback
+    const rawPhone = (idxPhone !== -1 && row[idxPhone]) ? String(row[idxPhone]).trim() : '';
+    if (!whatsappVal && (rawPhone.startsWith('+') || rawPhone.startsWith('66') || rawPhone.length >= 10)) {
+      whatsappVal = rawPhone.startsWith('+') ? rawPhone : (rawPhone.startsWith('66') ? `+${rawPhone}` : rawPhone);
     }
 
     participants.push({
       id: `sheet-p-${i}`,
       nameEnglish,
       nameNative,
-      nickname: (idxNickname !== -1 && row[idxNickname]) ? row[idxNickname].trim() : '',
+      nickname: (idxNickname !== -1 && row[idxNickname]) ? String(row[idxNickname]).trim() : '',
       nationality: countryMeta.name,
       countryCode: countryMeta.code,
       countryFlag: countryMeta.flag,
-      affiliation: (idxAffiliation !== -1 && row[idxAffiliation]) ? row[idxAffiliation].trim() : 'Geospatial Agency',
-      position: (idxPosition !== -1 && row[idxPosition]) ? row[idxPosition].trim() : 'Specialist',
-      expertise: (idxExpertise !== -1 && row[idxExpertise]) ? row[idxExpertise].trim() : 'Remote Sensing & GIS',
-      workingOffice: (idxOffice !== -1 && row[idxOffice]) ? row[idxOffice].trim() : '',
-      phone: (idxPhone !== -1 && row[idxPhone]) ? row[idxPhone].trim() : '',
-      email: (idxEmail !== -1 && row[idxEmail]) ? row[idxEmail].trim() : '',
-      linkedin: (idxLinkedin !== -1 && row[idxLinkedin]) ? row[idxLinkedin].trim() : '',
+      affiliation: (idxAffiliation !== -1 && row[idxAffiliation]) ? String(row[idxAffiliation]).trim() : 'Geospatial Agency',
+      position: (idxPosition !== -1 && row[idxPosition]) ? String(row[idxPosition]).trim() : 'Specialist',
+      expertise: (idxExpertise !== -1 && row[idxExpertise]) ? String(row[idxExpertise]).trim() : 'Remote Sensing & GIS',
+      workingOffice: (idxOffice !== -1 && row[idxOffice]) ? String(row[idxOffice]).trim() : '',
+      phone: rawPhone,
+      email: (idxEmail !== -1 && row[idxEmail]) ? String(row[idxEmail]).trim() : '',
+      linkedin: (idxLinkedin !== -1 && row[idxLinkedin]) ? String(row[idxLinkedin]).trim() : '',
       wechatId: wechatVal,
       lineId: lineVal,
-      whatsapp: whatsappVal || ((idxPhone !== -1 && row[idxPhone] && row[idxPhone].includes('+')) ? row[idxPhone].trim() : ''),
+      whatsapp: whatsappVal,
       facebook: facebookVal,
-      message: (idxMessage !== -1 && row[idxMessage]) ? row[idxMessage].trim() : '',
-      photoUrl: (idxPhoto !== -1 && row[idxPhoto]) ? formatDrivePhotoUrl(row[idxPhoto]) : '',
+      message: (idxMessage !== -1 && row[idxMessage]) ? String(row[idxMessage]).trim() : '',
+      photoUrl: (idxPhoto !== -1 && row[idxPhoto]) ? formatDrivePhotoUrl(String(row[idxPhoto])) : '',
       role: "Participant"
     });
   }
@@ -264,10 +336,11 @@ export function mapCsvToLecturers(rows) {
   const idxEmail = findIndex(headers, ['email', 'อีเมล']);
   const idxPhone = findIndex(headers, ['phone', 'tel', 'เบอร์']);
   const idxLinkedin = findIndex(headers, ['linkedin', 'ลิงก์linkedin']);
-  const idxWechat = findIndex(headers, ['wechat', 'wxid', 'weixin', '微信', 'wechatid']);
-  const idxLine = findIndex(headers, ['lineid', 'line', 'ไลน์', 'ไลน์ไอดี']);
-  const idxWhatsapp = findIndex(headers, ['whatsapp', 'wa', 'วอทส์แอพ']);
-  const idxFacebook = findIndex(headers, ['facebook', 'fb', 'เฟซบุ๊ก', 'เฟสบุ๊ค']);
+  const idxWechat = findIndex(headers, ['wechatid', 'wechat', 'wxid', 'weixin', '微信']);
+  const idxLine = findIndex(headers, ['lineid', 'line', 'ไลน์', 'ไลน์ไอดี'], ['whatsapp', 'wechat']);
+  const idxWhatsapp = findIndex(headers, ['whatsappnumber', 'whatsapp', 'wa', 'วอทส์แอพ'], ['line', 'wechat']);
+  const idxFacebook = findIndex(headers, ['facebookprofile', 'facebook', 'fb', 'เฟซบุ๊ก', 'เฟสบุ๊ค']);
+  const idxGenericChat = findIndex(headers, ['lineidwhatsapp', 'linewhatsapp', 'messaging', 'chat', 'contactapp', 'channels']);
   const idxLab = findIndex(headers, ['website', 'lab', 'researchgate', 'เว็บ']);
   const idxSlides = findIndex(headers, ['slide', 'material', 'download', 'เอกสาร', 'สไลด์']);
   const idxNotes = findIndex(headers, ['note', 'remark', 'หมายเหตุ']);
@@ -277,14 +350,14 @@ export function mapCsvToLecturers(rows) {
 
   for (let i = 1; i < rows.length; i++) {
     const row = rows[i];
-    if (!row || !row.some(val => val && val.trim() !== '')) continue;
+    if (!row || !row.some(val => val && String(val).trim() !== '')) continue;
 
-    const nameEnglish = (idxNameEnglish !== -1 && row[idxNameEnglish]) ? row[idxNameEnglish].trim() : `Lecturer ${i}`;
-    const countryRaw = (idxCountry !== -1 && row[idxCountry]) ? row[idxCountry].trim() : 'ASEAN';
+    const nameEnglish = (idxNameEnglish !== -1 && row[idxNameEnglish]) ? String(row[idxNameEnglish]).trim() : `Lecturer ${i}`;
+    const countryRaw = (idxCountry !== -1 && row[idxCountry]) ? String(row[idxCountry]).trim() : 'ASEAN';
     const countryMeta = getCountryMeta(countryRaw);
 
-    const titleVal = (idxTitle !== -1 && row[idxTitle]) ? row[idxTitle].trim() : 'Guest Lecturer / Specialist';
-    const sessionVal = (idxSession !== -1 && row[idxSession]) ? row[idxSession].trim() : `Session ${i}`;
+    const titleVal = (idxTitle !== -1 && row[idxTitle]) ? String(row[idxTitle]).trim() : 'Guest Lecturer / Specialist';
+    const sessionVal = (idxSession !== -1 && row[idxSession]) ? String(row[idxSession]).trim() : `Session ${i}`;
     const isTourLead = titleVal.toLowerCase().includes('tour lead') ||
                        titleVal.includes('ผู้นำทัศนศึกษา') ||
                        titleVal.includes('ผู้ประสานงานทัศนศึกษา') ||
@@ -292,29 +365,70 @@ export function mapCsvToLecturers(rows) {
                        sessionVal.toLowerCase().includes('tour') ||
                        sessionVal.toLowerCase().includes('excursion');
 
+    let wechatVal = (idxWechat !== -1 && row[idxWechat]) ? String(row[idxWechat]).trim() : '';
+    let lineVal = (idxLine !== -1 && row[idxLine]) ? String(row[idxLine]).trim() : '';
+    let whatsappVal = (idxWhatsapp !== -1 && row[idxWhatsapp]) ? String(row[idxWhatsapp]).trim() : '';
+    let facebookVal = (idxFacebook !== -1 && row[idxFacebook]) ? String(row[idxFacebook]).trim() : '';
+
+    const rawToParse = [
+      (idxGenericChat !== -1 && row[idxGenericChat]) ? String(row[idxGenericChat]).trim() : '',
+      lineVal,
+      whatsappVal,
+      wechatVal
+    ].find(str => str && (str.includes('|') || /(?:wechat|line|whatsapp|wa|fb|facebook):/i.test(str)));
+
+    if (rawToParse) {
+      const p = parseMessagingChannels(rawToParse);
+      if (!wechatVal && p.wechat) wechatVal = p.wechat;
+      if (p.line) lineVal = p.line;
+      if (p.whatsapp) whatsappVal = p.whatsapp;
+      if (!facebookVal && p.facebook) facebookVal = p.facebook;
+    }
+
+    if (lineVal && (lineVal.includes('|') || /(?:wechat|whatsapp|fb):/i.test(lineVal))) {
+      const p = parseMessagingChannels(lineVal);
+      lineVal = p.line || '';
+      if (!wechatVal && p.wechat) wechatVal = p.wechat;
+      if (!whatsappVal && p.whatsapp) whatsappVal = p.whatsapp;
+      if (!facebookVal && p.facebook) facebookVal = p.facebook;
+    }
+
+    if (whatsappVal && (whatsappVal.includes('|') || /(?:wechat|line|fb):/i.test(whatsappVal))) {
+      const p = parseMessagingChannels(whatsappVal);
+      whatsappVal = p.whatsapp || '';
+      if (!wechatVal && p.wechat) wechatVal = p.wechat;
+      if (!lineVal && p.line) lineVal = p.line;
+      if (!facebookVal && p.facebook) facebookVal = p.facebook;
+    }
+
+    const rawPhone = (idxPhone !== -1 && row[idxPhone]) ? String(row[idxPhone]).trim() : '';
+    if (!whatsappVal && (rawPhone.startsWith('+') || rawPhone.startsWith('66') || rawPhone.length >= 10)) {
+      whatsappVal = rawPhone.startsWith('+') ? rawPhone : (rawPhone.startsWith('66') ? `+${rawPhone}` : rawPhone);
+    }
+
     lecturers.push({
       id: `sheet-lec-${i}`,
       nameEnglish,
-      nameNative: (idxNameNative !== -1 && row[idxNameNative]) ? row[idxNameNative].trim() : nameEnglish,
+      nameNative: (idxNameNative !== -1 && row[idxNameNative]) ? String(row[idxNameNative]).trim() : nameEnglish,
       title: titleVal,
-      affiliation: (idxAffiliation !== -1 && row[idxAffiliation]) ? row[idxAffiliation].trim() : 'Partner Organization',
+      affiliation: (idxAffiliation !== -1 && row[idxAffiliation]) ? String(row[idxAffiliation]).trim() : 'Partner Organization',
       country: countryMeta.name,
       countryCode: countryMeta.code,
       sessionTitle: sessionVal,
-      sessionDate: (idxDate !== -1 && row[idxDate]) ? row[idxDate].trim() : 'Seminar Schedule',
+      sessionDate: (idxDate !== -1 && row[idxDate]) ? String(row[idxDate]).trim() : 'Seminar Schedule',
       sessionDay: isTourLead ? 'Field Trip' : `Day ${i}`,
-      topics: (idxTopics !== -1 && row[idxTopics]) ? row[idxTopics].trim() : '',
-      email: (idxEmail !== -1 && row[idxEmail]) ? row[idxEmail].trim() : '',
-      phone: (idxPhone !== -1 && row[idxPhone]) ? row[idxPhone].trim() : '',
-      linkedin: (idxLinkedin !== -1 && row[idxLinkedin]) ? row[idxLinkedin].trim() : '',
-      wechatId: (idxWechat !== -1 && row[idxWechat]) ? row[idxWechat].trim() : '',
-      lineId: (idxLine !== -1 && row[idxLine]) ? row[idxLine].trim() : '',
-      whatsapp: (idxWhatsapp !== -1 && row[idxWhatsapp]) ? row[idxWhatsapp].trim() : '',
-      facebook: (idxFacebook !== -1 && row[idxFacebook]) ? row[idxFacebook].trim() : '',
-      labWebsite: (idxLab !== -1 && row[idxLab]) ? row[idxLab].trim() : '',
-      slidesUrl: (idxSlides !== -1 && row[idxSlides]) ? row[idxSlides].trim() : '',
-      notes: (idxNotes !== -1 && row[idxNotes]) ? row[idxNotes].trim() : '',
-      photoUrl: (idxPhoto !== -1 && row[idxPhoto]) ? formatDrivePhotoUrl(row[idxPhoto]) : '',
+      topics: (idxTopics !== -1 && row[idxTopics]) ? String(row[idxTopics]).trim() : '',
+      email: (idxEmail !== -1 && row[idxEmail]) ? String(row[idxEmail]).trim() : '',
+      phone: rawPhone,
+      linkedin: (idxLinkedin !== -1 && row[idxLinkedin]) ? String(row[idxLinkedin]).trim() : '',
+      wechatId: wechatVal,
+      lineId: lineVal,
+      whatsapp: whatsappVal,
+      facebook: facebookVal,
+      labWebsite: (idxLab !== -1 && row[idxLab]) ? String(row[idxLab]).trim() : '',
+      slidesUrl: (idxSlides !== -1 && row[idxSlides]) ? String(row[idxSlides]).trim() : '',
+      notes: (idxNotes !== -1 && row[idxNotes]) ? String(row[idxNotes]).trim() : '',
+      photoUrl: (idxPhoto !== -1 && row[idxPhoto]) ? formatDrivePhotoUrl(String(row[idxPhoto])) : '',
       role: isTourLead ? "Tour Lead" : "Lecturer"
     });
   }

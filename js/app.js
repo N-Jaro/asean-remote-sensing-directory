@@ -1368,22 +1368,109 @@ class DirectoryApp {
 
           <!-- Contacts -->
           <div class="border-t border-slate-100 pt-4">
-            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">${isTourLead ? 'Coordinator Contact' : 'Lecturer Contact'}</h4>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-              ${item.email ? `<p class="flex items-center gap-2 text-slate-700"><span class="text-slate-400">${SOCIAL_ICONS.mail}</span> <span>${item.email}</span></p>` : ''}
-              ${item.phone ? `<p class="flex items-center gap-2 text-slate-700"><span class="text-slate-400">${SOCIAL_ICONS.phone}</span> <span>${item.phone}</span></p>` : ''}
-              ${item.wechatId ? `<p class="flex items-center gap-2 text-emerald-800 font-semibold cursor-pointer" onclick="navigator.clipboard.writeText('${item.wechatId}'); alert('Copied WeChat ID: ${item.wechatId}');"><span class="text-emerald-600">${SOCIAL_ICONS.wechat}</span> WeChat: ${item.wechatId}</p>` : ''}
-              ${item.lineId ? `<a href="https://line.me/R/ti/p/~${item.lineId}" target="_blank" class="flex items-center gap-2 text-[#06c755] hover:underline font-medium"><span class="text-[#06c755]">${SOCIAL_ICONS.line}</span> LINE: ${item.lineId}</a>` : ''}
-              ${item.whatsapp ? `<a href="https://wa.me/${item.whatsapp.replace(/[^0-9]/g, '')}" target="_blank" class="flex items-center gap-2 text-[#25d366] hover:underline font-medium"><span class="text-[#25d366]">${SOCIAL_ICONS.whatsapp}</span> WhatsApp: ${item.whatsapp}</a>` : ''}
-              ${item.facebook ? `<a href="${item.facebook.startsWith('http') ? item.facebook : 'https://facebook.com/' + item.facebook}" target="_blank" class="flex items-center gap-2 text-[#1877f2] hover:underline font-medium"><span class="text-[#1877f2]">${SOCIAL_ICONS.facebook}</span> Facebook</a>` : ''}
-              ${item.linkedin ? `<a href="${item.linkedin}" target="_blank" class="flex items-center gap-2 text-[#0077b5] hover:underline"><span class="text-[#0077b5]">${SOCIAL_ICONS.linkedin}</span> LinkedIn Profile</a>` : ''}
+            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+              <i data-lucide="contact" class="w-4 h-4 ${isTourLead ? 'text-emerald-500' : 'text-cyan-500'}"></i> ${isTourLead ? 'Coordinator Contact Information' : 'Lecturer Contact Information'}
+            </h4>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              ${item.email ? `
+                <a href="mailto:${item.email}" class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:border-cyan-400 hover:bg-cyan-50/50 transition group">
+                  <div class="w-9 h-9 rounded-lg bg-cyan-100 text-cyan-700 flex items-center justify-center flex-shrink-0 group-hover:bg-cyan-600 group-hover:text-white transition">
+                    <i data-lucide="mail" class="w-4 h-4"></i>
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-[11px] font-medium text-slate-400">Email Address</p>
+                    <p class="text-xs font-semibold text-slate-800 truncate">${item.email}</p>
+                  </div>
+                </a>
+              ` : ''}
+
+              ${item.phone ? `
+                <a href="tel:${item.phone}" class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition group">
+                  <div class="w-9 h-9 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center flex-shrink-0 group-hover:bg-slate-800 group-hover:text-white transition">
+                    <i data-lucide="phone" class="w-4 h-4"></i>
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-[11px] font-medium text-slate-400">Phone / Mobile</p>
+                    <p class="text-xs font-semibold text-slate-800 truncate">${item.phone}</p>
+                  </div>
+                </a>
+              ` : ''}
+
+              ${item.wechatId ? `
+                <div onclick="navigator.clipboard.writeText('${item.wechatId}'); alert('Copied WeChat ID: ${item.wechatId}');" class="flex items-center justify-between p-3 rounded-xl border border-emerald-300 bg-emerald-50/70 hover:bg-emerald-100/80 transition cursor-pointer group">
+                  <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-9 h-9 rounded-lg bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 font-bold text-xs shadow-sm">
+                      微
+                    </div>
+                    <div class="min-w-0">
+                      <p class="text-[11px] font-bold text-emerald-800 flex items-center gap-1.5">
+                        WeChat ID (微信号)
+                        <span class="text-[9px] bg-emerald-200 text-emerald-900 px-1.5 py-0.2 rounded font-semibold">China</span>
+                      </p>
+                      <p class="text-xs font-bold text-slate-900 truncate">${item.wechatId}</p>
+                    </div>
+                  </div>
+                  <span class="text-[10px] font-semibold text-emerald-800 bg-white px-2 py-0.5 rounded border border-emerald-200">Copy</span>
+                </div>
+              ` : ''}
+
+              ${item.lineId ? `
+                <a href="https://line.me/R/ti/p/~${item.lineId}" target="_blank" rel="noopener" class="flex items-center gap-3 p-3 rounded-xl border border-green-300 bg-green-50/60 hover:bg-green-100/70 transition group">
+                  <div class="w-9 h-9 rounded-lg bg-[#06c755] text-white flex items-center justify-center flex-shrink-0 shadow-sm">
+                    ${iconLg(SOCIAL_ICONS.line)}
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-[11px] font-semibold text-green-800">LINE ID</p>
+                    <p class="text-xs font-bold text-slate-900 truncate">${item.lineId}</p>
+                  </div>
+                </a>
+              ` : ''}
+
+              ${item.whatsapp ? `
+                <a href="https://wa.me/${item.whatsapp.replace(/[^0-9]/g, '')}" target="_blank" rel="noopener" class="flex items-center gap-3 p-3 rounded-xl border border-teal-300 bg-teal-50/60 hover:bg-teal-100/70 transition group">
+                  <div class="w-9 h-9 rounded-lg bg-[#25d366] text-white flex items-center justify-center flex-shrink-0 shadow-sm">
+                    ${iconLg(SOCIAL_ICONS.whatsapp)}
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-[11px] font-semibold text-teal-800">WhatsApp</p>
+                    <p class="text-xs font-bold text-slate-900 truncate">${item.whatsapp}</p>
+                  </div>
+                </a>
+              ` : ''}
+
+              ${item.facebook ? `
+                <a href="${item.facebook.startsWith('http') ? item.facebook : 'https://facebook.com/' + item.facebook}" target="_blank" rel="noopener" class="flex items-center gap-3 p-3 rounded-xl border border-blue-300 bg-blue-50/60 hover:bg-blue-100/70 transition group">
+                  <div class="w-9 h-9 rounded-lg bg-[#1877f2] text-white flex items-center justify-center flex-shrink-0 shadow-sm">
+                    ${iconLg(SOCIAL_ICONS.facebook)}
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-[11px] font-semibold text-blue-800">Facebook</p>
+                    <p class="text-xs font-bold text-slate-900 truncate">${item.facebook.replace(/https?:\/\/(www\.)?facebook\.com\/?/, '')}</p>
+                  </div>
+                </a>
+              ` : ''}
+
+              ${item.linkedin ? `
+                <a href="${item.linkedin}" target="_blank" rel="noopener" class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:border-blue-400 hover:bg-blue-50/50 transition group">
+                  <div class="w-9 h-9 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center flex-shrink-0 group-hover:bg-[#0077b5] group-hover:text-white transition">
+                    ${iconLg(SOCIAL_ICONS.linkedin)}
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-[11px] font-medium text-slate-400">LinkedIn Profile</p>
+                    <p class="text-xs font-semibold text-slate-800 truncate">View Profile</p>
+                  </div>
+                </a>
+              ` : ''}
             </div>
           </div>
         </div>
 
-        <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end sm:rounded-b-2xl">
+        <div class="p-4 bg-slate-50 border-t border-slate-200 flex flex-wrap gap-2 justify-end sm:rounded-b-2xl">
+          <button id="btnDownloadVcard" class="px-4 py-2 rounded-xl text-xs font-semibold bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 flex items-center gap-1.5 transition">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i> Save Contact (vCard)
+          </button>
           <button id="btnCopyContact" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-white flex items-center gap-1.5 transition">
-            <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy Info
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy Details
           </button>
         </div>
       `;
@@ -1401,7 +1488,20 @@ class DirectoryApp {
     const copyBtn = document.getElementById('btnCopyContact');
     if (copyBtn) {
       copyBtn.onclick = () => {
-        const text = `${item.nameEnglish} (${item.nationality || item.country})\n${item.position || item.title} - ${item.affiliation}\nEmail: ${item.email || 'N/A'}\nPhone: ${item.phone || 'N/A'}\nLine: ${item.lineId || 'N/A'}`;
+        const lines = [
+          `${item.nameEnglish}${item.nameNative ? ' (' + item.nameNative + ')' : ''}`,
+          `${item.position || item.title || 'Specialist'} • ${item.affiliation || ''}`,
+          item.country || item.nationality ? `Country: ${item.country || item.nationality}` : '',
+          item.email ? `Email: ${item.email}` : '',
+          item.phone ? `Phone: ${item.phone}` : '',
+          item.wechatId ? `WeChat: ${item.wechatId}` : '',
+          item.lineId ? `LINE: ${item.lineId}` : '',
+          item.whatsapp ? `WhatsApp: ${item.whatsapp}` : '',
+          item.facebook ? `Facebook: ${item.facebook}` : '',
+          item.linkedin ? `LinkedIn: ${item.linkedin}` : ''
+        ].filter(Boolean);
+
+        const text = lines.join('\n');
         navigator.clipboard.writeText(text).then(() => {
           copyBtn.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> Copied!`;
           if (window.lucide) lucide.createIcons();

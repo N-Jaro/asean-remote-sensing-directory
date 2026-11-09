@@ -13,7 +13,7 @@ const PHOTO_FOLDER_NAME = "ASEAN_Remote_Sensing_2026_Photos";
 const PARTICIPANTS_SHEET_NAME = "Participants";
 const LECTURERS_SHEET_NAME = "Lecturers";
 
-// Standard Column Headers with dedicated contact channels
+// Standard Column Headers matching the updated Google Sheet
 const PARTICIPANT_HEADERS = [
   "Timestamp",
   "Name (English)",
@@ -26,13 +26,14 @@ const PARTICIPANT_HEADERS = [
   "Working Office Location",
   "Phone Number",
   "Email",
+  "LinkedIn Profile",
+  "Line ID / WhatsApp",
+  "Message to Other Participants",
+  "Photo URL",
   "WeChat ID",
   "LINE ID",
   "WhatsApp Number",
-  "Facebook Profile",
-  "LinkedIn Profile",
-  "Message to Other Participants",
-  "Photo URL"
+  "Facebook Profile"
 ];
 
 const LECTURER_HEADERS = [
@@ -315,12 +316,46 @@ function appendRowByHeaders(sheet, fieldMap, defaultHeaders) {
     const h = String(headers[c] || '').toLowerCase().trim();
     let val = "";
 
-    if (h.includes("timestamp") || h === "date" || h === "เวลา") val = fieldMap.timestamp || new Date();
-    else if (h.includes("wechat") || h.includes("wx") || h.includes("微信")) val = fieldMap.wechatId || "";
-    else if (h.includes("line") && !h.includes("whatsapp")) val = fieldMap.lineId || "";
-    else if (h.includes("whatsapp") && !h.includes("line")) val = fieldMap.whatsapp || "";
-    else if (h.includes("facebook") || h.includes("fb")) val = fieldMap.facebook || "";
-    else if (h.includes("linkedin")) val = fieldMap.linkedin || "";
+    if (h.includes("timestamp") || h === "date" || h === "เวลา") {
+      val = fieldMap.timestamp || new Date();
+    }
+    // WeChat ID
+    else if (h.includes("wechat") || h.includes("wx") || h.includes("微信")) {
+      val = fieldMap.wechatId || "";
+    }
+    // Dedicated LINE ID (not combined with whatsapp)
+    else if (h.includes("line") && !h.includes("whatsapp")) {
+      val = fieldMap.lineId || "";
+    }
+    // Dedicated WhatsApp Number (not combined with line)
+    else if (h.includes("whatsapp") && !h.includes("line")) {
+      val = fieldMap.whatsapp || "";
+    }
+    // Facebook
+    else if (h.includes("facebook") || h.includes("fb")) {
+      val = fieldMap.facebook || "";
+    }
+    // LinkedIn
+    else if (h.includes("linkedin")) {
+      val = fieldMap.linkedin || "";
+    }
+    // Personal greeting / message to other participants (distinct from messaging app)
+    else if (h.includes("message to other") || h.includes("greeting") || h === "message" || h.includes("notetoother")) {
+      val = fieldMap.message || "";
+    }
+    // Combined / Legacy Line ID & WhatsApp column
+    else if (h.includes("line") && h.includes("whatsapp")) {
+      val = fieldMap.messaging || [
+        fieldMap.wechatId ? 'WeChat: ' + fieldMap.wechatId : '',
+        fieldMap.lineId ? 'LINE: ' + fieldMap.lineId : '',
+        fieldMap.whatsapp ? 'WhatsApp: ' + fieldMap.whatsapp : '',
+        fieldMap.facebook ? 'FB: ' + fieldMap.facebook : ''
+      ].filter(Boolean).join(' | ') || fieldMap.lineId || "";
+    }
+    // Generic messaging / chat app
+    else if (h === "messaging" || h === "chat" || h.includes("contact app") || h.includes("channels")) {
+      val = fieldMap.messaging || "";
+    }
     else if (h.includes("native") || h.includes("local") || h.includes("ภาษาไทย")) val = fieldMap.nameNative || "";
     else if (h.includes("name") || h.includes("fullname") || h.includes("ชื่อ")) val = fieldMap.nameEnglish || "";
     else if (h.includes("nick") || h.includes("preferred") || h.includes("ชื่อเล่น")) val = fieldMap.nickname || "";
@@ -331,21 +366,13 @@ function appendRowByHeaders(sheet, fieldMap, defaultHeaders) {
     else if (h.includes("office") || h.includes("location") || h.includes("ที่ทำงาน")) val = fieldMap.workingOffice || "";
     else if (h.includes("phone") || h.includes("tel") || h.includes("mobile") || h.includes("เบอร์")) val = fieldMap.phone || "";
     else if (h.includes("email") || h.includes("mail") || h.includes("อีเมล")) val = fieldMap.email || "";
-    else if (h.includes("messag") || h.includes("chat") || h.includes("line/whatsapp") || h.includes("line id / whatsapp")) {
-      val = fieldMap.messaging || [
-        fieldMap.wechatId ? 'WeChat: ' + fieldMap.wechatId : '',
-        fieldMap.lineId ? 'LINE: ' + fieldMap.lineId : '',
-        fieldMap.whatsapp ? 'WhatsApp: ' + fieldMap.whatsapp : '',
-        fieldMap.facebook ? 'FB: ' + fieldMap.facebook : ''
-      ].filter(Boolean).join(' | ') || fieldMap.lineId || "";
-    }
-    else if (h.includes("note") || h.includes("other") || h.includes("ข้อความ")) val = fieldMap.message || "";
     else if (h.includes("photo") || h.includes("picture") || h.includes("image") || h.includes("รูป")) val = fieldMap.photoUrl || "";
     else if (h.includes("session") || h.includes("course") || h.includes("topic") || h.includes("tour")) val = fieldMap.sessionTitle || fieldMap.tourName || "";
     else if (h.includes("date") || h.includes("วัน")) val = fieldMap.sessionDate || fieldMap.tourDate || "";
     else if (h.includes("key") || h.includes("highlight")) val = fieldMap.topics || fieldMap.tourHighlights || "";
     else if (h.includes("slide") || h.includes("guide")) val = fieldMap.slidesUrl || fieldMap.guideUrl || "";
     else if (h.includes("web") || h.includes("lab")) val = fieldMap.website || fieldMap.labWebsite || "";
+    else if (h.includes("note") || h.includes("other") || h.includes("ข้อความ")) val = fieldMap.message || "";
 
     rowData.push(val);
   }
@@ -363,6 +390,12 @@ function doGet(e) {
     return getSheetDataAsJson(PARTICIPANTS_SHEET_NAME);
   } else if (action === "getLecturers") {
     return getSheetDataAsJson(LECTURERS_SHEET_NAME);
+  } else if (action === "setupDatabase") {
+    setupDatabase();
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "ok",
+      message: "Database setup completed successfully."
+    })).setMimeType(ContentService.MimeType.JSON);
   }
 
   // Default response
@@ -387,24 +420,9 @@ function doPost(e) {
     // Auto-create sheet with headers if it doesn't exist
     if (!sheet) {
       sheet = ss.insertSheet(PARTICIPANTS_SHEET_NAME);
-      sheet.appendRow([
-        "Timestamp",
-        "Name (English)",
-        "Name (Native Language)",
-        "Nickname / Preferred Name",
-        "Nationality / Country",
-        "Affiliation / Organization",
-        "Position / Title",
-        "Expertise / Specialization",
-        "Working Office Location",
-        "Phone Number",
-        "Email",
-        "LinkedIn Profile",
-        "Line ID / WhatsApp",
-        "Message to Other Participants",
-        "Photo URL"
-      ]);
-      sheet.getRange(1, 1, 1, 15).setFontWeight("bold").setBackground("#0f172a").setFontColor("#ffffff");
+      sheet.appendRow(PARTICIPANT_HEADERS);
+      sheet.getRange(1, 1, 1, PARTICIPANT_HEADERS.length).setFontWeight("bold").setBackground("#0f172a").setFontColor("#ffffff");
+      sheet.setFrozenRows(1);
     }
 
     let data;
