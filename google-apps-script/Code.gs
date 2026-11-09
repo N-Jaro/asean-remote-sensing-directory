@@ -13,9 +13,53 @@ const PHOTO_FOLDER_NAME = "ASEAN_Remote_Sensing_2026_Photos";
 const PARTICIPANTS_SHEET_NAME = "Participants";
 const LECTURERS_SHEET_NAME = "Lecturers";
 
+// Standard Column Headers with dedicated contact channels
+const PARTICIPANT_HEADERS = [
+  "Timestamp",
+  "Name (English)",
+  "Name (Native Language)",
+  "Nickname / Preferred Name",
+  "Nationality / Country",
+  "Affiliation / Organization",
+  "Position / Title",
+  "Expertise / Specialization",
+  "Working Office Location",
+  "Phone Number",
+  "Email",
+  "WeChat ID",
+  "LINE ID",
+  "WhatsApp Number",
+  "Facebook Profile",
+  "LinkedIn Profile",
+  "Message to Other Participants",
+  "Photo URL"
+];
+
+const LECTURER_HEADERS = [
+  "Session / Course Title",
+  "Date & Time",
+  "Lecturer Name (English)",
+  "Lecturer Name (Native)",
+  "Title / Position",
+  "Affiliation",
+  "Country",
+  "Key Topics Covered",
+  "Email",
+  "Phone",
+  "WeChat ID",
+  "LINE ID",
+  "WhatsApp Number",
+  "Facebook Profile",
+  "LinkedIn",
+  "Lab or Website URL",
+  "Presentation Slides Link",
+  "Photo URL"
+];
+
 /**
  * One-Click Setup Function: Run this function directly from the Apps Script toolbar (select 'setupDatabase' and click 'Run')
- * to automatically create and format the 'Participants' and 'Lecturers' sheets, plus create the Drive folder.
+ * to automatically create and format the 'Participants' and 'Lecturers' sheets, add dedicated contact columns
+ * (WeChat ID, LINE ID, WhatsApp Number, Facebook Profile), and configure the Google Drive photo folder.
  */
 function setupDatabase() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -26,27 +70,9 @@ function setupDatabase() {
     partSheet = ss.insertSheet(PARTICIPANTS_SHEET_NAME, 0);
   }
   
-  const partHeaders = [
-    "Timestamp",
-    "Name (English)",
-    "Name (Native Language)",
-    "Nickname / Preferred Name",
-    "Nationality / Country",
-    "Affiliation / Organization",
-    "Position / Title",
-    "Expertise / Specialization",
-    "Working Office Location",
-    "Phone Number",
-    "Email",
-    "LinkedIn Profile",
-    "Line ID / WhatsApp",
-    "Message to Other Participants",
-    "Photo URL"
-  ];
-  
   if (partSheet.getLastRow() === 0) {
-    partSheet.appendRow(partHeaders);
-    partSheet.getRange(1, 1, 1, partHeaders.length)
+    partSheet.appendRow(PARTICIPANT_HEADERS);
+    partSheet.getRange(1, 1, 1, PARTICIPANT_HEADERS.length)
       .setFontWeight("bold")
       .setBackground("#0f172a")
       .setFontColor("#ffffff")
@@ -67,8 +93,11 @@ function setupDatabase() {
         "Vientiane, Lao PDR",
         "+856 21 214567",
         "khamphanh.s@ngd.gov.la",
+        "kham_ngd",
+        "kham_laos",
+        "+85621214567",
+        "",
         "https://linkedin.com",
-        "Line: kham_ngd",
         "Looking forward to collaborating on Mekong basin EO data sharing!",
         "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80"
       ],
@@ -84,8 +113,11 @@ function setupDatabase() {
         "Space Krenovation Park, Chonburi, Thailand",
         "+66 81 234 5678",
         "thanapat@gistda.or.th",
+        "",
+        "pat_gistda",
+        "+66812345678",
+        "facebook.com/thanapat.gistda",
         "https://linkedin.com",
-        "Line: pat_gistda",
         "Welcome all ASEAN colleagues to Bangkok and Space Technology Center!",
         "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80"
       ],
@@ -101,8 +133,11 @@ function setupDatabase() {
         "Phnom Penh, Cambodia",
         "+855 23 721012",
         "sophea.chea@moe.gov.kh",
+        "sophea_moe",
+        "",
+        "+85523721012",
+        "",
         "https://linkedin.com",
-        "WhatsApp: +85523721012",
         "Warm greetings to all ASEAN remote sensing researchers!",
         "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80"
       ],
@@ -118,8 +153,11 @@ function setupDatabase() {
         "Naypyidaw, Myanmar",
         "+95 67 411031",
         "aungkyaw.moe@dmh.gov.mm",
+        "",
+        "",
+        "+9567411031",
+        "facebook.com/aungkyaw.moe",
         "https://linkedin.com",
-        "Viber / WhatsApp: +9567411031",
         "Excited to learn new SAR and EO techniques for disaster monitoring.",
         "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=600&q=80"
       ],
@@ -135,14 +173,20 @@ function setupDatabase() {
         "Haidian District, Beijing, China",
         "+86 10 8217 8000",
         "liwei@aircas.ac.cn",
+        "liwei_aircas",
+        "",
+        "",
+        "",
         "https://linkedin.com",
-        "WeChat: liwei_aircas",
         "Glad to exchange AI geospatial modeling insights with ASEAN partners!",
         "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=600&q=80"
       ]
     ];
     
     sampleRows.forEach(row => partSheet.appendRow(row));
+  } else {
+    // Sheet already has rows: dynamically ensure all contact columns exist without touching existing data
+    ensureContactColumns(partSheet, PARTICIPANT_HEADERS);
   }
   
   // 2. Setup Lecturers Sheet
@@ -151,26 +195,9 @@ function setupDatabase() {
     lecSheet = ss.insertSheet(LECTURERS_SHEET_NAME, 1);
   }
   
-  const lecHeaders = [
-    "Session / Course Title",
-    "Date & Time",
-    "Lecturer Name (English)",
-    "Lecturer Name (Native)",
-    "Title / Position",
-    "Affiliation",
-    "Country",
-    "Key Topics Covered",
-    "Email",
-    "Phone",
-    "LinkedIn",
-    "Lab or Website URL",
-    "Presentation Slides Link",
-    "Photo URL"
-  ];
-  
   if (lecSheet.getLastRow() === 0) {
-    lecSheet.appendRow(lecHeaders);
-    lecSheet.getRange(1, 1, 1, lecHeaders.length)
+    lecSheet.appendRow(LECTURER_HEADERS);
+    lecSheet.getRange(1, 1, 1, LECTURER_HEADERS.length)
       .setFontWeight("bold")
       .setBackground("#0f172a")
       .setFontColor("#ffffff")
@@ -188,6 +215,10 @@ function setupDatabase() {
       "Principles of Synthetic Aperture Radar, Sentinel-1 InSAR processing, Land subsidence and flood mapping",
       "suwit@sut.ac.th",
       "+66 44 224 350",
+      "",
+      "suwit_sut",
+      "+6644224350",
+      "",
       "https://linkedin.com",
       "https://sut.ac.th",
       "https://drive.google.com",
@@ -195,8 +226,8 @@ function setupDatabase() {
     ]);
 
     lecSheet.appendRow([
-      "Field Trip & Technical Tour: Space Krenovation Park & Ground Receiving Station",
-      "31 Oct 2026, 08:30 – 17:00",
+      "Tour Lead: Technical Field Trip & Facilities Visit",
+      "Seminar Period (28 Oct – 10 Nov 2026)",
       "Chaiwat Supamongkol",
       "ชัยวัฒน์ ศุภมงคล",
       "Senior Tour Lead & Space Operations Engineer",
@@ -205,11 +236,17 @@ function setupDatabase() {
       "Leading technical visit to satellite telemetry ground receiving antennas, clean room assembly facilities, and test center. Please wear comfortable shoes.",
       "chaiwat.s@gistda.or.th",
       "+66 89 123 4567",
+      "chaiwat_wx",
+      "chaiwat_gistda",
+      "+66891234567",
+      "facebook.com/chaiwat.gistda",
       "https://linkedin.com",
       "https://www.gistda.or.th",
       "https://drive.google.com",
       "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80"
     ]);
+  } else {
+    ensureContactColumns(lecSheet, LECTURER_HEADERS);
   }
   
   // 3. Ensure Google Drive photo folder exists
@@ -222,7 +259,94 @@ function setupDatabase() {
   }
   folder.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
   
-  SpreadsheetApp.getUi().alert("✅ Success!", "Database sheets ('Participants' and 'Lecturers') and Google Drive photo folder are now fully configured with multilingual support (Laos, Thai, Chinese, Myanmar, Cambodia)!", SpreadsheetApp.getUi().ButtonSet.OK);
+  try {
+    SpreadsheetApp.getUi().alert("✅ Success!", "Database sheets ('Participants' and 'Lecturers') are now fully configured with dedicated contact columns: WeChat ID, LINE ID, WhatsApp Number, and Facebook Profile!", SpreadsheetApp.getUi().ButtonSet.OK);
+  } catch (e) {
+    Logger.log("setupDatabase executed successfully.");
+  }
+}
+
+/**
+ * Checks and appends any missing contact columns to row 1 of an existing sheet without affecting existing data
+ */
+function ensureContactColumns(sheet, requiredHeaders) {
+  if (!sheet || sheet.getLastRow() === 0) return;
+  const lastCol = Math.max(sheet.getLastColumn(), 1);
+  const currentHeaders = sheet.getRange(1, 1, 1, lastCol).getValues()[0].map(h => String(h).trim());
+
+  requiredHeaders.forEach(colName => {
+    const exists = currentHeaders.some(h => h.toLowerCase() === colName.toLowerCase());
+    if (!exists) {
+      const nextCol = sheet.getLastColumn() + 1;
+      const cell = sheet.getRange(1, nextCol);
+      cell.setValue(colName)
+        .setFontWeight("bold")
+        .setBackground("#0f172a")
+        .setFontColor("#ffffff")
+        .setFontSize(10);
+      currentHeaders.push(colName);
+    }
+  });
+}
+
+/**
+ * Helper to append row dynamically by matching whatever column names exist in the sheet
+ */
+function appendRowByHeaders(sheet, fieldMap, defaultHeaders) {
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(defaultHeaders);
+    sheet.getRange(1, 1, 1, defaultHeaders.length)
+      .setFontWeight("bold")
+      .setBackground("#0f172a")
+      .setFontColor("#ffffff")
+      .setFontSize(10);
+    sheet.setFrozenRows(1);
+  }
+
+  const lastCol = Math.max(sheet.getLastColumn(), defaultHeaders.length);
+  const headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+  const rowData = [];
+
+  for (let c = 0; c < headers.length; c++) {
+    const h = String(headers[c] || '').toLowerCase().trim();
+    let val = "";
+
+    if (h.includes("timestamp") || h === "date" || h === "เวลา") val = fieldMap.timestamp || new Date();
+    else if (h.includes("wechat") || h.includes("wx") || h.includes("微信")) val = fieldMap.wechatId || "";
+    else if (h.includes("line") && !h.includes("whatsapp")) val = fieldMap.lineId || "";
+    else if (h.includes("whatsapp") && !h.includes("line")) val = fieldMap.whatsapp || "";
+    else if (h.includes("facebook") || h.includes("fb")) val = fieldMap.facebook || "";
+    else if (h.includes("linkedin")) val = fieldMap.linkedin || "";
+    else if (h.includes("native") || h.includes("local") || h.includes("ภาษาไทย")) val = fieldMap.nameNative || "";
+    else if (h.includes("name") || h.includes("fullname") || h.includes("ชื่อ")) val = fieldMap.nameEnglish || "";
+    else if (h.includes("nick") || h.includes("preferred") || h.includes("ชื่อเล่น")) val = fieldMap.nickname || "";
+    else if (h.includes("nation") || h.includes("country") || h.includes("ประเทศ")) val = fieldMap.nationality || fieldMap.country || "";
+    else if (h.includes("affil") || h.includes("organ") || h.includes("หน่วยงาน")) val = fieldMap.affiliation || "";
+    else if (h.includes("pos") || h.includes("title") || h.includes("ตำแหน่ง")) val = fieldMap.position || fieldMap.title || "";
+    else if (h.includes("expert") || h.includes("special") || h.includes("ความเชี่ยวชาญ")) val = fieldMap.expertise || "";
+    else if (h.includes("office") || h.includes("location") || h.includes("ที่ทำงาน")) val = fieldMap.workingOffice || "";
+    else if (h.includes("phone") || h.includes("tel") || h.includes("mobile") || h.includes("เบอร์")) val = fieldMap.phone || "";
+    else if (h.includes("email") || h.includes("mail") || h.includes("อีเมล")) val = fieldMap.email || "";
+    else if (h.includes("messag") || h.includes("chat") || h.includes("line/whatsapp") || h.includes("line id / whatsapp")) {
+      val = fieldMap.messaging || [
+        fieldMap.wechatId ? 'WeChat: ' + fieldMap.wechatId : '',
+        fieldMap.lineId ? 'LINE: ' + fieldMap.lineId : '',
+        fieldMap.whatsapp ? 'WhatsApp: ' + fieldMap.whatsapp : '',
+        fieldMap.facebook ? 'FB: ' + fieldMap.facebook : ''
+      ].filter(Boolean).join(' | ') || fieldMap.lineId || "";
+    }
+    else if (h.includes("note") || h.includes("other") || h.includes("ข้อความ")) val = fieldMap.message || "";
+    else if (h.includes("photo") || h.includes("picture") || h.includes("image") || h.includes("รูป")) val = fieldMap.photoUrl || "";
+    else if (h.includes("session") || h.includes("course") || h.includes("topic") || h.includes("tour")) val = fieldMap.sessionTitle || fieldMap.tourName || "";
+    else if (h.includes("date") || h.includes("วัน")) val = fieldMap.sessionDate || fieldMap.tourDate || "";
+    else if (h.includes("key") || h.includes("highlight")) val = fieldMap.topics || fieldMap.tourHighlights || "";
+    else if (h.includes("slide") || h.includes("guide")) val = fieldMap.slidesUrl || fieldMap.guideUrl || "";
+    else if (h.includes("web") || h.includes("lab")) val = fieldMap.website || fieldMap.labWebsite || "";
+
+    rowData.push(val);
+  }
+
+  sheet.appendRow(rowData);
 }
 
 /**
@@ -297,41 +421,28 @@ function doPost(e) {
       let lecSheet = ss.getSheetByName(LECTURERS_SHEET_NAME);
       if (!lecSheet) {
         lecSheet = ss.insertSheet(LECTURERS_SHEET_NAME);
-        lecSheet.appendRow([
-          "Session / Course Title",
-          "Date & Time",
-          "Lecturer Name (English)",
-          "Lecturer Name (Native)",
-          "Title / Position",
-          "Affiliation",
-          "Country",
-          "Key Topics Covered",
-          "Email",
-          "Phone",
-          "LinkedIn",
-          "Lab or Website URL",
-          "Presentation Slides Link",
-          "Photo URL"
-        ]);
-        lecSheet.getRange(1, 1, 1, 14).setFontWeight("bold").setBackground("#0f172a").setFontColor("#ffffff");
       }
 
-      lecSheet.appendRow([
-        data.sessionTitle || data.tourName || "Field Trip / Seminar Session",
-        data.sessionDate || data.tourDate || "",
-        data.nameEnglish || "",
-        data.nameNative || "",
-        data.title || data.position || (data.role === "Tour Lead" ? "Tour Lead & Field Trip Coordinator" : "Lecturer"),
-        data.affiliation || "",
-        data.country || data.nationality || "",
-        data.topics || data.tourHighlights || "",
-        data.email || "",
-        data.phone || "",
-        data.linkedin || "",
-        data.labWebsite || data.website || "",
-        data.slidesUrl || data.guideUrl || "",
-        photoUrl
-      ]);
+      appendRowByHeaders(lecSheet, {
+        sessionTitle: data.sessionTitle || data.tourName || (data.role === "Tour Lead" ? "Tour Lead Coordinator" : "Field Trip / Seminar Session"),
+        sessionDate: data.sessionDate || data.tourDate || "",
+        nameEnglish: data.nameEnglish || "",
+        nameNative: data.nameNative || "",
+        title: data.title || data.position || (data.role === "Tour Lead" ? "Tour Lead & Field Trip Coordinator" : "Lecturer"),
+        affiliation: data.affiliation || "",
+        country: data.country || data.nationality || "",
+        topics: data.topics || data.tourHighlights || "",
+        email: data.email || "",
+        phone: data.phone || "",
+        wechatId: data.wechatId || "",
+        lineId: data.lineId || "",
+        whatsapp: data.whatsapp || "",
+        facebook: data.facebook || "",
+        linkedin: data.linkedin || "",
+        website: data.labWebsite || data.website || "",
+        slidesUrl: data.slidesUrl || data.guideUrl || "",
+        photoUrl: photoUrl
+      }, LECTURER_HEADERS);
 
       return ContentService.createTextOutput(JSON.stringify({
         result: "success",
@@ -340,31 +451,28 @@ function doPost(e) {
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
-    const messagingStr = data.messaging || [
-      data.wechatId ? 'WeChat: ' + data.wechatId : '',
-      data.lineId ? 'LINE: ' + data.lineId : '',
-      data.whatsapp ? 'WhatsApp: ' + data.whatsapp : '',
-      data.facebook ? 'FB: ' + data.facebook : ''
-    ].filter(Boolean).join(' | ') || data.lineId || "";
-
-    // Otherwise append to Participants sheet
-    sheet.appendRow([
-      new Date(),
-      data.nameEnglish || "",
-      data.nameNative || "",
-      data.nickname || "",
-      data.nationality || "",
-      data.affiliation || "",
-      data.position || "",
-      data.expertise || "",
-      data.workingOffice || "",
-      data.phone || "",
-      data.email || "",
-      data.linkedin || "",
-      messagingStr,
-      data.message || "",
-      photoUrl
-    ]);
+    // Otherwise append to Participants sheet dynamically matching headers
+    appendRowByHeaders(sheet, {
+      timestamp: new Date(),
+      nameEnglish: data.nameEnglish || "",
+      nameNative: data.nameNative || "",
+      nickname: data.nickname || "",
+      nationality: data.nationality || "",
+      affiliation: data.affiliation || "",
+      position: data.position || "",
+      expertise: data.expertise || "",
+      workingOffice: data.workingOffice || "",
+      phone: data.phone || "",
+      email: data.email || "",
+      wechatId: data.wechatId || "",
+      lineId: data.lineId || "",
+      whatsapp: data.whatsapp || "",
+      facebook: data.facebook || "",
+      linkedin: data.linkedin || "",
+      messaging: data.messaging || "",
+      message: data.message || "",
+      photoUrl: photoUrl
+    }, PARTICIPANT_HEADERS);
 
     return ContentService.createTextOutput(JSON.stringify({
       result: "success",
