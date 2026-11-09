@@ -18,14 +18,14 @@ export const CONFIG = {
   googleIntegration: {
     // 1. Google Sheets "Publish to the web" CSV URL for Participants
     // How to get: File -> Share -> Publish to web -> select 'Participants' sheet -> Comma-separated values (.csv)
-    participantsCsvUrl: localStorage.getItem('rs_participants_csv_url') || "",
+    participantsCsvUrl: localStorage.getItem('rs_participants_csv_url') || "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvyKOBDiAEtxzkr3ETAYT8SLg_L4NeeZnyblKl1C3BFiTa8a66AZzTYZeNMKNYw4UKIEkH1US8PcI7/pub?gid=1959497488&single=true&output=csv",
 
     // 2. Google Sheets "Publish to the web" CSV URL for Lecturers
     // How to get: File -> Share -> Publish to web -> select 'Lecturers' sheet -> Comma-separated values (.csv)
-    lecturersCsvUrl: localStorage.getItem('rs_lecturers_csv_url') || "",
+    lecturersCsvUrl: localStorage.getItem('rs_lecturers_csv_url') || "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvyKOBDiAEtxzkr3ETAYT8SLg_L4NeeZnyblKl1C3BFiTa8a66AZzTYZeNMKNYw4UKIEkH1US8PcI7/pub?gid=998993160&single=true&output=csv",
 
     // 3. Google Apps Script Web App URL (for direct web form submissions with file upload to Google Drive)
-    appsScriptUrl: localStorage.getItem('rs_apps_script_url') || "",
+    appsScriptUrl: localStorage.getItem('rs_apps_script_url') || "https://script.google.com/macros/s/AKfycbzDqSebJZ0pRmAmt1eTN0VauiM-zi8m3tkLM8qman29yZf45vRayv-xdgG4GfBgzO7B/exec",
 
     // 4. (Optional) Direct Google Form Link if you want participants to fill the standard Google Form directly
     googleFormUrl: localStorage.getItem('rs_google_form_url') || "",
