@@ -222,3 +222,4 @@ class ProfileSubmission {
 window.addEventListener('DOMContentLoaded', () => {
   new ProfileSubmission();
 });
+

@@ -282,3 +282,4 @@ export async function fetchLiveLecturers(csvUrl) {
     return null;
   }
 }
+

@@ -177,3 +177,4 @@ function getSheetDataAsJson(sheetName) {
 
   return ContentService.createTextOutput(JSON.stringify(items)).setMimeType(ContentService.MimeType.JSON);
 }
+

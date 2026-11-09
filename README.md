@@ -142,3 +142,4 @@ npx serve .
 ## 📄 License
 This project is licensed under the [MIT License](LICENSE).
 Seminar on Remote Sensing Technology for ASEAN Countries (2026).
+

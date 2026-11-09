@@ -66,3 +66,4 @@ export const CONFIG = {
     "Climate Change & Meteorology"
   ]
 };
+

@@ -397,3 +397,4 @@ export const SAMPLE_LECTURERS = [
     role: "Lecturer"
   }
 ];
+
