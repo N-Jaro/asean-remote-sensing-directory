@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ลงทะเบียนทำเนียบผู้เข้าร่วมสัมมนา | ASEAN Remote Sensing Seminar 2026</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Plus Jakarta Sans & Kanit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="orbit-pattern min-h-screen flex flex-col bg-slate-50">
+
+  <!-- Top Header -->
+  <header class="glass-header text-white sticky top-0 z-40">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2.5 text-sm font-semibold hover:text-cyan-400 transition">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+        <span>กลับสู่หน้าทำเนียบ (Back to Directory)</span>
+      </a>
+      <span class="text-xs text-slate-400 hidden sm:inline">28 Oct – 10 Nov 2026</span>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="flex-1 max-w-3xl w-full mx-auto px-4 py-8 sm:py-12">
+    
+    <!-- Title Card -->
+    <div class="bg-gradient-to-r from-slate-900 via-sky-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl mb-8 border border-slate-800">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 mb-3">
+        <i data-lucide="satellite" class="w-3.5 h-3.5"></i>
+        <span>Participant Profile Registration Form</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">
+        ลงทะเบียนทำเนียบผู้เข้าร่วมสัมมนา
+      </h1>
+      <p class="text-sm text-slate-300 mt-2 leading-relaxed">
+        Seminar on Remote Sensing Technology for ASEAN Countries (28 Oct – 10 Nov 2026)
+        กรุณากรอกข้อมูลและอัปโหลดรูปภาพของท่าน ข้อมูลนี้จะเชื่อมต่อไปยังทำเนียบรุ่นออนไลน์และ Google Sheet เพื่อการติดต่อประสานงานระหว่างเพื่อนสมาชิก
+      </p>
+    </div>
+
+    <!-- Success Message Box (Hidden until submitted) -->
+    <div id="submissionSuccessBox" class="hidden bg-white rounded-3xl p-8 shadow-xl border border-emerald-200 text-center space-y-4">
+      <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 mx-auto flex items-center justify-center">
+        <i data-lucide="check-circle-2" class="w-10 h-10"></i>
+      </div>
+      <h2 class="text-2xl font-bold text-slate-900">บันทึกข้อมูลเรียบร้อยแล้ว!</h2>
+      <p class="text-slate-600 text-sm max-w-md mx-auto">
+        ยินดีต้อนรับคุณ <span id="successParticipantName" class="font-bold text-slate-900"></span> เข้าสู่ทำเนียบผู้เข้าร่วมสัมมนาเทคโนโลยีสำรวจระยะไกลสำหรับประเทศกลุ่มอาเซียน
+      </p>
+      <div id="successDetails" class="text-xs p-3 bg-slate-50 rounded-xl border border-slate-200 max-w-md mx-auto"></div>
+      <div class="pt-4 flex flex-wrap justify-center gap-3">
+        <a href="index.html" class="px-6 py-2.5 rounded-xl text-sm font-semibold bg-cyan-600 hover:bg-cyan-700 text-white shadow-md transition flex items-center gap-2">
+          <i data-lucide="layout-grid" class="w-4 h-4"></i> ไปยังหน้าทำเนียบผู้เข้าร่วม
+        </a>
+        <button onclick="location.reload()" class="px-6 py-2.5 rounded-xl text-sm font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 transition">
+          กรอกข้อมูลท่านอื่นเพิ่ม
+        </button>
+      </div>
+    </div>
+
+    <!-- Registration Form -->
+    <form id="participantForm" class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
+
+      <!-- Section: Photo Upload -->
+      <div>
+        <label class="block text-sm font-bold text-slate-800 mb-2">
+          1. รูปถ่ายประจำตัว (Profile Photo) <span class="text-red-500">*</span>
+        </label>
+        <div id="photoDropzone" class="border-2 border-dashed border-slate-300 rounded-2xl p-6 text-center hover:border-cyan-500 hover:bg-slate-50/50 transition cursor-pointer relative">
+          <input type="file" id="photoFileInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+          
+          <!-- Upload Prompt -->
+          <div id="photoUploadPrompt" class="space-y-2">
+            <div class="w-14 h-14 rounded-full bg-cyan-50 text-cyan-600 mx-auto flex items-center justify-center">
+              <i data-lucide="image-plus" class="w-7 h-7"></i>
+            </div>
+            <p class="text-sm font-semibold text-slate-700">คลิกหรือลากไฟล์รูปภาพมาวางที่นี่</p>
+            <p class="text-xs text-slate-400">รองรับไฟล์ JPG, PNG, WebP (ขนาดไม่เกิน 5MB)</p>
+          </div>
+
+          <!-- Photo Preview Container -->
+          <div id="photoPreviewContainer" class="hidden flex flex-col items-center">
+            <div class="w-28 h-28 rounded-2xl overflow-hidden shadow-md border-2 border-cyan-500 mb-3 relative">
+              <img id="photoPreviewImg" src="" alt="Preview" class="w-full h-full object-cover">
+            </div>
+            <button type="button" id="btnRemovePhoto" class="px-3 py-1 rounded-lg text-xs font-semibold bg-red-50 text-red-600 hover:bg-red-100 transition flex items-center gap-1">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> เปลี่ยนรูปภาพ
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section: Names -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">
+            2. Name in English (ชื่อภาษาอังกฤษ) <span class="text-red-500">*</span>
+          </label>
+          <input 
+            type="text" 
+            name="nameEnglish" 
+            placeholder="e.g. Dr. Somchai Jaidee / Maria Santos" 
+            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm" 
+            required
+          >
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">
+            3. Name in your native language (ชื่อในภาษาของคุณ)
+          </label>
+          <input 
+            type="text" 
+            name="nameNative" 
+            placeholder="e.g. ดร. สมชาย ใจดี / Nguyễn Văn A" 
+            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
+          >
+        </div>
+      </div>
+
+      <!-- Section: Nickname & Nationality -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">
+            4. Nickname or Preferred name (ชื่อเล่น / ชื่อเรียกที่สะดวก) <span class="text-red-500">*</span>
+          </label>
+          <input 
+            type="text" 
+            name="nickname" 
+            placeholder="e.g. Som / Kit / Bayu / Malou" 
+            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm" 
+            required
+          >
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">
+            5. Nationality / Country (สัญชาติ / ประเทศ) <span class="text-red-500">*</span>
+          </label>
+          <select 
+            id="nationalitySelect" 
+            name="nationality" 
+            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm bg-white" 
+            required
+          >
+            <!-- Populated by JS -->
+          </select>
+        </div>
+      </div>
+
+      <!-- Section: Affiliation & Position -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">
+            6. Affiliation / Organization (หน่วยงาน / องค์กรที่สังกัด) <span class="text-red-500">*</span>
+          </label>
+          <input 
+            type="text" 
+            name="affiliation" 
+            placeholder="e.g. GISTDA / PhilSA / BRIN / VNSC / University" 
+            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm" 
+            required
+          >
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">
+            7. Position / Title (ตำแหน่ง) <span class="text-red-500">*</span>
+          </label>
+          <input 
+            type="text" 
+            name="position" 
+            placeholder="e.g. Remote Sensing Specialist / Researcher / Engineer" 
+            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm" 
+            required
+          >
+        </div>
+      </div>
+
+      <!-- Section: Expertise -->
+      <div>
+        <label class="block text-xs font-bold text-slate-700 mb-1">
+          8. Expertise / Specialization (สาขาความเชี่ยวชาญ / เทคโนโลยีที่สนใจ) <span class="text-red-500">*</span>
+        </label>
+        <p class="text-xs text-slate-400 mb-2">คลิกเลือกหัวข้อที่ตรงกับท่าน หรือพิมพ์เพิ่มเติมคั่นด้วยเครื่องหมายจุลภาค (,)</p>
+        <div id="expertiseChips" class="flex flex-wrap gap-1.5 mb-2.5">
+          <!-- Populated by JS -->
+        </div>
+        <input 
+          type="text" 
+          id="expertiseInput" 
+          name="expertise" 
+          placeholder="e.g. SAR / Radar, UAV / Drone Mapping, GIS & Spatial Modeling, Precision Agriculture" 
+          class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm" 
+          required
+        >
+      </div>
+
+      <!-- Section: Working Office Location -->
+      <div>
+        <label class="block text-xs font-bold text-slate-700 mb-1">
+          9. Where is your working office? (สถานที่ตั้งที่ทำงาน / เมือง / ประเทศ) <span class="text-red-500">*</span>
+        </label>
+        <input 
+          type="text" 
+          name="workingOffice" 
+          placeholder="e.g. Si Racha, Chonburi, Thailand / Cibinong, West Java, Indonesia / Quezon City, Philippines" 
+          class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm" 
+          required
+        >
+      </div>
+
+      <!-- Section: Contact Info -->
+      <div class="border-t border-slate-100 pt-5 space-y-4">
+        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+          <i data-lucide="contact" class="w-4 h-4 text-cyan-600"></i> Contact Information (ช่องทางการติดต่อ)
+        </h3>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">
+              Email Address <span class="text-red-500">*</span>
+            </label>
+            <input 
+              type="email" 
+              name="email" 
+              placeholder="name@agency.org" 
+              class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm" 
+              required
+            >
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">
+              Phone Number / WhatsApp (เบอร์โทรศัพท์พร้อมรหัสประเทศ) <span class="text-red-500">*</span>
+            </label>
+            <input 
+              type="text" 
+              name="phone" 
+              placeholder="e.g. +66 81 234 5678" 
+              class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm" 
+              required
+            >
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">
+              LinkedIn Profile URL
+            </label>
+            <input 
+              type="url" 
+              name="linkedin" 
+              placeholder="https://linkedin.com/in/username" 
+              class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
+            >
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">
+              Line ID / WhatsApp ID
+            </label>
+            <input 
+              type="text" 
+              name="lineId" 
+              placeholder="e.g. somchai_line or WhatsApp number" 
+              class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- Section: Message to other participants -->
+      <div class="border-t border-slate-100 pt-5">
+        <label class="block text-xs font-bold text-slate-700 mb-1">
+          10. A little bit of message to note to other participants (ข้อความทักทาย / ฝากถึงเพื่อนร่วมรุ่น)
+        </label>
+        <textarea 
+          name="message" 
+          rows="3" 
+          placeholder="e.g. Glad to meet everyone! Excited to collaborate on InSAR or drone mapping projects across ASEAN..." 
+          class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
+        ></textarea>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+        <a href="index.html" class="text-xs font-semibold text-slate-500 hover:text-slate-800">
+          ยกเลิก (Cancel)
+        </a>
+        <button 
+          type="submit" 
+          id="btnSubmitForm" 
+          class="px-8 py-3 rounded-xl text-sm font-semibold bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-lg shadow-cyan-600/20 transition flex items-center gap-2"
+        >
+          <i data-lucide="send" class="w-4 h-4"></i>
+          <span>บันทึกและส่งข้อมูล (Submit Profile)</span>
+        </button>
+      </div>
+
+    </form>
+
+  </main>
+
+  <script>
+    if (window.lucide) lucide.createIcons();
+  </script>
+  <script type="module" src="js/submit.js"></script>
+</body>
+</html>
