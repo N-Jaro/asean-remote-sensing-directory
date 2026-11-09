@@ -67,22 +67,30 @@
 
 ---
 
-### สำหรับแท็บ "วิทยากร" (Lecturers & Sessions):
-ใน Google Sheet เล่มเดิม ให้สร้าง Sheet แท็บที่ 2 ชื่อ **`Lecturers`** โดยมีหัวคอลัมน์ดังนี้:
-1. `Session / Course Title` (เช่น Session 1: Optical & Hyperspectral Remote Sensing)
-2. `Date & Time` (เช่น 28 Oct 2026, 09:00 - 12:00)
-3. `Lecturer Name (English)` (เช่น Prof. Dr. Suwit Ongsomwang)
-4. `Lecturer Name (Native)` (เช่น ศ.ดร. สุวิทย์ องสมหวัง)
-5. `Title / Position` (เช่น Professor in Geoinformatics)
-6. `Affiliation` (เช่น Suranaree University of Technology)
+### สำหรับแท็บ "วิทยากรและผู้นำทัศนศึกษา" (Lecturers & Tour Leads):
+ใน Google Sheet เล่มเดิม โค้ดรองรับทั้งวิทยากรและผู้นำทัศนศึกษา (Tour Leads / Field Trip Coordinators) โดยอยู่ในชีตแท็บ **`Lecturers`** ร่วมกัน
+
+> 💡 **เคล็ดลับตั้งค่าใน 1 คลิก**: ใน Apps Script Editor เลือกฟังก์ชัน **`setupDatabase`** แล้วกด **Run (เรียกใช้)** ระบบจะสร้างทั้งชีต `Participants` และ `Lecturers` พร้อมใส่สีหัวตารางและตัวอย่างข้อมูลให้อัตโนมัติทันที!
+
+หัวคอลัมน์ของชีต `Lecturers`:
+1. `Session / Course Title` (เช่น Field Trip: Space Krenovation Park & Ground Receiving Station หรือ Session 1: Optical Remote Sensing)
+2. `Date & Time` (เช่น 31 Oct 2026, 08:30 – 17:00)
+3. `Lecturer / Tour Lead Name (English)` (เช่น Chaiwat Supamongkol)
+4. `Lecturer / Tour Lead Name (Native)` (เช่น ชัยวัฒน์ ศุภมงคล)
+5. `Title / Position` (เช่น Senior Tour Lead & Space Engineer)
+6. `Affiliation` (เช่น GISTDA)
 7. `Country` (เช่น Thailand)
-8. `Key Topics Covered` (สรุปเนื้อหาบรรยาย)
+8. `Key Topics Covered` (จุดเด่นสถานที่ศึกษาดูงาน ข้อควรปฏิบัติ หรือหัวข้อบรรยาย)
 9. `Email`
 10. `Phone`
 11. `LinkedIn`
 12. `Lab or Website URL`
-13. `Presentation Slides Link` (ลิงก์ดาวน์โหลดสไลด์หรือ Google Drive)
+13. `Presentation Slides Link` (ลิงก์กำหนดการ / คู่มือทัศนศึกษา หรือเอกสารบรรยาย)
 14. `Photo URL`
 
-จากนั้นไปที่ **File** ➡️ **Publish to web** ➡️ เลือกแท็บ `Lecturers` ➡️ เลือกเป็น **CSV** แล้วนำลิงก์มาวางในเว็บทำเนียบ!
+### ลิงก์ฟอร์มที่สามารถส่งให้ผู้เข้าร่วมและผู้นำทัวร์แยกกัน:
+- 🧑‍🎓 **ฟอร์มสำหรับผู้เข้าร่วมสัมมนา (Participants)**: `https://n-jaro.github.io/asean-remote-sensing-directory/submit.html`
+- 🚌 **ฟอร์มสำหรับผู้นำทัศนศึกษา (Tour Leads)**: `https://n-jaro.github.io/asean-remote-sensing-directory/lead-submit.html`
+
+จากนั้นไปที่ **File** ➡️ **Publish to web** ➡️ เลือกแท็บ `Lecturers` ➡️ เลือกเป็น **CSV** แล้วนำลิงก์มาวางในช่อง Lecturers CSV ของเว็บทำเนียบ!
 

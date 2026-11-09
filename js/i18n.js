@@ -29,13 +29,17 @@ export const TRANSLATIONS = {
     heroLocation: "Bangkok & Space Technology Center, Thailand",
     statParticipants: "Participants",
     statCountries: "Countries",
-    statLecturers: "Lecturers",
+    statLecturers: "Lecturers & Leads",
 
     // Tabs & Actions
     tabParticipants: "Participants",
-    tabLecturers: "Lecturers & Sessions",
+    tabLecturers: "Lecturers & Tour Leads",
     btnAddLecturer: "Add Lecturer",
+    btnAddTourLead: "Tour Lead Form",
     btnExportCsv: "Export CSV",
+    badgeTourLead: "Tour Lead",
+    badgeLecturer: "Lecturer",
+    btnTourGuide: "Tour Itinerary / Guide",
 
     // Search & Filter
     searchPlaceholder: "Search by name, nickname, country, organization, expertise...",
@@ -117,7 +121,20 @@ export const TRANSLATIONS = {
     submitSuccessTitle: "Registration Successful!",
     submitSuccessDesc: "Welcome to the ASEAN Remote Sensing Directory.",
     submitBtnViewDirectory: "Go to Directory",
-    submitBtnAddAnother: "Submit Another Profile"
+    submitBtnAddAnother: "Submit Another Profile",
+
+    // Tour Lead Form Page
+    tourLeadPageTitle: "Tour Lead Registration | ASEAN Remote Sensing Seminar 2026",
+    tourLeadFormBadge: "Field Trip & Technical Tour Coordinator",
+    tourLeadFormTitle: "Tour Lead Profile Registration",
+    tourLeadFormDesc: "Seminar on Remote Sensing Technology for ASEAN Countries (28 Oct – 10 Nov 2026). Please register your details as a tour lead / field trip coordinator to be displayed in the directory.",
+    tourLeadLabelTourName: "Assigned Tour / Field Trip Session",
+    tourLeadLabelTourDate: "Tour Date & Time",
+    tourLeadLabelRole: "Lead Role / Position Title",
+    tourLeadLabelHighlights: "Tour Highlights, Field Guide & Instructions",
+    tourLeadLabelGuideUrl: "Tour Itinerary / Field Guide Document URL (Optional)",
+    tourLeadSuccessTitle: "Tour Lead Profile Saved!",
+    tourLeadSuccessDesc: "Your profile has been added to the Lecturers & Tour Leads directory."
   },
 
   th: {
@@ -136,13 +153,17 @@ export const TRANSLATIONS = {
     heroLocation: "กรุงเทพฯ และศูนย์เทคโนโลยีอวกาศ ประเทศไทย",
     statParticipants: "ผู้เข้าร่วม",
     statCountries: "ประเทศ",
-    statLecturers: "วิทยากร",
+    statLecturers: "วิทยากร & ผู้นำทัวร์",
 
     // Tabs & Actions
     tabParticipants: "ผู้เข้าร่วมสัมมนา (Participants)",
-    tabLecturers: "วิทยากรและการบรรยาย (Lecturers)",
+    tabLecturers: "วิทยากรและผู้นำทัศนศึกษา (Lecturers & Tour Leads)",
     btnAddLecturer: "เพิ่มวิทยากร",
+    btnAddTourLead: "ฟอร์มผู้นำทัศนศึกษา",
     btnExportCsv: "Export CSV",
+    badgeTourLead: "ผู้นำทัศนศึกษา",
+    badgeLecturer: "วิทยากร",
+    btnTourGuide: "คู่มือทัศนศึกษา / กำหนดการ",
 
     // Search & Filter
     searchPlaceholder: "ค้นหาด้วยชื่อ (ไทย/อังกฤษ), ชื่อเล่น, ประเทศ, หน่วยงาน, หรือความเชี่ยวชาญ...",
@@ -224,7 +245,20 @@ export const TRANSLATIONS = {
     submitSuccessTitle: "บันทึกข้อมูลเรียบร้อยแล้ว!",
     submitSuccessDesc: "ยินดีต้อนรับเข้าสู่ทำเนียบผู้เข้าร่วมสัมมนาเทคโนโลยีสำรวจระยะไกล",
     submitBtnViewDirectory: "ไปยังหน้าทำเนียบผู้เข้าร่วม",
-    submitBtnAddAnother: "กรอกข้อมูลท่านอื่นเพิ่ม"
+    submitBtnAddAnother: "กรอกข้อมูลท่านอื่นเพิ่ม",
+
+    // Tour Lead Form Page
+    tourLeadPageTitle: "ลงทะเบียนผู้นำทัศนศึกษา | ASEAN Remote Sensing Seminar 2026",
+    tourLeadFormBadge: "ผู้ประสานงานและผู้นำทัศนศึกษาภาคสนาม",
+    tourLeadFormTitle: "ลงทะเบียนประวัติผู้นำทัศนศึกษา",
+    tourLeadFormDesc: "Seminar on Remote Sensing Technology for ASEAN Countries (28 ต.ค. – 10 พ.ย. 2569) กรุณากรอกข้อมูลและรายละเอียดการนำทัศนศึกษาเพื่อแสดงในทำเนียบวิทยากรและผู้นำทัศนศึกษา",
+    tourLeadLabelTourName: "หัวข้อทัศนศึกษา / เส้นทางศึกษาดูงานที่รับผิดชอบ",
+    tourLeadLabelTourDate: "วันและเวลาทัศนศึกษา",
+    tourLeadLabelRole: "บทบาทหน้าที่ / ตำแหน่ง",
+    tourLeadLabelHighlights: "จุดเด่นของสถานที่ ข้อควรปฏิบัติ และคำแนะนำสำหรับผู้ร่วมทริป",
+    tourLeadLabelGuideUrl: "ลิงก์กำหนดการ / คู่มือการศึกษาดูงาน (Google Drive / PDF)",
+    tourLeadSuccessTitle: "บันทึกข้อมูลผู้นำทัศนศึกษาเรียบร้อยแล้ว!",
+    tourLeadSuccessDesc: "ข้อมูลของท่านถูกบันทึกและแสดงในทำเนียบวิทยากรและผู้นำทัศนศึกษาเรียบร้อยแล้ว"
   },
 
   lo: {
@@ -243,13 +277,17 @@ export const TRANSLATIONS = {
     heroLocation: "ບາງກອກ ແລະ ສູນເຕັກໂນໂລຊີອາວະກາດ, ປະເທດໄທ",
     statParticipants: "ຜູ້ເຂົ້າຮ່ວມ",
     statCountries: "ປະເທດ",
-    statLecturers: "ວິທະຍາກອນ",
+    statLecturers: "ວິທະຍາກອນ & ຜູ້ນຳທົວຣ໌",
 
     // Tabs & Actions
     tabParticipants: "ຜູ້ເຂົ້າຮ່ວມສຳມະນາ (Participants)",
-    tabLecturers: "ວິທະຍາກອນ ແລະ ຫົວຂໍ້ບັນຍາຍ (Lecturers)",
+    tabLecturers: "ວິທະຍາກອນ ແລະ ຜູ້ນຳທັດສະນະສຶກສາ (Lecturers & Tour Leads)",
     btnAddLecturer: "ເພີ່ມວິທະຍາກອນ",
+    btnAddTourLead: "ຟອມຜູ້ນຳທົວຣ໌",
     btnExportCsv: "ສົ່ງອອກ CSV",
+    badgeTourLead: "ຜູ້ນຳທັດສະນະສຶກສາ",
+    badgeLecturer: "ວິທະຍາກອນ",
+    btnTourGuide: "ຄູ່ມືທັດສະນະສຶກສາ",
 
     // Search & Filter
     searchPlaceholder: "ຄົ້ນຫາຕາມຊື່, ຊື່ຫຼິ້ນ, ປະເທດ, ອົງກອນ, ຫຼື ຄວາມຊ່ຽວຊານ...",
@@ -331,7 +369,20 @@ export const TRANSLATIONS = {
     submitSuccessTitle: "ບັນທຶກຂໍ້ມູນສຳເລັດແລ້ວ!",
     submitSuccessDesc: "ຍິນດີຕ້ອນຮັບເຂົ້າສູ່ທຳນຽບຜູ້ເຂົ້າຮ່ວມສຳມະນາເຕັກໂນໂລຊີສຳຫຼວດໄລຍະໄກ.",
     submitBtnViewDirectory: "ໄປທີ່ໜ້າທຳນຽບ",
-    submitBtnAddAnother: "ລົງທະບຽນທ່ານອື່ນເພີ່ມ"
+    submitBtnAddAnother: "ລົງທະບຽນທ່ານອື່ນເພີ່ມ",
+
+    // Tour Lead Form Page
+    tourLeadPageTitle: "ລົງທະບຽນຜູ້ນຳທັດສະນະສຶກສາ | ASEAN Remote Sensing Seminar 2026",
+    tourLeadFormBadge: "ຜູ້ປະສານງານ ແລະ ຜູ້ນຳທັດສະນະສຶກສາ",
+    tourLeadFormTitle: "ລົງທະບຽນປະຫວັດຜູ້ນຳທັດສະນະສຶກສາ",
+    tourLeadFormDesc: "Seminar on Remote Sensing Technology for ASEAN Countries (28 ຕຸລາ – 10 ພະຈິກ 2026). ກະລຸນາປ້ອນຂໍ້ມູນ ແລະ ລາຍລະອຽດການນຳທັດສະນະສຶກສາ.",
+    tourLeadLabelTourName: "ຫົວຂໍ້ທັດສະນະສຶກສາ / ເສັ້ນທາງທີ່ຮັບຜິດຊອບ",
+    tourLeadLabelTourDate: "ວັນທີ ແລະ ເວລາທັດສະນະສຶກສາ",
+    tourLeadLabelRole: "ບົດບາດໜ້າທີ່ / ຕຳແໜ່ງ",
+    tourLeadLabelHighlights: "ຈຸດເດັ່ນ ແລະ ຄຳແນະນຳສຳລັບຜູ້ຮ່ວມທຣິບ",
+    tourLeadLabelGuideUrl: "ລິ້ງກຳນົດການ / ຄູ່ມືທັດສະນະສຶກສາ",
+    tourLeadSuccessTitle: "ບັນທຶກຂໍ້ມູນສຳເລັດແລ້ວ!",
+    tourLeadSuccessDesc: "ຂໍ້ມູນຂອງທ່ານຖືກບັນທຶກລົງໃນທຳນຽບວິທະຍາກອນ ແລະ ຜູ້ນຳທັດສະນະສຶກສາຮຽບຮ້ອຍແລ້ວ"
   },
 
   zh: {
@@ -350,13 +401,17 @@ export const TRANSLATIONS = {
     heroLocation: "泰国曼谷及国家航天科技中心",
     statParticipants: "参会学员",
     statCountries: "代表国家",
-    statLecturers: "授课专家",
+    statLecturers: "讲师与考察领队",
 
     // Tabs & Actions
     tabParticipants: "学员名录 (Participants)",
-    tabLecturers: "讲师与专题 (Lecturers)",
+    tabLecturers: "专家讲师与考察领队 (Lecturers & Tour Leads)",
     btnAddLecturer: "添加讲师",
+    btnAddTourLead: "考察领队登记表",
     btnExportCsv: "导出 CSV",
+    badgeTourLead: "考察领队",
+    badgeLecturer: "授课专家",
+    btnTourGuide: "考察行程指南 / 课件",
 
     // Search & Filter
     searchPlaceholder: "搜索姓名（中英文）、昵称、国家、工作机构或专业专长...",
@@ -438,7 +493,20 @@ export const TRANSLATIONS = {
     submitSuccessTitle: "档案提交成功！",
     submitSuccessDesc: "欢迎加入东盟遥感技术研讨会学术通讯录。",
     submitBtnViewDirectory: "前往名录主页",
-    submitBtnAddAnother: "继续添加下一位"
+    submitBtnAddAnother: "继续添加下一位",
+
+    // Tour Lead Form Page
+    tourLeadPageTitle: "考察领队登记 | ASEAN Remote Sensing Seminar 2026",
+    tourLeadFormBadge: "实地技术考察与现场研学协调员",
+    tourLeadFormTitle: "考察领队个人档案登记",
+    tourLeadFormDesc: "东盟国家遥感技术研讨会（2026年10月28日–11月10日）。请填写您的个人档案及负责的考察行程信息，以载入名录。",
+    tourLeadLabelTourName: "负责的实地考察 / 专题研学路线",
+    tourLeadLabelTourDate: "考察日期与时间",
+    tourLeadLabelRole: "担任角色 / 职务头衔",
+    tourLeadLabelHighlights: "考察参访亮点、研学要点及行前注意事项",
+    tourLeadLabelGuideUrl: "考察行程指南 / 研学手册链接 (Google Drive / PDF)",
+    tourLeadSuccessTitle: "考察领队档案提交成功！",
+    tourLeadSuccessDesc: "您的信息已成功加入讲师与考察领队名录。"
   },
 
   my: {
@@ -457,13 +525,17 @@ export const TRANSLATIONS = {
     heroLocation: "ဘန်ကောက်နှင့် အာကာသနည်းပညာဗဟိုဌာန၊ ထိုင်းနိုင်ငံ",
     statParticipants: "သင်တန်းသားများ",
     statCountries: "ပါဝင်နိုင်ငံများ",
-    statLecturers: "ဟောပြောပို့ချသူများ",
+    statLecturers: "ပို့ချသူများနှင့် ခေါင်းဆောင်များ",
 
     // Tabs & Actions
     tabParticipants: "သင်တန်းသားများ (Participants)",
-    tabLecturers: "ပို့ချသူများနှင့် ခေါင်းစဉ်များ (Lecturers)",
+    tabLecturers: "ဟောပြောပို့ချသူများနှင့် လေ့လာရေးခေါင်းဆောင်များ (Lecturers & Tour Leads)",
     btnAddLecturer: "ပို့ချသူထည့်ရန်",
+    btnAddTourLead: "လေ့လာရေးခေါင်းဆောင်ပုံစံ",
     btnExportCsv: "CSV ထုတ်ယူရန်",
+    badgeTourLead: "လေ့လာရေးခေါင်းဆောင်",
+    badgeLecturer: "ဟောပြောပို့ချသူ",
+    btnTourGuide: "လေ့လာရေးလမ်းညွှန် / အစီအစဉ်",
 
     // Search & Filter
     searchPlaceholder: "အမည်၊ နိုင်ငံ၊ ဌာန သို့မဟုတ် ကျွမ်းကျင်မှုဖြင့် ရှာဖွေပါ...",
@@ -545,7 +617,20 @@ export const TRANSLATIONS = {
     submitSuccessTitle: "အောင်မြင်စွာ သိမ်းဆည်းပြီးပါပြီ!",
     submitSuccessDesc: "အာဆီယံ အဝေးအာရုံခံနည်းပညာ လမ်းညွှန်မှ ကြိုဆိုပါသည်။",
     submitBtnViewDirectory: "လမ်းညွှန်စာမျက်နှာသို့ သွားရန်",
-    submitBtnAddAnother: "နောက်တစ်ဦး ထပ်မံဖြည့်ရန်"
+    submitBtnAddAnother: "နောက်တစ်ဦး ထပ်မံဖြည့်ရန်",
+
+    // Tour Lead Form Page
+    tourLeadPageTitle: "လေ့လာရေးခေါင်းဆောင် မှတ်ပုံတင်ခြင်း | ASEAN Remote Sensing Seminar 2026",
+    tourLeadFormBadge: "ကွင်းဆင်းလေ့လာရေးနှင့် နည်းပညာခရီးစဉ် ညှိနှိုင်းရေးမှူး",
+    tourLeadFormTitle: "လေ့လာရေးခေါင်းဆောင် ကိုယ်ရေးမှတ်တမ်း ဖြည့်သွင်းခြင်း",
+    tourLeadFormDesc: "Seminar on Remote Sensing Technology for ASEAN Countries (၂၈ အောက်တိုဘာ – ၁၀ နိုဝင်ဘာ ၂၀၂၆)။ ကျေးဇူးပြု၍ သင့်အချက်အလက်များနှင့် လေ့လာရေးခရီးစဉ်အသေးစိတ်ကို ဖြည့်သွင်းပေးပါ။",
+    tourLeadLabelTourName: "တာဝန်ယူထားသော လေ့လာရေးခရီးစဉ် / အစီအစဉ်",
+    tourLeadLabelTourDate: "လေ့လာရေးနေ့ရက်နှင့် အချိန်",
+    tourLeadLabelRole: "တာဝန် / ရာထူး",
+    tourLeadLabelHighlights: "ခရီးစဉ်အဓိကအချက်များ၊ လမ်းညွှန်ချက်များနှင့် သတိပြုရန်များ",
+    tourLeadLabelGuideUrl: "ခရီးစဉ်အစီအစဉ် / လမ်းညွှန်စာအုပ် လင့်ခ်",
+    tourLeadSuccessTitle: "လေ့လာရေးခေါင်းဆောင် အချက်အလက်များ သိမ်းဆည်းပြီးပါပြီ!",
+    tourLeadSuccessDesc: "သင့်အချက်အလက်များကို ဟောပြောပို့ချသူများနှင့် လေ့လာရေးခေါင်းဆောင်များ လမ်းညွှန်တွင် ထည့်သွင်းပြီးပါပြီ။"
   },
 
   km: {
@@ -564,13 +649,17 @@ export const TRANSLATIONS = {
     heroLocation: "បាងកក និង មជ្ឈមណ្ឌលបច្ចេកវិទ្យាអវកាស ប្រទេសថៃ",
     statParticipants: "សិក្ខាកាម",
     statCountries: "ប្រទេស",
-    statLecturers: "សាស្ត្រាចារ្យ",
+    statLecturers: "សាស្ត្រាចារ្យ & អ្នកដឹកនាំ",
 
     // Tabs & Actions
     tabParticipants: "សិក្ខាកាម (Participants)",
-    tabLecturers: "សាស្ត្រាចារ្យ និងប្រធានបទ (Lecturers)",
+    tabLecturers: "សាស្ត្រាចារ្យ និងអ្នកដឹកនាំទស្សនកិច្ច (Lecturers & Tour Leads)",
     btnAddLecturer: "បន្ថែមសាស្ត្រាចារ្យ",
+    btnAddTourLead: "ទម្រង់អ្នកដឹកនាំទស្សនកិច្ច",
     btnExportCsv: "ទាញយក CSV",
+    badgeTourLead: "អ្នកដឹកនាំទស្សនកិច្ច",
+    badgeLecturer: "សាស្ត្រាចារ្យឧទ្ទេសនាម",
+    btnTourGuide: "កាលវិភាគ / សៀវភៅណែនាំ",
 
     // Search & Filter
     searchPlaceholder: "ស្វែងរកតាមឈ្មោះ, ប្រទេស, អង្គភាព ឬ ជំនាញឯកទេស...",
@@ -652,7 +741,20 @@ export const TRANSLATIONS = {
     submitSuccessTitle: "បានរក្សាទុកដោយជោគជ័យ!",
     submitSuccessDesc: "សូមស្វាគមន៍មកកាន់បញ្ជីឈ្មោះសិក្ខាកាមបច្ចេកវិទ្យា Remote Sensing អាស៊ាន។",
     submitBtnViewDirectory: "ទៅកាន់ទំព័របញ្ជីឈ្មោះ",
-    submitBtnAddAnother: "ចុះឈ្មោះអ្នកផ្សេងទៀតបន្ថែម"
+    submitBtnAddAnother: "ចុះឈ្មោះអ្នកផ្សេងទៀតបន្ថែម",
+
+    // Tour Lead Form Page
+    tourLeadPageTitle: "ចុះឈ្មោះអ្នកដឹកនាំទស្សនកិច្ច | ASEAN Remote Sensing Seminar 2026",
+    tourLeadFormBadge: "អ្នកសម្របសម្រួល និងដឹកនាំទស្សនកិច្ចសិក្សាជាក់ស្តែង",
+    tourLeadFormTitle: "ចុះឈ្មោះព័ត៌មានអ្នកដឹកនាំទស្សនកិច្ច",
+    tourLeadFormDesc: "Seminar on Remote Sensing Technology for ASEAN Countries (២៨ តុលា – ១០ វិច្ឆិកា ២០២៦)។ សូមបំពេញព័ត៌មាន និងព័ត៌មានលម្អិតនៃដំណើរទស្សនកិច្ច។",
+    tourLeadLabelTourName: "កម្មវិធីទស្សនកិច្ច / ទីតាំងចុះសិក្សាជាក់ស្តែង",
+    tourLeadLabelTourDate: "កាលបរិច្ឆេទ និងពេលវេលាទស្សនកិច្ច",
+    tourLeadLabelRole: "តួនាទី / មុខតំណែង",
+    tourLeadLabelHighlights: "ចំណុចសំខាន់ៗនៃការទស្សនកិច្ច និងការណែនាំ",
+    tourLeadLabelGuideUrl: "តំណភ្ជាប់កាលវិភាគ / សៀវភៅណែនាំ",
+    tourLeadSuccessTitle: "បានរក្សាទុកព័ត៌មានអ្នកដឹកនាំទស្សនកិច្ច!",
+    tourLeadSuccessDesc: "ព័ត៌មានរបស់អ្នកត្រូវបានបន្ថែមទៅក្នុងបញ្ជីឈ្មោះសាស្ត្រាចារ្យ និងអ្នកដឹកនាំទស្សនកិច្ចរួចរាល់ហើយ។"
   }
 };
 

@@ -139,16 +139,21 @@
       <div class="bg-slate-200/80 p-1 rounded-xl flex items-center gap-1 self-start sm:self-auto">
         <button id="tabParticipants" class="px-5 py-2.5 rounded-lg text-sm font-semibold shadow-sm bg-cyan-600 text-white flex items-center gap-2 transition">
           <i data-lucide="users" class="w-4 h-4"></i>
-          <span data-i18n="tabParticipants">Participants (ผู้เข้าร่วมสัมมนา)</span>
+          <span data-i18n="tabParticipants">Participants</span>
         </button>
         <button id="tabLecturers" class="px-5 py-2.5 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-100 flex items-center gap-2 transition">
           <i data-lucide="graduation-cap" class="w-4 h-4"></i>
-          <span data-i18n="tabLecturers">Lecturers & Sessions (วิทยากร)</span>
+          <span data-i18n="tabLecturers">Lecturers & Tour Leads</span>
         </button>
       </div>
 
-      <!-- Secondary Actions: Add Lecturer & Export CSV -->
-      <div class="flex items-center gap-2">
+      <!-- Secondary Actions: Tour Lead Form, Add Lecturer & Export CSV -->
+      <div class="flex flex-wrap items-center gap-2">
+        <a href="lead-submit.html" class="px-3 py-2 rounded-lg text-xs font-semibold bg-emerald-50 border border-emerald-300 text-emerald-800 hover:bg-emerald-100 flex items-center gap-1.5 transition shadow-sm">
+          <i data-lucide="compass" class="w-3.5 h-3.5 text-emerald-600"></i>
+          <span data-i18n="btnAddTourLead">Tour Lead Form</span>
+        </a>
+
         <button id="btnOpenAddLecturer" class="px-3 py-2 rounded-lg text-xs font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 flex items-center gap-1.5 transition">
           <i data-lucide="plus-circle" class="w-3.5 h-3.5 text-cyan-600"></i>
           <span data-i18n="btnAddLecturer">เพิ่มวิทยากร</span>
@@ -243,11 +248,13 @@
       </div>
 
       <div class="flex flex-wrap items-center gap-4">
-        <a href="submit.html" class="hover:text-cyan-400 transition" data-i18n="addProfileBtn">ลงทะเบียนทำเนียบ</a>
+        <a href="submit.html" class="hover:text-cyan-400 transition" data-i18n="addProfileBtn">Participant Registration</a>
+        <span>•</span>
+        <a href="lead-submit.html" class="hover:text-emerald-400 transition" data-i18n="btnAddTourLead">Tour Lead Form</a>
         <span>•</span>
         <a href="google-apps-script/README.md" target="_blank" class="hover:text-cyan-400 transition">Google Sheet Guide</a>
         <span>•</span>
-        <button onclick="window.app.openSettingsModal()" class="hover:text-cyan-400 transition" data-i18n="googleSheetBtn">ตั้งค่าระบบ</button>
+        <button onclick="window.app.openSettingsModal()" class="hover:text-cyan-400 transition" data-i18n="googleSheetBtn">Settings</button>
       </div>
     </div>
   </footer>

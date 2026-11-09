@@ -193,6 +193,23 @@ function setupDatabase() {
       "https://drive.google.com",
       "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80"
     ]);
+
+    lecSheet.appendRow([
+      "Field Trip & Technical Tour: Space Krenovation Park & Ground Receiving Station",
+      "31 Oct 2026, 08:30 – 17:00",
+      "Chaiwat Supamongkol",
+      "ชัยวัฒน์ ศุภมงคล",
+      "Senior Tour Lead & Space Operations Engineer",
+      "Geo-Informatics and Space Technology Development Agency (GISTDA)",
+      "Thailand",
+      "Leading technical visit to satellite telemetry ground receiving antennas, clean room assembly facilities, and test center. Please wear comfortable shoes.",
+      "chaiwat.s@gistda.or.th",
+      "+66 89 123 4567",
+      "https://linkedin.com",
+      "https://www.gistda.or.th",
+      "https://drive.google.com",
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80"
+    ]);
   }
   
   // 3. Ensure Google Drive photo folder exists
@@ -272,10 +289,58 @@ function doPost(e) {
     // Handle Photo upload to Google Drive if provided as base64
     let photoUrl = data.photoUrl || "";
     if (data.photoBase64 && data.photoBase64.length > 50) {
-      photoUrl = savePhotoToDrive(data.photoBase64, data.photoFileName || `${data.nameEnglish || 'participant'}_photo.jpg`);
+      photoUrl = savePhotoToDrive(data.photoBase64, data.photoFileName || `${data.nameEnglish || 'profile'}_photo.jpg`);
     }
 
-    // Append new participant row
+    // Check if submission is for Tour Leads / Lecturers
+    if (data.targetSheet === "Lecturers" || data.role === "Tour Lead" || data.role === "Lecturer") {
+      let lecSheet = ss.getSheetByName(LECTURERS_SHEET_NAME);
+      if (!lecSheet) {
+        lecSheet = ss.insertSheet(LECTURERS_SHEET_NAME);
+        lecSheet.appendRow([
+          "Session / Course Title",
+          "Date & Time",
+          "Lecturer Name (English)",
+          "Lecturer Name (Native)",
+          "Title / Position",
+          "Affiliation",
+          "Country",
+          "Key Topics Covered",
+          "Email",
+          "Phone",
+          "LinkedIn",
+          "Lab or Website URL",
+          "Presentation Slides Link",
+          "Photo URL"
+        ]);
+        lecSheet.getRange(1, 1, 1, 14).setFontWeight("bold").setBackground("#0f172a").setFontColor("#ffffff");
+      }
+
+      lecSheet.appendRow([
+        data.sessionTitle || data.tourName || "Field Trip / Seminar Session",
+        data.sessionDate || data.tourDate || "",
+        data.nameEnglish || "",
+        data.nameNative || "",
+        data.title || data.position || (data.role === "Tour Lead" ? "Tour Lead & Field Trip Coordinator" : "Lecturer"),
+        data.affiliation || "",
+        data.country || data.nationality || "",
+        data.topics || data.tourHighlights || "",
+        data.email || "",
+        data.phone || "",
+        data.linkedin || "",
+        data.labWebsite || data.website || "",
+        data.slidesUrl || data.guideUrl || "",
+        photoUrl
+      ]);
+
+      return ContentService.createTextOutput(JSON.stringify({
+        result: "success",
+        message: "Tour Lead / Lecturer profile recorded successfully!",
+        photoUrl: photoUrl
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // Otherwise append to Participants sheet
     sheet.appendRow([
       new Date(),
       data.nameEnglish || "",

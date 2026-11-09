@@ -218,17 +218,26 @@ export function mapCsvToLecturers(rows) {
     const countryRaw = (idxCountry !== -1 && row[idxCountry]) ? row[idxCountry].trim() : 'ASEAN';
     const countryMeta = getCountryMeta(countryRaw);
 
+    const titleVal = (idxTitle !== -1 && row[idxTitle]) ? row[idxTitle].trim() : 'Guest Lecturer / Specialist';
+    const sessionVal = (idxSession !== -1 && row[idxSession]) ? row[idxSession].trim() : `Session ${i}`;
+    const isTourLead = titleVal.toLowerCase().includes('tour lead') ||
+                       titleVal.includes('ผู้นำทัศนศึกษา') ||
+                       titleVal.includes('ผู้ประสานงานทัศนศึกษา') ||
+                       sessionVal.toLowerCase().includes('field trip') ||
+                       sessionVal.toLowerCase().includes('tour') ||
+                       sessionVal.toLowerCase().includes('excursion');
+
     lecturers.push({
       id: `sheet-lec-${i}`,
       nameEnglish,
       nameNative: (idxNameNative !== -1 && row[idxNameNative]) ? row[idxNameNative].trim() : nameEnglish,
-      title: (idxTitle !== -1 && row[idxTitle]) ? row[idxTitle].trim() : 'Guest Lecturer / Specialist',
+      title: titleVal,
       affiliation: (idxAffiliation !== -1 && row[idxAffiliation]) ? row[idxAffiliation].trim() : 'Partner Organization',
       country: countryMeta.name,
       countryCode: countryMeta.code,
-      sessionTitle: (idxSession !== -1 && row[idxSession]) ? row[idxSession].trim() : `Session ${i}`,
+      sessionTitle: sessionVal,
       sessionDate: (idxDate !== -1 && row[idxDate]) ? row[idxDate].trim() : 'Seminar Schedule',
-      sessionDay: `Day ${i}`,
+      sessionDay: isTourLead ? 'Field Trip' : `Day ${i}`,
       topics: (idxTopics !== -1 && row[idxTopics]) ? row[idxTopics].trim() : '',
       email: (idxEmail !== -1 && row[idxEmail]) ? row[idxEmail].trim() : '',
       phone: (idxPhone !== -1 && row[idxPhone]) ? row[idxPhone].trim() : '',
@@ -237,7 +246,7 @@ export function mapCsvToLecturers(rows) {
       slidesUrl: (idxSlides !== -1 && row[idxSlides]) ? row[idxSlides].trim() : '',
       notes: (idxNotes !== -1 && row[idxNotes]) ? row[idxNotes].trim() : '',
       photoUrl: (idxPhoto !== -1 && row[idxPhoto]) ? formatDrivePhotoUrl(row[idxPhoto]) : '',
-      role: "Lecturer"
+      role: isTourLead ? "Tour Lead" : "Lecturer"
     });
   }
 

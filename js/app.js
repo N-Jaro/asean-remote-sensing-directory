@@ -189,6 +189,7 @@ class DirectoryApp {
     if (tabParticipants && tabLecturers) {
       tabParticipants.addEventListener('click', () => {
         this.activeTab = 'participants';
+        if (window.location.hash) history.replaceState(null, null, window.location.pathname + window.location.search);
         tabParticipants.className = "px-5 py-2.5 rounded-lg text-sm font-semibold shadow-sm bg-cyan-600 text-white flex items-center gap-2 transition";
         tabLecturers.className = "px-5 py-2.5 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-100 flex items-center gap-2 transition";
         document.getElementById('expertiseFilterContainer')?.classList.remove('hidden');
@@ -197,6 +198,7 @@ class DirectoryApp {
 
       tabLecturers.addEventListener('click', () => {
         this.activeTab = 'lecturers';
+        history.replaceState(null, null, '#lecturers');
         tabLecturers.className = "px-5 py-2.5 rounded-lg text-sm font-semibold shadow-sm bg-cyan-600 text-white flex items-center gap-2 transition";
         tabParticipants.className = "px-5 py-2.5 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-100 flex items-center gap-2 transition";
         document.getElementById('expertiseFilterContainer')?.classList.add('hidden');
@@ -491,36 +493,62 @@ class DirectoryApp {
   renderLecturerCard(l) {
     const countryMeta = getCountryMeta(l.country);
     const photo = l.photoUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(l.nameEnglish)}&background=0b132b&color=38bdf8&size=256`;
+    const isTourLead = l.role === 'Tour Lead' ||
+      (l.title && l.title.toLowerCase().includes('tour lead')) ||
+      (l.title && l.title.includes('ผู้นำทัศนศึกษา')) ||
+      (l.sessionTitle && (l.sessionTitle.toLowerCase().includes('tour') || l.sessionTitle.toLowerCase().includes('field trip') || l.sessionTitle.toLowerCase().includes('excursion')));
+
+    const headerGradient = isTourLead 
+      ? 'bg-gradient-to-r from-emerald-900 via-slate-900 to-teal-950'
+      : 'bg-gradient-to-r from-cyan-900 via-slate-900 to-sky-950';
+
+    const roleBadgeClass = isTourLead
+      ? 'bg-emerald-500/20 text-emerald-200 border-emerald-400/30'
+      : 'bg-cyan-500/20 text-cyan-200 border-cyan-400/30';
+
+    const roleBadgeText = isTourLead
+      ? `🚌 ${t('badgeTourLead') || 'Tour Lead'}`
+      : `🎓 ${l.sessionDay || t('badgeLecturer') || 'Lecturer'}`;
+
+    const linkButtonClass = isTourLead
+      ? 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border-emerald-200'
+      : 'bg-cyan-50 text-cyan-700 hover:bg-cyan-100 border-cyan-200';
+
+    const linkButtonLabel = isTourLead
+      ? (t('btnTourGuide') || 'Tour Itinerary / Field Guide')
+      : 'Presentation Slides';
+
+    const linkButtonIcon = isTourLead ? 'compass' : 'file-text';
 
     return `
       <div class="glass-card rounded-2xl overflow-hidden shadow-sm flex flex-col cursor-pointer border border-slate-200/90 group" data-id="${l.id}" data-type="lecturer">
         <!-- Session badge top -->
-        <div class="relative bg-gradient-to-r from-cyan-900 via-slate-900 to-sky-950 p-4 text-white">
+        <div class="relative ${headerGradient} p-4 text-white">
           <div class="flex justify-between items-start gap-2 mb-1.5">
-            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-cyan-500/20 text-cyan-200 border border-cyan-400/30">
-              ${l.sessionDay || 'Seminar Session'}
+            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${roleBadgeClass} border">
+              ${roleBadgeText}
             </span>
             <span class="text-xs font-medium text-slate-300 flex items-center gap-1">
-              <i data-lucide="calendar" class="w-3.5 h-3.5 text-cyan-400"></i> ${l.sessionDate}
+              <i data-lucide="calendar" class="w-3.5 h-3.5 ${isTourLead ? 'text-emerald-400' : 'text-cyan-400'}"></i> ${l.sessionDate}
             </span>
           </div>
-          <h4 class="font-semibold text-sm text-cyan-50 line-clamp-2 leading-tight">
+          <h4 class="font-semibold text-sm ${isTourLead ? 'text-emerald-50' : 'text-cyan-50'} line-clamp-2 leading-tight">
             ${l.sessionTitle}
           </h4>
         </div>
 
         <div class="p-5 flex-1 flex flex-col">
-          <!-- Lecturer profile row -->
+          <!-- Lecturer / Tour Lead profile row -->
           <div class="flex items-center gap-3.5 mb-3">
             <div class="w-14 h-14 rounded-xl avatar-container shadow-sm border border-slate-200 flex-shrink-0">
               <img src="${photo}" alt="${l.nameEnglish}" loading="lazy" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(l.nameEnglish)}&background=0b132b&color=38bdf8';"/>
             </div>
             <div>
-              <h3 class="font-bold text-slate-900 text-sm group-hover:text-cyan-600 transition">
+              <h3 class="font-bold text-slate-900 text-sm ${isTourLead ? 'group-hover:text-emerald-600' : 'group-hover:text-cyan-600'} transition">
                 ${l.nameEnglish}
               </h3>
               ${l.nameNative && l.nameNative !== l.nameEnglish ? `<p class="text-xs text-slate-500">${l.nameNative}</p>` : ''}
-              <p class="text-xs font-medium text-slate-600 line-clamp-1">${l.title || 'Lecturer'}</p>
+              <p class="text-xs font-medium text-slate-600 line-clamp-1">${l.title || (isTourLead ? 'Tour Lead' : 'Lecturer')}</p>
             </div>
           </div>
 
@@ -535,19 +563,19 @@ class DirectoryApp {
             </p>
           </div>
 
-          <!-- Covered Topics -->
+          <!-- Covered Topics / Highlights -->
           ${l.topics ? `
             <div class="mt-auto pt-3 border-t border-slate-100">
-              <p class="text-[11px] font-medium text-slate-500 uppercase tracking-wider mb-1">Topics covered:</p>
+              <p class="text-[11px] font-medium text-slate-500 uppercase tracking-wider mb-1">${isTourLead ? 'Tour Highlights & Guide:' : 'Topics covered:'}</p>
               <p class="text-xs text-slate-700 line-clamp-2">${l.topics}</p>
             </div>
           ` : ''}
 
-          <!-- Slides button if available -->
+          <!-- Slides or Tour Guide button if available -->
           ${l.slidesUrl ? `
             <div class="mt-3">
-              <a href="${l.slidesUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="inline-flex items-center justify-center gap-1.5 w-full py-1.5 px-3 rounded-lg text-xs font-semibold bg-cyan-50 text-cyan-700 hover:bg-cyan-100 transition border border-cyan-200">
-                <i data-lucide="file-text" class="w-3.5 h-3.5"></i> Presentation Slides
+              <a href="${l.slidesUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="inline-flex items-center justify-center gap-1.5 w-full py-1.5 px-3 rounded-lg text-xs font-semibold ${linkButtonClass} transition border">
+                <i data-lucide="${linkButtonIcon}" class="w-3.5 h-3.5"></i> ${linkButtonLabel}
               </a>
             </div>
           ` : ''}
@@ -707,41 +735,58 @@ class DirectoryApp {
         </div>
       `;
     } else {
-      // Lecturer modal
+      // Lecturer / Tour Lead modal
+      const isTourLead = item.role === 'Tour Lead' ||
+        (item.title && item.title.toLowerCase().includes('tour lead')) ||
+        (item.title && item.title.includes('ผู้นำทัศนศึกษา')) ||
+        (item.sessionTitle && (item.sessionTitle.toLowerCase().includes('tour') || item.sessionTitle.toLowerCase().includes('field trip') || item.sessionTitle.toLowerCase().includes('excursion')));
+
+      const headerGradient = isTourLead 
+        ? 'bg-gradient-to-r from-emerald-950 via-slate-900 to-teal-950'
+        : 'bg-gradient-to-r from-cyan-950 via-slate-900 to-sky-950';
+
+      const roleBadgeText = isTourLead
+        ? `🚌 ${t('badgeTourLead') || 'Tour Lead & Field Trip Coordinator'}`
+        : `🎓 ${item.sessionDay || t('badgeLecturer') || 'Lecturer'}`;
+
+      const roleBadgeClass = isTourLead
+        ? 'bg-emerald-500/20 text-emerald-200 border-emerald-400/30'
+        : 'bg-cyan-500/20 text-cyan-200 border-cyan-400/30';
+
       content.innerHTML = `
-        <div class="relative bg-gradient-to-r from-cyan-950 via-slate-900 to-sky-950 p-6 text-white sm:rounded-t-2xl">
+        <div class="relative ${headerGradient} p-6 text-white sm:rounded-t-2xl">
           <div class="flex items-start gap-4">
-            <div class="w-24 h-24 rounded-2xl avatar-container shadow-xl border-2 border-white/80 ring-4 ring-cyan-500/20 flex-shrink-0">
+            <div class="w-24 h-24 rounded-2xl avatar-container shadow-xl border-2 border-white/80 ring-4 ${isTourLead ? 'ring-emerald-500/20' : 'ring-cyan-500/20'} flex-shrink-0">
               <img src="${photo}" alt="${item.nameEnglish}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(item.nameEnglish)}&background=0b132b&color=38bdf8';"/>
             </div>
             <div class="flex-1 min-w-0">
               <div class="flex flex-wrap items-center gap-2 mb-1">
-                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-cyan-500/20 text-cyan-200 border border-cyan-400/30">
-                  ${item.sessionDay || 'Lecturer'}
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${roleBadgeClass} border">
+                  ${roleBadgeText}
                 </span>
                 <span class="text-xs text-slate-300"><span>${countryMeta.flag}</span> ${item.country}</span>
               </div>
               <h2 class="text-xl font-bold text-white leading-tight">${item.nameEnglish}</h2>
-              ${item.nameNative && item.nameNative !== item.nameEnglish ? `<p class="text-sm text-cyan-200 mt-0.5 font-medium">${item.nameNative}</p>` : ''}
+              ${item.nameNative && item.nameNative !== item.nameEnglish ? `<p class="text-sm ${isTourLead ? 'text-emerald-200' : 'text-cyan-200'} mt-0.5 font-medium">${item.nameNative}</p>` : ''}
               <p class="text-xs text-slate-300 mt-1">${item.title} • ${item.affiliation}</p>
             </div>
           </div>
         </div>
 
         <div class="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
-          <!-- Session Details -->
+          <!-- Session / Tour Details -->
           <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
-            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Seminar Session</p>
+            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">${isTourLead ? 'Field Trip / Technical Tour' : 'Seminar Session'}</p>
             <h3 class="text-base font-bold text-slate-900 mb-1">${item.sessionTitle}</h3>
-            <p class="text-xs text-cyan-700 font-medium flex items-center gap-1.5">
+            <p class="text-xs ${isTourLead ? 'text-emerald-700' : 'text-cyan-700'} font-medium flex items-center gap-1.5">
               <i data-lucide="calendar" class="w-3.5 h-3.5"></i> ${item.sessionDate}
             </p>
           </div>
 
-          <!-- Topics Covered -->
+          <!-- Topics / Highlights -->
           ${item.topics ? `
             <div>
-              <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Topics & Highlights</h4>
+              <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">${isTourLead ? 'Tour Highlights & Instructions' : 'Topics & Highlights'}</h4>
               <p class="text-sm text-slate-700 bg-white p-3 rounded-xl border border-slate-200 leading-relaxed">
                 ${item.topics}
               </p>
@@ -751,34 +796,35 @@ class DirectoryApp {
           <!-- Notes -->
           ${item.notes ? `
             <div>
-              <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Session Notes</h4>
+              <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">${isTourLead ? 'Important Tour Notes' : 'Session Notes'}</h4>
               <p class="text-xs text-slate-600 italic bg-amber-50/60 p-3 rounded-xl border border-amber-200">
                 ${item.notes}
               </p>
             </div>
           ` : ''}
 
-          <!-- Presentation Slides & Lab Links -->
+          <!-- Presentation Slides & Guide Links -->
           <div class="flex flex-wrap gap-2 pt-2">
             ${item.slidesUrl ? `
-              <a href="${item.slidesUrl}" target="_blank" rel="noopener" class="flex-1 min-w-[200px] inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold bg-cyan-600 hover:bg-cyan-700 text-white shadow-sm transition">
-                <i data-lucide="file-text" class="w-4 h-4"></i> Download Session Slides
+              <a href="${item.slidesUrl}" target="_blank" rel="noopener" class="flex-1 min-w-[200px] inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold ${isTourLead ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-cyan-600 hover:bg-cyan-700'} text-white shadow-sm transition">
+                <i data-lucide="${isTourLead ? 'compass' : 'file-text'}" class="w-4 h-4"></i> ${isTourLead ? (t('btnTourGuide') || 'Tour Itinerary / Field Guide') : 'Download Session Slides'}
               </a>
             ` : ''}
             ${item.labWebsite ? `
               <a href="${item.labWebsite}" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition">
-                <i data-lucide="globe" class="w-4 h-4"></i> Lab / Institution Website
+                <i data-lucide="globe" class="w-4 h-4"></i> Organization Website
               </a>
             ` : ''}
           </div>
 
           <!-- Contacts -->
           <div class="border-t border-slate-100 pt-4">
-            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Lecturer Contact</h4>
+            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">${isTourLead ? 'Coordinator Contact' : 'Lecturer Contact'}</h4>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
               ${item.email ? `<p class="flex items-center gap-2 text-slate-700"><i data-lucide="mail" class="w-4 h-4 text-slate-400"></i> ${item.email}</p>` : ''}
               ${item.phone ? `<p class="flex items-center gap-2 text-slate-700"><i data-lucide="phone" class="w-4 h-4 text-slate-400"></i> ${item.phone}</p>` : ''}
               ${item.linkedin ? `<a href="${item.linkedin}" target="_blank" class="flex items-center gap-2 text-blue-600 hover:underline"><i data-lucide="linkedin" class="w-4 h-4 text-blue-500"></i> LinkedIn Profile</a>` : ''}
+              ${item.lineId ? `<p class="flex items-center gap-2 text-slate-700"><i data-lucide="message-circle" class="w-4 h-4 text-green-500"></i> Line/Chat: ${item.lineId}</p>` : ''}
             </div>
           </div>
         </div>
