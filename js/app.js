@@ -37,8 +37,13 @@ class DirectoryApp {
 
     this.bindEvents();
 
-    // 1. FAST INITIAL RENDER (<50ms): Load cached or local data immediately so cards appear instantly
-    this.loadInitialData();
+    // 1. APP-LIKE SKELETON LOADER: Display shimmering skeleton cards and animated loading state while syncing
+    this.renderSkeletons();
+
+    // 2. PARALLEL LIVE SYNC: Fetch live Google Sheet data (races CSV & Apps Script API in parallel)
+    await this.loadData();
+
+    // 3. RENDER CONTENT: Display live interactive filters & directory cards
     this.renderCountryFilters();
     this.renderExpertiseFilters();
 
@@ -49,11 +54,75 @@ class DirectoryApp {
     } else {
       this.render();
     }
+  }
 
-    // 2. PARALLEL BACKGROUND SYNC: Silently fetch latest Google Sheet data in parallel
-    await this.loadData();
-    this.renderExpertiseFilters();
-    this.render();
+  /**
+   * Render app-like shimmering skeleton cards while Google Sheet is syncing
+   */
+  renderSkeletons() {
+    const container = document.getElementById('cardsContainer');
+    const resultsCount = document.getElementById('resultsCount');
+    const statusBadge = document.getElementById('sheetStatusBadge');
+    const topBar = document.getElementById('topAppLoadingBar');
+
+    if (topBar) {
+      topBar.classList.remove('hidden', 'opacity-0');
+    }
+
+    if (statusBadge) {
+      statusBadge.innerHTML = `
+        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-cyan-950/80 text-cyan-300 border border-cyan-800 shadow-sm">
+          <svg class="animate-spin h-3.5 w-3.5 text-cyan-400" viewBox="0 0 24 24" fill="none">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+          </svg>
+          <span>Syncing Google Sheet...</span>
+        </span>
+      `;
+    }
+
+    if (resultsCount) {
+      resultsCount.innerHTML = `
+        <div class="inline-flex items-center gap-2 text-slate-500 font-medium">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+          </span>
+          <span>Connecting & syncing live seminar directory from Google Sheet...</span>
+        </div>
+      `;
+    }
+
+    if (!container) return;
+
+    let skeletonsHtml = '';
+    for (let i = 0; i < 8; i++) {
+      skeletonsHtml += `
+        <div class="glass-card rounded-2xl overflow-hidden border border-slate-200/80 bg-white shadow-sm flex flex-col animate-pulse">
+          <div class="bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 h-24 p-3 flex justify-between items-start">
+            <div class="w-20 h-5 rounded-full bg-slate-300"></div>
+            <div class="w-14 h-4 rounded-full bg-slate-300/60"></div>
+          </div>
+          <div class="p-5 flex-1 flex flex-col space-y-3">
+            <div class="w-16 h-16 -mt-11 rounded-2xl bg-slate-300 border-4 border-white shadow-sm flex-shrink-0"></div>
+            <div class="space-y-1.5 pt-1">
+              <div class="h-4.5 w-3/4 bg-slate-300 rounded-md"></div>
+              <div class="h-3.5 w-1/2 bg-slate-200 rounded-md"></div>
+            </div>
+            <div class="space-y-1.5 pt-2">
+              <div class="h-3 w-5/6 bg-slate-200 rounded"></div>
+              <div class="h-3 w-2/3 bg-slate-200 rounded"></div>
+            </div>
+            <div class="flex flex-wrap gap-1.5 pt-3 mt-auto">
+              <div class="h-5 w-20 bg-slate-200 rounded-full"></div>
+              <div class="h-5 w-24 bg-slate-200 rounded-full"></div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    container.innerHTML = skeletonsHtml;
   }
 
   /**
@@ -112,6 +181,10 @@ class DirectoryApp {
    */
   async loadData() {
     this.updateStatusBadge(true);
+    const topBar = document.getElementById('topAppLoadingBar');
+    if (topBar) {
+      topBar.classList.remove('hidden', 'opacity-0');
+    }
 
     const participantsUrl = CONFIG.googleIntegration.participantsCsvUrl;
     const lecturersUrl = CONFIG.googleIntegration.lecturersCsvUrl;
@@ -199,6 +272,11 @@ class DirectoryApp {
 
     this.updateStatusBadge(false);
     this.updateStats();
+
+    if (topBar) {
+      topBar.classList.add('opacity-0');
+      setTimeout(() => topBar.classList.add('hidden'), 500);
+    }
   }
 
   updateStatusBadge(syncing = false) {
