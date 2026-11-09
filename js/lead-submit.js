@@ -121,6 +121,13 @@ class TourLeadSubmission {
       e.preventDefault();
 
       const btnOriginalText = submitBtn.innerHTML;
+
+      // 1. Profile photo is required
+      if (!this.photoBase64) {
+        alert('Please upload a profile photo / กรุณาอัปโหลดรูปถ่ายโปรไฟล์');
+        return;
+      }
+
       submitBtn.disabled = true;
       submitBtn.innerHTML = `
         <span class="inline-flex items-center gap-2">
@@ -132,7 +139,7 @@ class TourLeadSubmission {
         </span>
       `;
 
-      const countryName = form.nationality.value;
+      const countryName = form.nationality.value || 'Thailand';
       const countryMeta = getCountryMeta(countryName);
 
       const payload = {
@@ -140,11 +147,11 @@ class TourLeadSubmission {
         nameEnglish: form.nameEnglish.value.trim(),
         nameNative: form.nameNative.value.trim() || form.nameEnglish.value.trim(),
         nickname: form.nickname.value.trim(),
-        title: form.title.value.trim() || 'Tour Lead & Field Trip Coordinator',
+        title: form.title.value.trim() || 'Tour Lead',
         country: countryMeta.name,
         nationality: countryName,
         countryCode: countryMeta.code,
-        affiliation: form.affiliation.value.trim(),
+        affiliation: form.affiliation.value.trim() || 'Seminar Tour Lead Team',
         tourName: '',
         sessionTitle: form.title.value.trim() || 'Tour Lead Coordinator',
         tourDate: '',
