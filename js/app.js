@@ -519,17 +519,22 @@ class DirectoryApp {
     const container = document.getElementById('countryFilterButtons');
     if (!container) return;
 
+    const baseClass = "country-filter-btn flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs transition cursor-pointer";
+    const activeClass = `${baseClass} font-semibold bg-slate-900 text-white shadow-sm border border-slate-900`;
+    const inactiveClass = `${baseClass} font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300`;
+
     let html = `
-      <button data-country="ALL" class="country-filter-btn px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition bg-slate-900 text-white shadow-sm inline-flex items-center gap-1.5">
+      <button data-country="ALL" class="${this.selectedCountry === 'ALL' ? activeClass : inactiveClass}">
         <span class="text-sm">🌏</span> <span>${t('filterAllCountries')}</span>
       </button>
     `;
 
     CONFIG.countries.forEach(c => {
-      const flagImg = getCountryFlagImg(c.code, c.flag, 'w-4.5 h-3 object-cover rounded-[2px] shadow-xs inline-block align-middle');
+      const isSelected = this.selectedCountry === c.code;
+      const flagImg = getCountryFlagImg(c.code, c.flag, 'w-4.5 h-3 object-cover rounded-[2px] shadow-xs inline-block flex-shrink-0');
       html += `
-        <button data-country="${c.code}" class="country-filter-btn px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 inline-flex items-center gap-1.5">
-          ${flagImg} <span class="hidden sm:inline">${c.name}</span><span class="sm:hidden">${c.code}</span>
+        <button data-country="${c.code}" class="${isSelected ? activeClass : inactiveClass}">
+          ${flagImg} <span>${c.name}</span>
         </button>
       `;
     });
@@ -540,9 +545,9 @@ class DirectoryApp {
       btn.addEventListener('click', () => {
         this.selectedCountry = btn.dataset.country;
         container.querySelectorAll('.country-filter-btn').forEach(b => {
-          b.className = "country-filter-btn px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition bg-white border border-slate-200 text-slate-700 hover:bg-slate-50";
+          b.className = inactiveClass;
         });
-        btn.className = "country-filter-btn px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition bg-slate-900 text-white shadow-sm";
+        btn.className = activeClass;
         this.render();
       });
     });
