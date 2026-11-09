@@ -3,6 +3,16 @@
  * Supports: English (en), Thai (th), Lao (lo), Chinese (zh), Myanmar (my), Khmer/Cambodia (km)
  */
 
+// Ensure English is the default language on first load and resets legacy test state
+try {
+  if (!localStorage.getItem('rs_lang_default_en_v1')) {
+    localStorage.setItem('rs_selected_lang', 'en');
+    localStorage.setItem('rs_lang_default_en_v1', 'true');
+  }
+} catch (e) {
+  // Ignore in private browsing mode
+}
+
 export const SUPPORTED_LANGUAGES = {
   en: { code: 'en', countryCode: 'gb', name: 'English', nativeName: 'English', flag: '🇬🇧' },
   th: { code: 'th', countryCode: 'th', name: 'Thai', nativeName: 'ไทย', flag: '🇹🇭' },
@@ -25,6 +35,7 @@ export function getLangFlagImg(countryCode, fallbackEmoji = '🌐', className = 
 export const TRANSLATIONS = {
   en: {
     // Header & Brand
+    directoryPageTitle: "ASEAN Remote Sensing Seminar 2026 Directory | Participants & Lecturers",
     seminarBadge: "ASEAN RS 2026",
     datesHeader: "28 Oct – 10 Nov 2026",
     brandTitle: "ASEAN Remote Sensing Directory",
@@ -50,6 +61,7 @@ export const TRANSLATIONS = {
     badgeTourLead: "Tour Lead",
     badgeLecturer: "Lecturer",
     btnTourGuide: "Tour Itinerary / Guide",
+    lecturerModalTitle: "Add Lecturer & Session Information",
 
     // Search & Filter
     searchPlaceholder: "Search by name, nickname, country, organization, expertise...",
@@ -160,6 +172,7 @@ export const TRANSLATIONS = {
 
   th: {
     // Header & Brand
+    directoryPageTitle: "ทำเนียบผู้เข้าร่วมสัมมนา | ASEAN Remote Sensing Seminar 2026",
     seminarBadge: "ASEAN RS 2026",
     datesHeader: "28 ต.ค. – 10 พ.ย. 2569",
     brandTitle: "ทำเนียบผู้เข้าร่วมสัมมนาเทคโนโลยีสำรวจระยะไกล",
@@ -185,6 +198,7 @@ export const TRANSLATIONS = {
     badgeTourLead: "ผู้นำทัศนศึกษา",
     badgeLecturer: "วิทยากร",
     btnTourGuide: "คู่มือทัศนศึกษา / กำหนดการ",
+    lecturerModalTitle: "เพิ่มข้อมูลวิทยากรและหัวข้อบรรยาย",
 
     // Search & Filter
     searchPlaceholder: "ค้นหาด้วยชื่อ (ไทย/อังกฤษ), ชื่อเล่น, ประเทศ, หน่วยงาน, หรือความเชี่ยวชาญ...",
@@ -295,6 +309,7 @@ export const TRANSLATIONS = {
 
   lo: {
     // Header & Brand
+    directoryPageTitle: "ທຳນຽບຜູ້ເຂົ້າຮ່ວມສຳມະນາ | ASEAN Remote Sensing Seminar 2026",
     seminarBadge: "ASEAN RS 2026",
     datesHeader: "28 ຕຸລາ – 10 ພະຈິກ 2026",
     brandTitle: "ທຳນຽບຜູ້ເຂົ້າຮ່ວມສຳມະນາເຕັກໂນໂລຊີສຳຫຼວດໄລຍະໄກ",
@@ -320,6 +335,7 @@ export const TRANSLATIONS = {
     badgeTourLead: "ຜູ້ນຳທັດສະນະສຶກສາ",
     badgeLecturer: "ວິທະຍາກອນ",
     btnTourGuide: "ຄູ່ມືທັດສະນະສຶກສາ",
+    lecturerModalTitle: "ເພີ່ມຂໍ້ມູນວິທະຍາກອນ ແລະ ຫົວຂໍ້ບັນຍາຍ",
 
     // Search & Filter
     searchPlaceholder: "ຄົ້ນຫາຕາມຊື່, ຊື່ຫຼິ້ນ, ປະເທດ, ອົງກອນ, ຫຼື ຄວາມຊ່ຽວຊານ...",
@@ -430,6 +446,7 @@ export const TRANSLATIONS = {
 
   zh: {
     // Header & Brand
+    directoryPageTitle: "东盟遥感技术研讨会名录 | ASEAN Remote Sensing Seminar 2026",
     seminarBadge: "ASEAN RS 2026",
     datesHeader: "2026年10月28日 – 11月10日",
     brandTitle: "东盟国家遥感技术赋能新质生产力研修班通讯录",
@@ -455,6 +472,7 @@ export const TRANSLATIONS = {
     badgeTourLead: "考察领队",
     badgeLecturer: "授课专家",
     btnTourGuide: "考察行程指南 / 课件",
+    lecturerModalTitle: "添加讲师与专题讲座信息",
 
     // Search & Filter
     searchPlaceholder: "搜索姓名（中英文）、昵称、国家、工作机构或专业专长...",
@@ -565,6 +583,7 @@ export const TRANSLATIONS = {
 
   my: {
     // Header & Brand
+    directoryPageTitle: "အာဆီယံ အဝေးအာရုံခံနည်းပညာ သင်တန်းသားလမ်းညွှန် | ASEAN Remote Sensing Seminar 2026",
     seminarBadge: "ASEAN RS 2026",
     datesHeader: "၂၈ အောက်တိုဘာ – ၁၀ နိုဝင်ဘာ ၂၀၂၆",
     brandTitle: "အာဆီယံ အဝေးအာရုံခံနည်းပညာ သင်တန်းသားလမ်းညွှန်",
@@ -590,6 +609,7 @@ export const TRANSLATIONS = {
     badgeTourLead: "လေ့လာရေးခေါင်းဆောင်",
     badgeLecturer: "ဟောပြောပို့ချသူ",
     btnTourGuide: "လေ့လာရေးလမ်းညွှန် / အစီအစဉ်",
+    lecturerModalTitle: "ဟောပြောပို့ချသူနှင့် သင်တန်းအကြောင်းအရာထည့်သွင်းရန်",
 
     // Search & Filter
     searchPlaceholder: "အမည်၊ နိုင်ငံ၊ ဌာန သို့မဟုတ် ကျွမ်းကျင်မှုဖြင့် ရှာဖွေပါ...",
@@ -700,6 +720,7 @@ export const TRANSLATIONS = {
 
   km: {
     // Header & Brand
+    directoryPageTitle: "បញ្ជីឈ្មោះសិក្ខាកាម Remote Sensing អាស៊ាន ២០២៦",
     seminarBadge: "ASEAN RS 2026",
     datesHeader: "២៨ តុលា – ១០ វិច្ឆិកា ២០២៦",
     brandTitle: "បញ្ជីឈ្មោះសិក្ខាកាមបច្ចេកវិទ្យា Remote Sensing អាស៊ាន",
@@ -725,6 +746,7 @@ export const TRANSLATIONS = {
     badgeTourLead: "អ្នកដឹកនាំទស្សនកិច្ច",
     badgeLecturer: "សាស្ត្រាចារ្យឧទ្ទេសនាម",
     btnTourGuide: "កាលវិភាគ / សៀវភៅណែនាំ",
+    lecturerModalTitle: "បន្ថែមព័ត៌មានសាស្ត្រាចារ្យ និងប្រធានបទបង្រៀន",
 
     // Search & Filter
     searchPlaceholder: "ស្វែងរកតាមឈ្មោះ, ប្រទេស, អង្គភាព ឬ ជំនាញឯកទេស...",
@@ -875,12 +897,16 @@ export function t(key, lang = getCurrentLang()) {
  * Apply translations to all DOM elements marked with data-i18n, data-i18n-placeholder, data-i18n-title
  */
 export function applyTranslations(lang = getCurrentLang()) {
-  // Translate text content
+  // Translate text content & document title
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
     const translation = t(key, lang);
     if (translation && translation !== key) {
-      el.textContent = translation;
+      if (el.tagName === 'TITLE') {
+        document.title = translation;
+      } else {
+        el.textContent = translation;
+      }
     }
   });
 
