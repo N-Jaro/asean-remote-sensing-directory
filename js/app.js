@@ -953,7 +953,12 @@ END:VCARD`;
   }
 }
 
-// Global initialization
-window.addEventListener('DOMContentLoaded', () => {
+function startApp() {
   window.app = new DirectoryApp();
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', startApp);
+} else {
+  startApp();
+}

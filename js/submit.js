@@ -228,7 +228,13 @@ class ProfileSubmission {
   }
 }
 
-window.addEventListener('DOMContentLoaded', () => {
+function startSubmission() {
   new ProfileSubmission();
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', startSubmission);
+} else {
+  startSubmission();
+}
 

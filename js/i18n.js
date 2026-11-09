@@ -86,6 +86,7 @@ export const TRANSLATIONS = {
     settingsBtnCancel: "Cancel",
 
     // Submit Page
+    submitPageTitle: "Participant Profile Registration | ASEAN Remote Sensing Seminar 2026",
     backToDir: "Back to Directory",
     submitFormBadge: "Participant Profile Registration Form",
     submitFormTitle: "Participant Profile Registration",
@@ -98,16 +99,19 @@ export const TRANSLATIONS = {
     submitLabelNameNative: "3. Name in your native language (Lao, Thai, Chinese, Myanmar, Khmer)",
     submitLabelNickname: "4. Nickname / Preferred name",
     submitLabelCountry: "5. Nationality / Country",
-    submitSelectCountry: "Select your country",
+    submitSelectCountry: "Select your country / nationality",
     submitLabelAffiliation: "6. Affiliation / Organization",
     submitLabelPosition: "7. Position / Title",
-    submitLabelExpertise: "8. Expertise / Specialization (comma separated)",
-    submitLabelOffice: "9. Working Office Location",
-    submitLabelPhone: "10. Phone Number",
+    submitLabelExpertise: "8. Expertise / Specialization",
+    submitExpertiseHint: "Click tags to select, or type additional fields separated by commas (,)",
+    submitLabelOffice: "9. Working Office Location (City, Country)",
+    submitContactSection: "Contact Information",
+    submitLabelPhone: "10. Phone Number / WhatsApp",
     submitLabelEmail: "11. Email Address",
     submitLabelLinkedin: "12. LinkedIn Profile URL",
     submitLabelLine: "13. Line ID / WhatsApp / WeChat / Viber",
     submitLabelMessage: "14. Message to Other Participants",
+    submitBtnCancel: "Cancel",
     submitBtnSubmit: "Submit Profile",
     submitBtnSubmitting: "Saving to Google Sheet...",
     submitSuccessTitle: "Registration Successful!",
@@ -189,11 +193,12 @@ export const TRANSLATIONS = {
     settingsBtnCancel: "ยกเลิก",
 
     // Submit Page
+    submitPageTitle: "ลงทะเบียนทำเนียบผู้เข้าร่วมสัมมนา | ASEAN Remote Sensing Seminar 2026",
     backToDir: "กลับสู่หน้าทำเนียบ",
     submitFormBadge: "แบบฟอร์มลงทะเบียนทำเนียบรุ่น",
     submitFormTitle: "ลงทะเบียนทำเนียบผู้เข้าร่วมสัมมนา",
     submitFormDesc: "Seminar on Remote Sensing Technology for ASEAN Countries (28 ต.ค. – 10 พ.ย. 2569) กรุณากรอกข้อมูลและอัปโหลดรูปภาพของท่านเพื่อแสดงในทำเนียบออนไลน์",
-    submitSectionPhoto: "1. รูปถ่ายประจำตัว (Profile Photo)",
+    submitSectionPhoto: "1. รูปถ่ายประจำตัว",
     submitPhotoPrompt: "คลิกหรือลากไฟล์รูปภาพมาวางที่นี่",
     submitPhotoHint: "รองรับ JPG, PNG, WebP (ไม่เกิน 5MB)",
     submitChangePhoto: "เปลี่ยนรูปภาพ",
@@ -204,13 +209,16 @@ export const TRANSLATIONS = {
     submitSelectCountry: "เลือกประเทศของคุณ",
     submitLabelAffiliation: "6. หน่วยงาน / องค์กรที่สังกัด",
     submitLabelPosition: "7. ตำแหน่งหน้าที่",
-    submitLabelExpertise: "8. สาขาความเชี่ยวชาญ (คั่นด้วยจุลภาค)",
-    submitLabelOffice: "9. สถานที่ตั้งที่ทำงาน",
-    submitLabelPhone: "10. เบอร์โทรศัพท์",
+    submitLabelExpertise: "8. สาขาความเชี่ยวชาญ",
+    submitExpertiseHint: "คลิกเลือกหัวข้อที่ตรงกับท่าน หรือพิมพ์เพิ่มเติมคั่นด้วยเครื่องหมายจุลภาค (,)",
+    submitLabelOffice: "9. สถานที่ตั้งที่ทำงาน (เมือง / ประเทศ)",
+    submitContactSection: "ช่องทางการติดต่อ",
+    submitLabelPhone: "10. เบอร์โทรศัพท์ / WhatsApp",
     submitLabelEmail: "11. อีเมล",
     submitLabelLinkedin: "12. ลิงก์ LinkedIn",
     submitLabelLine: "13. Line ID / WhatsApp / WeChat / Viber",
     submitLabelMessage: "14. ข้อความทักทายเพื่อนร่วมรุ่น",
+    submitBtnCancel: "ยกเลิก",
     submitBtnSubmit: "ส่งข้อมูลลงทะเบียน",
     submitBtnSubmitting: "กำลังบันทึกข้อมูล...",
     submitSuccessTitle: "บันทึกข้อมูลเรียบร้อยแล้ว!",
@@ -292,11 +300,12 @@ export const TRANSLATIONS = {
     settingsBtnCancel: "ຍົກເລີກ",
 
     // Submit Page
+    submitPageTitle: "ລົງທະບຽນທຳນຽບຜູ້ເຂົ້າຮ່ວມ | ASEAN Remote Sensing Seminar 2026",
     backToDir: "ກັບສູ່ໜ້າທຳນຽບ",
     submitFormBadge: "ແບບຟອມລົງທະບຽນ",
     submitFormTitle: "ລົງທະບຽນທຳນຽບຜູ້ເຂົ້າຮ່ວມສຳມະນາ",
     submitFormDesc: "Seminar on Remote Sensing Technology for ASEAN Countries (28 ຕຸລາ – 10 ພະຈິກ 2026). ກະລຸນາປ້ອນຂໍ້ມູນ ແລະ ອັບໂຫຼດຮູບພາບຂອງທ່ານ.",
-    submitSectionPhoto: "1. ຮູບຖ່າຍປະຈຳຕົວ (Profile Photo)",
+    submitSectionPhoto: "1. ຮູບຖ່າຍປະຈຳຕົວ",
     submitPhotoPrompt: "ຄລິກ ຫຼື ລາກຮູບມາໃສ່ນີ້",
     submitPhotoHint: "ຮອງຮັບ JPG, PNG, WebP (ບໍ່ເກີນ 5MB)",
     submitChangePhoto: "ປ່ຽນຮູບພາບ",
@@ -308,12 +317,15 @@ export const TRANSLATIONS = {
     submitLabelAffiliation: "6. ສັງກັດ / ອົງກອນ",
     submitLabelPosition: "7. ຕຳແໜ່ງໜ້າທີ່",
     submitLabelExpertise: "8. ສາຂາຄວາມຊ່ຽວຊານ",
-    submitLabelOffice: "9. ທີ່ຕັ້ງບ່ອນເຮັດວຽກ",
-    submitLabelPhone: "10. ເບີໂທລະສັບ",
+    submitExpertiseHint: "ຄລິກເລືອກຫົວຂໍ້ ຫຼື ພິມເພີ່ມເຕີມໂດຍຂັ້ນດ້ວຍຈຸດ (,)",
+    submitLabelOffice: "9. ທີ່ຕັ້ງບ່ອນເຮັດວຽກ (ເມືອງ / ປະເທດ)",
+    submitContactSection: "ຊ່ອງທາງການຕິດຕໍ່",
+    submitLabelPhone: "10. ເບີໂທລະສັບ / WhatsApp",
     submitLabelEmail: "11. ອີເມວ",
     submitLabelLinkedin: "12. LinkedIn URL",
-    submitLabelLine: "13. Line ID / WhatsApp / WeChat",
+    submitLabelLine: "13. Line ID / WhatsApp / WeChat / Viber",
     submitLabelMessage: "14. ຂໍ້ຄວາມທັກທາຍເຖິງເພື່ອນຮ່ວມຮຸ່ນ",
+    submitBtnCancel: "ຍົກເລີກ",
     submitBtnSubmit: "ສົ່ງຂໍ້ມູນລົງທະບຽນ",
     submitBtnSubmitting: "ກຳລັງບັນທຶກ...",
     submitSuccessTitle: "ບັນທຶກຂໍ້ມູນສຳເລັດແລ້ວ!",
@@ -395,28 +407,32 @@ export const TRANSLATIONS = {
     settingsBtnCancel: "取消",
 
     // Submit Page
+    submitPageTitle: "研讨会学员名录登记 | ASEAN Remote Sensing Seminar 2026",
     backToDir: "返回名录主页",
     submitFormBadge: "学员档案登记表",
     submitFormTitle: "研讨会学员个人档案登记",
     submitFormDesc: "东盟国家遥感技术研讨会（2026年10月28日–11月10日）。请填写您的个人信息并上传头像照片以载入在线名录。",
-    submitSectionPhoto: "1. 个人免冠/工作照片 (Profile Photo)",
+    submitSectionPhoto: "1. 个人照片",
     submitPhotoPrompt: "点击或拖拽照片到此处",
     submitPhotoHint: "支持 JPG, PNG, WebP 格式（文件不超过 5MB）",
     submitChangePhoto: "更换照片",
     submitLabelNameEn: "2. 英文姓名 (Name in English)",
     submitLabelNameNative: "3. 母语姓名 (中文 / ພາສາລາວ / ไทย / မြန်မာ / ភាសាខ្មែរ)",
-    submitLabelNickname: "4. 常用英文昵称或称谓 (Preferred Name)",
+    submitLabelNickname: "4. 常用称谓或昵称 (Preferred Name)",
     submitLabelCountry: "5. 国籍 / 所在国家",
     submitSelectCountry: "请选择您的国家",
     submitLabelAffiliation: "6. 工作单位 / 所属机构",
     submitLabelPosition: "7. 职务 / 职称",
-    submitLabelExpertise: "8. 研究专长与技术领域（以英文逗号分隔）",
+    submitLabelExpertise: "8. 研究专长与技术领域",
+    submitExpertiseHint: "点击选择专长标签，或输入其他研究方向（以英文逗号分隔）",
     submitLabelOffice: "9. 办公地点（城市、建筑或国家）",
-    submitLabelPhone: "10. 联系电话（含国家区号）",
+    submitContactSection: "联系方式",
+    submitLabelPhone: "10. 联系电话 / WhatsApp",
     submitLabelEmail: "11. 电子邮箱",
     submitLabelLinkedin: "12. LinkedIn 个人主页",
     submitLabelLine: "13. 微信 / WhatsApp / Line / Viber",
     submitLabelMessage: "14. 给其他参会学者的留言/寄语",
+    submitBtnCancel: "取消",
     submitBtnSubmit: "提交个人档案",
     submitBtnSubmitting: "正在保存档案...",
     submitSuccessTitle: "档案提交成功！",
@@ -498,11 +514,12 @@ export const TRANSLATIONS = {
     settingsBtnCancel: "မလုပ်တော့ပါ",
 
     // Submit Page
+    submitPageTitle: "သင်တန်းသား မှတ်ပုံတင်ခြင်း | ASEAN Remote Sensing Seminar 2026",
     backToDir: "လမ်းညွှန်စာမျက်နှာသို့ ပြန်သွားရန်",
     submitFormBadge: "သင်တန်းသား မှတ်ပုံတင်ပုံစံ",
     submitFormTitle: "သင်တန်းသား ကိုယ်ရေးအချက်အလက် ဖြည့်သွင်းခြင်း",
     submitFormDesc: "Seminar on Remote Sensing Technology for ASEAN Countries (၂၈ အောက်တိုဘာ – ၁၀ နိုဝင်ဘာ ၂၀၂၆)။ ကျေးဇူးပြု၍ သင့်အချက်အလက်များကို ဖြည့်သွင်းပြီး ဓာတ်ပုံတင်ပေးပါ။",
-    submitSectionPhoto: "၁။ မျက်နှာဓာတ်ပုံ (Profile Photo)",
+    submitSectionPhoto: "၁။ မျက်နှာဓာတ်ပုံ",
     submitPhotoPrompt: "ဤနေရာတွင် ဓာတ်ပုံရွေးချယ်ပါ သို့မဟုတ် ဆွဲထည့်ပါ",
     submitPhotoHint: "JPG, PNG, WebP (အများဆုံး 5MB)",
     submitChangePhoto: "ဓာတ်ပုံပြောင်းရန်",
@@ -511,15 +528,18 @@ export const TRANSLATIONS = {
     submitLabelNickname: "၄။ အမည်ပြောင် သို့မဟုတ် အလွယ်ခေါ်ရန် အမည်",
     submitLabelCountry: "၅။ နိုင်ငံသား / နိုင်ငံ",
     submitSelectCountry: "သင့်နိုင်ငံကို ရွေးပါ",
-    submitLabelAffiliation: "၆။ လုပ်ငန်းဌာန / အဖွဲ့အစည်း",
+    submitLabelAffiliation: "6။ လုပ်ငန်းဌာန / အဖွဲ့အစည်း",
     submitLabelPosition: "၇။ ရာထူး / တာဝန်",
     submitLabelExpertise: "၈။ ကျွမ်းကျင်မှု နယ်ပယ်များ",
-    submitLabelOffice: "၉။ ရုံးတည်နေရာ",
-    submitLabelPhone: "၁၀။ ဖုန်းနံပါတ်",
+    submitExpertiseHint: "ကျွမ်းကျင်မှုခေါင်းစဉ်များကို ရွေးပါ သို့မဟုတ် ကော်မာ (,) ခြား၍ ရိုက်ထည့်ပါ",
+    submitLabelOffice: "၉။ ရုံးတည်နေရာ (မြို့၊ နိုင်ငံ)",
+    submitContactSection: "ဆက်သွယ်ရန် အချက်အလက်များ",
+    submitLabelPhone: "၁၀။ ဖုန်းနံပါတ် / WhatsApp",
     submitLabelEmail: "၁၁။ အီးမေးလ်",
     submitLabelLinkedin: "၁၂။ LinkedIn လင့်ခ်",
     submitLabelLine: "၁၃။ Viber / WhatsApp / Line / WeChat",
     submitLabelMessage: "၁၄။ သင်တန်းသားများသို့ နှုတ်ခွန်းဆက်စကား",
+    submitBtnCancel: "မလုပ်တော့ပါ",
     submitBtnSubmit: "အချက်အလက်များ ပေးပို့ရန်",
     submitBtnSubmitting: "သိမ်းဆည်းနေပါသည်...",
     submitSuccessTitle: "အောင်မြင်စွာ သိမ်းဆည်းပြီးပါပြီ!",
@@ -601,11 +621,12 @@ export const TRANSLATIONS = {
     settingsBtnCancel: "បោះបង់",
 
     // Submit Page
+    submitPageTitle: "ចុះឈ្មោះបញ្ជីសិក្ខាកាម | ASEAN Remote Sensing Seminar 2026",
     backToDir: "ត្រឡប់ទៅកាន់បញ្ជីឈ្មោះ",
     submitFormBadge: "ទម្រង់បែបបទចុះឈ្មោះ",
     submitFormTitle: "ចុះឈ្មោះព័ត៌មានសិក្ខាកាម",
     submitFormDesc: "Seminar on Remote Sensing Technology for ASEAN Countries (២៨ តុលា – ១០ វិច្ឆិកា ២០២៦)។ សូមបំពេញព័ត៌មាន និងបង្ហោះរូបថតរបស់អ្នក។",
-    submitSectionPhoto: "១. រូបថតផ្ទាល់ខ្លួន (Profile Photo)",
+    submitSectionPhoto: "១. រូបថតផ្ទាល់ខ្លួន",
     submitPhotoPrompt: "ចុច ឬ អូសរូបថតមកទីនេះ",
     submitPhotoHint: "គាំទ្រ JPG, PNG, WebP (អតិបរមា 5MB)",
     submitChangePhoto: "ប្តូររូបថត",
@@ -616,13 +637,16 @@ export const TRANSLATIONS = {
     submitSelectCountry: "ជ្រើសរើសប្រទេសរបស់អ្នក",
     submitLabelAffiliation: "៦. អង្គភាព / ស្ថាប័នបម្រើការងារ",
     submitLabelPosition: "៧. តួនាទី / មុខតំណែង",
-    submitLabelExpertise: "៨. ជំនាញឯកទេស (ខណ្ឌដោយសញ្ញាក្បៀស)",
-    submitLabelOffice: "៩. ទីតាំងកន្លែងធ្វើការ",
-    submitLabelPhone: "១០. លេខទូរស័ព្ទ",
+    submitLabelExpertise: "៨. ជំនាញឯកទេស",
+    submitExpertiseHint: "ចុចជ្រើសរើសប្រធានបទ ឬវាយបញ្ចូលបន្ថែមដោយខណ្ឌសញ្ញាក្បៀស (,)",
+    submitLabelOffice: "៩. ទីតាំងកន្លែងធ្វើការ (ទីក្រុង, ប្រទេស)",
+    submitContactSection: "ព័ត៌មានទំនាក់ទំនង",
+    submitLabelPhone: "១០. លេខទូរស័ព្ទ / WhatsApp",
     submitLabelEmail: "១១. អ៊ីមែល",
     submitLabelLinkedin: "១២. តំណភ្ជាប់ LinkedIn",
     submitLabelLine: "១៣. Telegram / WhatsApp / Line / WeChat",
     submitLabelMessage: "១៤. សារជូនពរ ឬ ស្វាគមន៍មិត្តរួមជំនាន់",
+    submitBtnCancel: "បោះបង់",
     submitBtnSubmit: "ផ្ញើព័ត៌មានចុះឈ្មោះ",
     submitBtnSubmitting: "កំពុងរក្សាទុក...",
     submitSuccessTitle: "បានរក្សាទុកដោយជោគជ័យ!",
@@ -799,32 +823,35 @@ export function renderLanguageSwitcher(containerId) {
  */
 function updateLanguageSwitcherUI(lang) {
   const item = SUPPORTED_LANGUAGES[lang] || SUPPORTED_LANGUAGES.en;
-  const container = document.getElementById('langSwitcherContainer') || document.getElementById('langSwitcherSubmit');
-  if (!container) return;
+  const containers = document.querySelectorAll('#langSwitcherContainer, #langSwitcherSubmit, [data-lang-switcher]');
+  if (!containers || containers.length === 0) return;
 
-  const btn = container.querySelector('#btnLangDropdown');
-  if (btn) {
-    btn.innerHTML = `
-      <span class="text-base leading-none">${item.flag}</span>
-      <span class="hidden sm:inline font-medium">${item.nativeName}</span>
-      <svg class="w-3.5 h-3.5 text-slate-300 ml-0.5 transition-transform" id="langChevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-      </svg>
-    `;
-  }
-
-  // Update checkmarks in menu
-  container.querySelectorAll('.lang-option-btn').forEach(opt => {
-    const code = opt.getAttribute('data-lang');
-    if (code === lang) {
-      opt.className = 'lang-option-btn w-full text-left px-3.5 py-2 text-xs flex items-center justify-between hover:bg-cyan-500/15 transition text-cyan-400 font-bold bg-cyan-500/10';
-      if (!opt.querySelector('svg')) {
-        opt.insertAdjacentHTML('beforeend', '<svg class="w-4 h-4 text-cyan-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>');
-      }
-    } else {
-      opt.className = 'lang-option-btn w-full text-left px-3.5 py-2 text-xs flex items-center justify-between hover:bg-cyan-500/15 transition text-slate-200';
-      const check = opt.querySelector('svg');
-      if (check) check.remove();
+  containers.forEach(container => {
+    const btn = container.querySelector('#btnLangDropdown');
+    if (btn) {
+      btn.innerHTML = `
+        <span class="text-base leading-none">${item.flag}</span>
+        <span class="hidden sm:inline font-medium">${item.nativeName}</span>
+        <svg class="w-3.5 h-3.5 text-slate-300 ml-0.5 transition-transform" id="langChevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
+      `;
     }
+
+    // Update checkmarks in menu
+    container.querySelectorAll('.lang-option-btn').forEach(opt => {
+      const code = opt.getAttribute('data-lang');
+      if (code === lang) {
+        opt.className = 'lang-option-btn w-full text-left px-3.5 py-2 text-xs flex items-center justify-between hover:bg-cyan-500/15 transition text-cyan-400 font-bold bg-cyan-500/10';
+        if (!opt.querySelector('svg')) {
+          opt.insertAdjacentHTML('beforeend', '<svg class="w-4 h-4 text-cyan-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>');
+        }
+      } else {
+        opt.className = 'lang-option-btn w-full text-left px-3.5 py-2 text-xs flex items-center justify-between hover:bg-cyan-500/15 transition text-slate-200';
+        const check = opt.querySelector('svg');
+        if (check) check.remove();
+      }
+    });
   });
 }
+
