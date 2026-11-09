@@ -4,13 +4,23 @@
  */
 
 export const SUPPORTED_LANGUAGES = {
-  en: { code: 'en', name: 'English', nativeName: 'English', flag: '🇬🇧' },
-  th: { code: 'th', name: 'Thai', nativeName: 'ไทย', flag: '🇹🇭' },
-  lo: { code: 'lo', name: 'Lao', nativeName: 'ພາສາລາວ', flag: '🇱🇦' },
-  zh: { code: 'zh', name: 'Chinese', nativeName: '中文', flag: '🇨🇳' },
-  my: { code: 'my', name: 'Myanmar', nativeName: 'မြန်မာစာ', flag: '🇲🇲' },
-  km: { code: 'km', name: 'Khmer', nativeName: 'ភាសាខ្មែរ', flag: '🇰🇭' }
+  en: { code: 'en', countryCode: 'gb', name: 'English', nativeName: 'English', flag: '🇬🇧' },
+  th: { code: 'th', countryCode: 'th', name: 'Thai', nativeName: 'ไทย', flag: '🇹🇭' },
+  lo: { code: 'lo', countryCode: 'la', name: 'Lao', nativeName: 'ພາສາລາວ', flag: '🇱🇦' },
+  zh: { code: 'zh', countryCode: 'cn', name: 'Chinese', nativeName: '中文', flag: '🇨🇳' },
+  my: { code: 'my', countryCode: 'mm', name: 'Myanmar', nativeName: 'မြန်မာစာ', flag: '🇲🇲' },
+  km: { code: 'km', countryCode: 'kh', name: 'Khmer', nativeName: 'ភាសាខ្មែរ', flag: '🇰🇭' }
 };
+
+/**
+ * Flag CDN helper for language switcher icons
+ * Solves Windows OS limitation where country flag emojis render as 2-letter ISO text codes (e.g. GB, TH, LA)
+ */
+export function getLangFlagImg(countryCode, fallbackEmoji = '🌐', className = 'w-4.5 h-3 object-cover rounded-[2px] shadow-xs inline-block align-middle flex-shrink-0') {
+  if (!countryCode) return `<span>${fallbackEmoji}</span>`;
+  const code = countryCode.toLowerCase().trim();
+  return `<img src="https://flagcdn.com/24x18/${code}.png" srcset="https://flagcdn.com/48x36/${code}.png 2x" class="${className}" alt="${code}" loading="lazy" onerror="this.outerHTML='<span>${fallbackEmoji}</span>'"/>`;
+}
 
 export const TRANSLATIONS = {
   en: {
@@ -905,12 +915,12 @@ export function renderLanguageSwitcher(containerId) {
       <button 
         type="button" 
         id="btnLangDropdown" 
-        class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white/10 hover:bg-white/20 text-white border border-white/15 backdrop-blur-md transition shadow-sm"
+        class="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white/10 hover:bg-white/20 text-white border border-white/15 backdrop-blur-md transition shadow-sm"
         aria-expanded="false" 
         aria-haspopup="true"
         title="Change Language"
       >
-        <span class="text-base leading-none">${currentLangObj.flag}</span>
+        ${getLangFlagImg(currentLangObj.countryCode, currentLangObj.flag)}
         <span class="hidden sm:inline font-medium">${currentLangObj.nativeName}</span>
         <svg class="w-3.5 h-3.5 text-slate-300 ml-0.5 transition-transform" id="langChevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -919,7 +929,7 @@ export function renderLanguageSwitcher(containerId) {
 
       <div 
         id="langDropdownMenu" 
-        class="hidden absolute right-0 mt-2 w-48 rounded-2xl bg-slate-900/95 backdrop-blur-xl border border-slate-700/80 shadow-2xl py-1.5 z-50 ring-1 ring-black ring-opacity-5 focus:outline-none"
+        class="hidden absolute right-0 mt-2 w-52 rounded-2xl bg-slate-900/95 backdrop-blur-xl border border-slate-700/80 shadow-2xl py-1.5 z-50 ring-1 ring-black ring-opacity-5 focus:outline-none"
         role="menu"
       >
         <div class="px-3 py-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-800">
@@ -928,11 +938,11 @@ export function renderLanguageSwitcher(containerId) {
         ${Object.values(SUPPORTED_LANGUAGES).map(item => `
           <button 
             type="button" 
-            class="lang-option-btn w-full text-left px-3.5 py-2 text-xs flex items-center justify-between hover:bg-cyan-500/15 transition ${item.code === currentLang ? 'text-cyan-400 font-bold bg-cyan-500/10' : 'text-slate-200'}"
+            class="lang-option-btn w-full text-left px-3.5 py-2.5 text-xs flex items-center justify-between hover:bg-cyan-500/15 transition ${item.code === currentLang ? 'text-cyan-400 font-bold bg-cyan-500/10' : 'text-slate-200'}"
             data-lang="${item.code}"
           >
             <div class="flex items-center gap-2.5">
-              <span class="text-base leading-none">${item.flag}</span>
+              ${getLangFlagImg(item.countryCode, item.flag)}
               <span class="font-medium">${item.nativeName}</span>
               <span class="text-[10px] text-slate-400">(${item.name})</span>
             </div>
@@ -992,7 +1002,7 @@ function updateLanguageSwitcherUI(lang) {
     const btn = container.querySelector('#btnLangDropdown');
     if (btn) {
       btn.innerHTML = `
-        <span class="text-base leading-none">${item.flag}</span>
+        ${getLangFlagImg(item.countryCode, item.flag)}
         <span class="hidden sm:inline font-medium">${item.nativeName}</span>
         <svg class="w-3.5 h-3.5 text-slate-300 ml-0.5 transition-transform" id="langChevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
