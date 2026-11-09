@@ -879,7 +879,7 @@ export function applyTranslations(lang = getCurrentLang()) {
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
     const translation = t(key, lang);
-    if (translation) {
+    if (translation && translation !== key) {
       el.textContent = translation;
     }
   });
@@ -888,7 +888,7 @@ export function applyTranslations(lang = getCurrentLang()) {
   document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
     const key = el.getAttribute('data-i18n-placeholder');
     const translation = t(key, lang);
-    if (translation) {
+    if (translation && translation !== key) {
       el.setAttribute('placeholder', translation);
     }
   });
@@ -897,7 +897,7 @@ export function applyTranslations(lang = getCurrentLang()) {
   document.querySelectorAll('[data-i18n-title]').forEach(el => {
     const key = el.getAttribute('data-i18n-title');
     const translation = t(key, lang);
-    if (translation) {
+    if (translation && translation !== key) {
       el.setAttribute('title', translation);
     }
   });
