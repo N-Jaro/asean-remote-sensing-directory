@@ -156,8 +156,16 @@ class TourLeadSubmission {
         slidesUrl: form.guideUrl.value.trim(),
         phone: form.phone.value.trim(),
         email: form.email.value.trim(),
-        linkedin: form.linkedin.value.trim(),
-        lineId: form.lineId.value.trim(),
+        wechatId: form.wechatId ? form.wechatId.value.trim() : '',
+        lineId: form.lineId ? form.lineId.value.trim() : '',
+        whatsapp: form.whatsapp ? form.whatsapp.value.trim() : '',
+        facebook: form.facebook ? form.facebook.value.trim() : '',
+        messaging: [
+          form.wechatId && form.wechatId.value.trim() ? `WeChat: ${form.wechatId.value.trim()}` : '',
+          form.lineId && form.lineId.value.trim() ? `LINE: ${form.lineId.value.trim()}` : '',
+          form.whatsapp && form.whatsapp.value.trim() ? `WhatsApp: ${form.whatsapp.value.trim()}` : '',
+          form.facebook && form.facebook.value.trim() ? `FB: ${form.facebook.value.trim()}` : ''
+        ].filter(Boolean).join(' | '),
         photoBase64: this.photoBase64,
         photoFileName: this.photoFileName,
         photoUrl: this.photoBase64 || `https://ui-avatars.com/api/?name=${encodeURIComponent(form.nameEnglish.value)}&background=064e3b&color=34d399&size=256`,

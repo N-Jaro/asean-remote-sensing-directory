@@ -439,10 +439,13 @@ class DirectoryApp {
             <div class="w-20 h-20 rounded-2xl avatar-container shadow-md border-2 border-white ring-2 ring-slate-100 flex-shrink-0">
               <img src="${photo}" alt="${p.nameEnglish}" loading="lazy" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nameEnglish)}&background=0b132b&color=38bdf8';"/>
             </div>
-            <div class="flex gap-1.5 pb-1">
-              ${p.email ? `<a href="mailto:${p.email}" onclick="event.stopPropagation()" title="Send Email" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-cyan-50 hover:text-cyan-600 text-slate-600 flex items-center justify-center transition text-xs"><i data-lucide="mail" class="w-4 h-4"></i></a>` : ''}
-              ${p.linkedin ? `<a href="${p.linkedin}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="LinkedIn Profile" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-600 flex items-center justify-center transition text-xs"><i data-lucide="linkedin" class="w-4 h-4"></i></a>` : ''}
-              ${p.lineId ? `<span title="Line: ${p.lineId}" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-green-50 hover:text-green-600 text-slate-600 flex items-center justify-center transition text-xs"><i data-lucide="message-circle" class="w-4 h-4"></i></span>` : ''}
+            <div class="flex flex-wrap gap-1.5 pb-1 justify-end max-w-[150px]">
+              ${p.email ? `<a href="mailto:${p.email}" onclick="event.stopPropagation()" title="Email: ${p.email}" class="w-7 h-7 rounded-full bg-slate-100 hover:bg-cyan-50 hover:text-cyan-600 text-slate-600 flex items-center justify-center transition text-xs"><i data-lucide="mail" class="w-3.5 h-3.5"></i></a>` : ''}
+              ${p.wechatId ? `<span onclick="event.stopPropagation(); navigator.clipboard.writeText('${p.wechatId}'); alert('Copied WeChat ID: ${p.wechatId}');" title="WeChat: ${p.wechatId} (Click to copy)" class="w-7 h-7 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 flex items-center justify-center transition text-[11px] font-bold cursor-pointer border border-emerald-200">微</span>` : ''}
+              ${p.lineId ? `<a href="https://line.me/R/ti/p/~${p.lineId}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="LINE: ${p.lineId}" class="w-7 h-7 rounded-full bg-green-50 hover:bg-green-100 text-[#06c755] flex items-center justify-center transition text-xs"><i data-lucide="message-circle" class="w-3.5 h-3.5"></i></a>` : ''}
+              ${p.whatsapp ? `<a href="https://wa.me/${p.whatsapp.replace(/[^0-9]/g, '')}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="WhatsApp: ${p.whatsapp}" class="w-7 h-7 rounded-full bg-teal-50 hover:bg-teal-100 text-[#25d366] flex items-center justify-center transition text-xs"><i data-lucide="phone-call" class="w-3.5 h-3.5"></i></a>` : ''}
+              ${p.facebook ? `<a href="${p.facebook.startsWith('http') ? p.facebook : 'https://facebook.com/' + p.facebook}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Facebook" class="w-7 h-7 rounded-full bg-blue-50 hover:bg-blue-100 text-[#1877f2] flex items-center justify-center transition text-xs"><i data-lucide="facebook" class="w-3.5 h-3.5"></i></a>` : ''}
+              ${p.linkedin ? `<a href="${p.linkedin}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="LinkedIn Profile" class="w-7 h-7 rounded-full bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-600 flex items-center justify-center transition text-xs"><i data-lucide="linkedin" class="w-3.5 h-3.5"></i></a>` : ''}
             </div>
           </div>
 
@@ -700,13 +703,67 @@ class DirectoryApp {
               ` : ''}
 
               ${item.phone ? `
-                <a href="tel:${item.phone}" class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:border-emerald-400 hover:bg-emerald-50/50 transition group">
-                  <div class="w-9 h-9 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition">
+                <a href="tel:${item.phone}" class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition group">
+                  <div class="w-9 h-9 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center flex-shrink-0 group-hover:bg-slate-800 group-hover:text-white transition">
                     <i data-lucide="phone" class="w-4 h-4"></i>
                   </div>
                   <div class="min-w-0">
                     <p class="text-[11px] font-medium text-slate-400">Phone / Mobile</p>
                     <p class="text-xs font-semibold text-slate-800 truncate">${item.phone}</p>
+                  </div>
+                </a>
+              ` : ''}
+
+              ${item.wechatId ? `
+                <div onclick="navigator.clipboard.writeText('${item.wechatId}'); alert('Copied WeChat ID: ${item.wechatId}');" class="flex items-center justify-between p-3 rounded-xl border border-emerald-300 bg-emerald-50/70 hover:bg-emerald-100/80 transition cursor-pointer group">
+                  <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-9 h-9 rounded-lg bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 font-bold text-xs shadow-sm">
+                      微
+                    </div>
+                    <div class="min-w-0">
+                      <p class="text-[11px] font-bold text-emerald-800 flex items-center gap-1.5">
+                        WeChat ID (微信号)
+                        <span class="text-[9px] bg-emerald-200 text-emerald-900 px-1.5 py-0.2 rounded font-semibold">China</span>
+                      </p>
+                      <p class="text-xs font-bold text-slate-900 truncate">${item.wechatId}</p>
+                    </div>
+                  </div>
+                  <span class="text-[10px] font-semibold text-emerald-800 bg-white px-2 py-0.5 rounded border border-emerald-200">Copy</span>
+                </div>
+              ` : ''}
+
+              ${item.lineId ? `
+                <a href="https://line.me/R/ti/p/~${item.lineId}" target="_blank" rel="noopener" class="flex items-center gap-3 p-3 rounded-xl border border-green-300 bg-green-50/60 hover:bg-green-100/70 transition group">
+                  <div class="w-9 h-9 rounded-lg bg-[#06c755] text-white flex items-center justify-center flex-shrink-0 shadow-sm">
+                    <i data-lucide="message-circle" class="w-4 h-4"></i>
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-[11px] font-semibold text-green-800">LINE ID</p>
+                    <p class="text-xs font-bold text-slate-900 truncate">${item.lineId}</p>
+                  </div>
+                </a>
+              ` : ''}
+
+              ${item.whatsapp ? `
+                <a href="https://wa.me/${item.whatsapp.replace(/[^0-9]/g, '')}" target="_blank" rel="noopener" class="flex items-center gap-3 p-3 rounded-xl border border-teal-300 bg-teal-50/60 hover:bg-teal-100/70 transition group">
+                  <div class="w-9 h-9 rounded-lg bg-[#25d366] text-white flex items-center justify-center flex-shrink-0 shadow-sm">
+                    <i data-lucide="phone-call" class="w-4 h-4"></i>
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-[11px] font-semibold text-teal-800">WhatsApp</p>
+                    <p class="text-xs font-bold text-slate-900 truncate">${item.whatsapp}</p>
+                  </div>
+                </a>
+              ` : ''}
+
+              ${item.facebook ? `
+                <a href="${item.facebook.startsWith('http') ? item.facebook : 'https://facebook.com/' + item.facebook}" target="_blank" rel="noopener" class="flex items-center gap-3 p-3 rounded-xl border border-blue-300 bg-blue-50/60 hover:bg-blue-100/70 transition group">
+                  <div class="w-9 h-9 rounded-lg bg-[#1877f2] text-white flex items-center justify-center flex-shrink-0 shadow-sm">
+                    <i data-lucide="facebook" class="w-4 h-4"></i>
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-[11px] font-semibold text-blue-800">Facebook</p>
+                    <p class="text-xs font-bold text-slate-900 truncate">${item.facebook.replace(/https?:\/\/(www\.)?facebook\.com\/?/, '')}</p>
                   </div>
                 </a>
               ` : ''}
@@ -721,18 +778,6 @@ class DirectoryApp {
                     <p class="text-xs font-semibold text-slate-800 truncate">View Profile</p>
                   </div>
                 </a>
-              ` : ''}
-
-              ${item.lineId ? `
-                <div class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 bg-slate-50/70">
-                  <div class="w-9 h-9 rounded-lg bg-green-100 text-green-700 flex items-center justify-center flex-shrink-0">
-                    <i data-lucide="message-circle" class="w-4 h-4"></i>
-                  </div>
-                  <div class="min-w-0">
-                    <p class="text-[11px] font-medium text-slate-400">Line ID / WhatsApp</p>
-                    <p class="text-xs font-semibold text-slate-800 truncate">${item.lineId}</p>
-                  </div>
-                </div>
               ` : ''}
             </div>
           </div>
@@ -842,8 +887,11 @@ class DirectoryApp {
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
               ${item.email ? `<p class="flex items-center gap-2 text-slate-700"><i data-lucide="mail" class="w-4 h-4 text-slate-400"></i> ${item.email}</p>` : ''}
               ${item.phone ? `<p class="flex items-center gap-2 text-slate-700"><i data-lucide="phone" class="w-4 h-4 text-slate-400"></i> ${item.phone}</p>` : ''}
+              ${item.wechatId ? `<p class="flex items-center gap-2 text-emerald-800 font-semibold cursor-pointer" onclick="navigator.clipboard.writeText('${item.wechatId}'); alert('Copied WeChat ID: ${item.wechatId}');"><span class="w-4 h-4 rounded bg-emerald-600 text-white flex items-center justify-center text-[10px] font-bold">微</span> WeChat: ${item.wechatId}</p>` : ''}
+              ${item.lineId ? `<a href="https://line.me/R/ti/p/~${item.lineId}" target="_blank" class="flex items-center gap-2 text-[#06c755] hover:underline font-medium"><i data-lucide="message-circle" class="w-4 h-4 text-[#06c755]"></i> LINE: ${item.lineId}</a>` : ''}
+              ${item.whatsapp ? `<a href="https://wa.me/${item.whatsapp.replace(/[^0-9]/g, '')}" target="_blank" class="flex items-center gap-2 text-[#25d366] hover:underline font-medium"><i data-lucide="phone-call" class="w-4 h-4 text-[#25d366]"></i> WhatsApp: ${item.whatsapp}</a>` : ''}
+              ${item.facebook ? `<a href="${item.facebook.startsWith('http') ? item.facebook : 'https://facebook.com/' + item.facebook}" target="_blank" class="flex items-center gap-2 text-[#1877f2] hover:underline font-medium"><i data-lucide="facebook" class="w-4 h-4 text-[#1877f2]"></i> Facebook</a>` : ''}
               ${item.linkedin ? `<a href="${item.linkedin}" target="_blank" class="flex items-center gap-2 text-blue-600 hover:underline"><i data-lucide="linkedin" class="w-4 h-4 text-blue-500"></i> LinkedIn Profile</a>` : ''}
-              ${item.lineId ? `<p class="flex items-center gap-2 text-slate-700"><i data-lucide="message-circle" class="w-4 h-4 text-green-500"></i> Line/Chat: ${item.lineId}</p>` : ''}
             </div>
           </div>
         </div>

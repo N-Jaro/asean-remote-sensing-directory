@@ -340,6 +340,13 @@ function doPost(e) {
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
+    const messagingStr = data.messaging || [
+      data.wechatId ? 'WeChat: ' + data.wechatId : '',
+      data.lineId ? 'LINE: ' + data.lineId : '',
+      data.whatsapp ? 'WhatsApp: ' + data.whatsapp : '',
+      data.facebook ? 'FB: ' + data.facebook : ''
+    ].filter(Boolean).join(' | ') || data.lineId || "";
+
     // Otherwise append to Participants sheet
     sheet.appendRow([
       new Date(),
@@ -354,7 +361,7 @@ function doPost(e) {
       data.phone || "",
       data.email || "",
       data.linkedin || "",
-      data.lineId || "",
+      messagingStr,
       data.message || "",
       photoUrl
     ]);

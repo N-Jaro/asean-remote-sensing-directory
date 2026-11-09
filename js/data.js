@@ -20,8 +20,10 @@ export const SAMPLE_PARTICIPANTS = [
     phone: "+66 81 234 5678",
     email: "kittisak.p@gistda.or.th",
     linkedin: "https://linkedin.com/in/kittisak-prommin",
+    wechatId: "kit_rs_2026",
     lineId: "kit_rs_gistda",
     whatsapp: "+66812345678",
+    facebook: "kittisak.prommin",
     message: "Delighted to meet all ASEAN colleagues! Let's collaborate on regional InSAR flood and land subsidence monitoring projects. Feel free to connect via Line or LinkedIn!",
     photoUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
     role: "Participant"

@@ -142,7 +142,11 @@ export function mapCsvToParticipants(rows) {
   const idxPhone = findIndex(headers, ['phone', 'tel', 'mobile', 'telephone', 'เบอร์โทร', 'เบอร์ติดต่อ']);
   const idxEmail = findIndex(headers, ['email', 'mail', 'อีเมล']);
   const idxLinkedin = findIndex(headers, ['linkedin', 'linkedinurl', 'ลิงก์linkedin']);
-  const idxLine = findIndex(headers, ['line', 'lineid', 'whatsapp', 'ไลน์', 'ไลน์ไอดี']);
+  const idxWechat = findIndex(headers, ['wechat', 'wxid', 'weixin', '微信', 'wechatid']);
+  const idxLine = findIndex(headers, ['lineid', 'line', 'ไลน์', 'ไลน์ไอดี']);
+  const idxWhatsapp = findIndex(headers, ['whatsapp', 'wa', 'วอทส์แอพ']);
+  const idxFacebook = findIndex(headers, ['facebook', 'fb', 'เฟซบุ๊ก', 'เฟสบุ๊ค']);
+  const idxGenericChat = findIndex(headers, ['messaging', 'chat', 'contactapp', 'lineid/whatsapp/wechat/viber', 'line/whatsapp']);
   const idxMessage = findIndex(headers, ['message', 'note', 'littlebit', 'ข้อความ', 'คำทักทาย', 'notetoother']);
   const idxPhoto = findIndex(headers, ['photo', 'picture', 'image', 'avatar', 'upload', 'รูปถ่าย', 'รูปภาพ']);
 
@@ -157,6 +161,42 @@ export function mapCsvToParticipants(rows) {
     const nameNative = (idxNative !== -1 && row[idxNative]) ? row[idxNative].trim() : nameEnglish;
     const nationalityRaw = (idxNationality !== -1 && row[idxNationality]) ? row[idxNationality].trim() : 'ASEAN';
     const countryMeta = getCountryMeta(nationalityRaw);
+
+    let wechatVal = (idxWechat !== -1 && row[idxWechat]) ? row[idxWechat].trim() : '';
+    let lineVal = (idxLine !== -1 && row[idxLine]) ? row[idxLine].trim() : '';
+    let whatsappVal = (idxWhatsapp !== -1 && row[idxWhatsapp]) ? row[idxWhatsapp].trim() : '';
+    let facebookVal = (idxFacebook !== -1 && row[idxFacebook]) ? row[idxFacebook].trim() : '';
+
+    const combinedChat = (idxGenericChat !== -1 && row[idxGenericChat]) ? row[idxGenericChat].trim() : '';
+    if (combinedChat) {
+      if (!wechatVal && combinedChat.includes('WeChat:')) {
+        const m = combinedChat.match(/WeChat:\s*([^|]+)/i);
+        if (m) wechatVal = m[1].trim();
+      }
+      if (!lineVal && combinedChat.includes('LINE:')) {
+        const m = combinedChat.match(/LINE:\s*([^|]+)/i);
+        if (m) lineVal = m[1].trim();
+      }
+      if (!whatsappVal && combinedChat.includes('WhatsApp:')) {
+        const m = combinedChat.match(/WhatsApp:\s*([^|]+)/i);
+        if (m) whatsappVal = m[1].trim();
+      }
+      if (!facebookVal && (combinedChat.includes('FB:') || combinedChat.includes('Facebook:'))) {
+        const m = combinedChat.match(/(?:FB|Facebook):\s*([^|]+)/i);
+        if (m) facebookVal = m[1].trim();
+      }
+      if (!wechatVal && !lineVal && !whatsappVal && !facebookVal) {
+        if (combinedChat.toLowerCase().includes('wx') || combinedChat.toLowerCase().includes('wechat')) {
+          wechatVal = combinedChat.replace(/wechat[:\s]*/i, '');
+        } else if (combinedChat.startsWith('+') || /^\d{9,15}$/.test(combinedChat.replace(/\s+/g, ''))) {
+          whatsappVal = combinedChat;
+        } else if (combinedChat.includes('facebook') || combinedChat.includes('fb.com')) {
+          facebookVal = combinedChat;
+        } else {
+          lineVal = combinedChat;
+        }
+      }
+    }
 
     participants.push({
       id: `sheet-p-${i}`,
@@ -173,8 +213,10 @@ export function mapCsvToParticipants(rows) {
       phone: (idxPhone !== -1 && row[idxPhone]) ? row[idxPhone].trim() : '',
       email: (idxEmail !== -1 && row[idxEmail]) ? row[idxEmail].trim() : '',
       linkedin: (idxLinkedin !== -1 && row[idxLinkedin]) ? row[idxLinkedin].trim() : '',
-      lineId: (idxLine !== -1 && row[idxLine]) ? row[idxLine].trim() : '',
-      whatsapp: (idxLine !== -1 && row[idxLine] && row[idxLine].includes('+')) ? row[idxLine].trim() : '',
+      wechatId: wechatVal,
+      lineId: lineVal,
+      whatsapp: whatsappVal || ((idxPhone !== -1 && row[idxPhone] && row[idxPhone].includes('+')) ? row[idxPhone].trim() : ''),
+      facebook: facebookVal,
       message: (idxMessage !== -1 && row[idxMessage]) ? row[idxMessage].trim() : '',
       photoUrl: (idxPhoto !== -1 && row[idxPhoto]) ? formatDrivePhotoUrl(row[idxPhoto]) : '',
       role: "Participant"
@@ -203,6 +245,10 @@ export function mapCsvToLecturers(rows) {
   const idxEmail = findIndex(headers, ['email', 'อีเมล']);
   const idxPhone = findIndex(headers, ['phone', 'tel', 'เบอร์']);
   const idxLinkedin = findIndex(headers, ['linkedin', 'ลิงก์linkedin']);
+  const idxWechat = findIndex(headers, ['wechat', 'wxid', 'weixin', '微信', 'wechatid']);
+  const idxLine = findIndex(headers, ['lineid', 'line', 'ไลน์', 'ไลน์ไอดี']);
+  const idxWhatsapp = findIndex(headers, ['whatsapp', 'wa', 'วอทส์แอพ']);
+  const idxFacebook = findIndex(headers, ['facebook', 'fb', 'เฟซบุ๊ก', 'เฟสบุ๊ค']);
   const idxLab = findIndex(headers, ['website', 'lab', 'researchgate', 'เว็บ']);
   const idxSlides = findIndex(headers, ['slide', 'material', 'download', 'เอกสาร', 'สไลด์']);
   const idxNotes = findIndex(headers, ['note', 'remark', 'หมายเหตุ']);
@@ -242,6 +288,10 @@ export function mapCsvToLecturers(rows) {
       email: (idxEmail !== -1 && row[idxEmail]) ? row[idxEmail].trim() : '',
       phone: (idxPhone !== -1 && row[idxPhone]) ? row[idxPhone].trim() : '',
       linkedin: (idxLinkedin !== -1 && row[idxLinkedin]) ? row[idxLinkedin].trim() : '',
+      wechatId: (idxWechat !== -1 && row[idxWechat]) ? row[idxWechat].trim() : '',
+      lineId: (idxLine !== -1 && row[idxLine]) ? row[idxLine].trim() : '',
+      whatsapp: (idxWhatsapp !== -1 && row[idxWhatsapp]) ? row[idxWhatsapp].trim() : '',
+      facebook: (idxFacebook !== -1 && row[idxFacebook]) ? row[idxFacebook].trim() : '',
       labWebsite: (idxLab !== -1 && row[idxLab]) ? row[idxLab].trim() : '',
       slidesUrl: (idxSlides !== -1 && row[idxSlides]) ? row[idxSlides].trim() : '',
       notes: (idxNotes !== -1 && row[idxNotes]) ? row[idxNotes].trim() : '',
