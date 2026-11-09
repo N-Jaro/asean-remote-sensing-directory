@@ -4,6 +4,7 @@
 
 import { CONFIG } from './config.js';
 import { getCountryMeta } from './sheet-sync.js';
+import { renderLanguageSwitcher, applyTranslations, t, getCurrentLang } from './i18n.js';
 
 class ProfileSubmission {
   constructor() {
@@ -13,6 +14,13 @@ class ProfileSubmission {
   }
 
   init() {
+    renderLanguageSwitcher('langSwitcherSubmit');
+    applyTranslations();
+
+    window.addEventListener('languageChanged', () => {
+      this.populateCountrySelect();
+    });
+
     this.bindPhotoUpload();
     this.bindFormSubmit();
     this.populateCountrySelect();
@@ -23,7 +31,8 @@ class ProfileSubmission {
     const select = document.getElementById('nationalitySelect');
     if (!select) return;
 
-    select.innerHTML = '<option value="" disabled selected>Select your ASEAN country / nationality</option>' +
+    const placeholderText = t('submitSelectCountry') || 'Select your ASEAN country / nationality';
+    select.innerHTML = `<option value="" disabled selected>${placeholderText}</option>` +
       CONFIG.countries.map(c => `<option value="${c.name}">${c.flag} ${c.name}</option>`).join('');
   }
 

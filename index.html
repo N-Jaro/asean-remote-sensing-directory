@@ -54,10 +54,10 @@
         </div>
         <div>
           <div class="flex items-center gap-2">
-            <span class="text-xs font-bold tracking-wider uppercase text-cyan-400 bg-cyan-950/80 px-2 py-0.5 rounded border border-cyan-800">ASEAN RS 2026</span>
-            <span class="text-xs text-slate-400 hidden sm:inline">28 Oct – 10 Nov 2026</span>
+            <span class="text-xs font-bold tracking-wider uppercase text-cyan-400 bg-cyan-950/80 px-2 py-0.5 rounded border border-cyan-800" data-i18n="seminarBadge">ASEAN RS 2026</span>
+            <span class="text-xs text-slate-400 hidden sm:inline" data-i18n="datesHeader">28 Oct – 10 Nov 2026</span>
           </div>
-          <h1 class="text-sm sm:text-base font-bold text-white tracking-tight leading-snug">
+          <h1 class="text-sm sm:text-base font-bold text-white tracking-tight leading-snug" data-i18n="brandTitle">
             ทำเนียบผู้เข้าร่วมสัมมนาเทคโนโลยีสำรวจระยะไกล
           </h1>
         </div>
@@ -68,16 +68,19 @@
         <!-- Google Sheet Sync Status Indicator -->
         <div id="sheetStatusBadge" class="hidden md:block"></div>
 
+        <!-- Language Switcher Dropdown -->
+        <div id="langSwitcherContainer"></div>
+
         <!-- Add My Profile Button -->
         <a href="submit.html" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/20 transition transform hover:-translate-y-0.5">
           <i data-lucide="user-plus" class="w-4 h-4"></i>
-          <span class="hidden sm:inline">ลงทะเบียน /</span> เพิ่มโปรไฟล์
+          <span class="hidden sm:inline" data-i18n="addProfileBtn">ลงทะเบียน / เพิ่มโปรไฟล์</span>
         </a>
 
         <!-- Settings Button -->
         <button id="btnOpenSettings" title="Connect Google Sheet" class="p-2 sm:px-3 sm:py-2 rounded-xl text-xs sm:text-sm font-medium bg-white/10 hover:bg-white/20 text-slate-200 border border-white/10 transition flex items-center gap-1.5">
           <i data-lucide="settings" class="w-4 h-4 text-cyan-400"></i>
-          <span class="hidden md:inline">Google Sheet</span>
+          <span class="hidden md:inline" data-i18n="googleSheetBtn">Google Sheet</span>
         </button>
       </div>
 
@@ -92,17 +95,17 @@
         <div class="max-w-3xl">
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 mb-3">
             <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
-            Seminar on Remote Sensing Technology for ASEAN Countries
+            <span data-i18n="heroBadge">Seminar on Remote Sensing Technology for ASEAN Countries</span>
           </div>
-          <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight">
+          <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight" data-i18n="heroTitle">
             ทำเนียบผู้เข้าร่วมสัมมนาและคณาจารย์วิทยากร
           </h2>
-          <p class="mt-2 text-sm sm:text-base text-slate-300 leading-relaxed">
+          <p class="mt-2 text-sm sm:text-base text-slate-300 leading-relaxed" data-i18n="heroDesc">
             ระบบทำเนียบรุ่นออนไลน์ รวบรวมรายชื่อผู้เข้าร่วมสัมมนาจากกลุ่มประเทศสมาชิกอาเซียนและวิทยากรผู้เชี่ยวชาญ พร้อมช่องทางการติดต่อ ความเชี่ยวชาญ และเชื่อมต่อข้อมูลแบบเรียลไทม์กับ Google Sheet
           </p>
           <div class="mt-4 flex flex-wrap items-center gap-4 text-xs text-slate-400">
-            <span class="flex items-center gap-1.5"><i data-lucide="calendar" class="w-4 h-4 text-cyan-400"></i> 28 October – 10 November 2026</span>
-            <span class="flex items-center gap-1.5"><i data-lucide="map-pin" class="w-4 h-4 text-emerald-400"></i> Bangkok & Space Center, Thailand</span>
+            <span class="flex items-center gap-1.5"><i data-lucide="calendar" class="w-4 h-4 text-cyan-400"></i> <span data-i18n="heroDates">28 October – 10 November 2026</span></span>
+            <span class="flex items-center gap-1.5"><i data-lucide="map-pin" class="w-4 h-4 text-emerald-400"></i> <span data-i18n="heroLocation">Bangkok & Space Center, Thailand</span></span>
           </div>
         </div>
 
@@ -110,15 +113,15 @@
         <div class="grid grid-cols-3 gap-3 bg-white/5 backdrop-blur-md p-4 rounded-2xl border border-white/10 sm:min-w-[340px]">
           <div class="text-center">
             <div id="totalParticipantsCount" class="text-2xl sm:text-3xl font-extrabold text-cyan-400">0</div>
-            <div class="text-[11px] text-slate-400 uppercase tracking-wider font-medium mt-0.5">Participants</div>
+            <div class="text-[11px] text-slate-400 uppercase tracking-wider font-medium mt-0.5" data-i18n="statParticipants">Participants</div>
           </div>
           <div class="text-center border-x border-white/10">
             <div id="totalCountriesCount" class="text-2xl sm:text-3xl font-extrabold text-emerald-400">0</div>
-            <div class="text-[11px] text-slate-400 uppercase tracking-wider font-medium mt-0.5">Countries</div>
+            <div class="text-[11px] text-slate-400 uppercase tracking-wider font-medium mt-0.5" data-i18n="statCountries">Countries</div>
           </div>
           <div class="text-center">
             <div id="totalLecturersCount" class="text-2xl sm:text-3xl font-extrabold text-amber-400">0</div>
-            <div class="text-[11px] text-slate-400 uppercase tracking-wider font-medium mt-0.5">Lecturers</div>
+            <div class="text-[11px] text-slate-400 uppercase tracking-wider font-medium mt-0.5" data-i18n="statLecturers">Lecturers</div>
           </div>
         </div>
 
@@ -136,11 +139,11 @@
       <div class="bg-slate-200/80 p-1 rounded-xl flex items-center gap-1 self-start sm:self-auto">
         <button id="tabParticipants" class="px-5 py-2.5 rounded-lg text-sm font-semibold shadow-sm bg-cyan-600 text-white flex items-center gap-2 transition">
           <i data-lucide="users" class="w-4 h-4"></i>
-          <span>Participants (ผู้เข้าร่วมสัมมนา)</span>
+          <span data-i18n="tabParticipants">Participants (ผู้เข้าร่วมสัมมนา)</span>
         </button>
         <button id="tabLecturers" class="px-5 py-2.5 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-100 flex items-center gap-2 transition">
           <i data-lucide="graduation-cap" class="w-4 h-4"></i>
-          <span>Lecturers & Sessions (วิทยากร)</span>
+          <span data-i18n="tabLecturers">Lecturers & Sessions (วิทยากร)</span>
         </button>
       </div>
 
@@ -148,12 +151,12 @@
       <div class="flex items-center gap-2">
         <button id="btnOpenAddLecturer" class="px-3 py-2 rounded-lg text-xs font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 flex items-center gap-1.5 transition">
           <i data-lucide="plus-circle" class="w-3.5 h-3.5 text-cyan-600"></i>
-          <span>เพิ่มวิทยากร</span>
+          <span data-i18n="btnAddLecturer">เพิ่มวิทยากร</span>
         </button>
 
         <button id="btnExportCsv" class="px-3 py-2 rounded-lg text-xs font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 flex items-center gap-1.5 transition">
           <i data-lucide="download" class="w-3.5 h-3.5 text-emerald-600"></i>
-          <span>Export CSV</span>
+          <span data-i18n="btnExportCsv">Export CSV</span>
         </button>
       </div>
 
@@ -172,6 +175,7 @@
           <input 
             type="text" 
             id="searchInput" 
+            data-i18n-placeholder="searchPlaceholder"
             placeholder="ค้นหาด้วยชื่อ (ไทย/อังกฤษ), ชื่อเล่น, ประเทศ, หน่วยงาน, หรือความเชี่ยวชาญ..." 
             class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 text-sm text-slate-800 placeholder-slate-400 bg-slate-50/50"
           >
@@ -179,11 +183,11 @@
 
         <!-- Sort Select -->
         <div class="flex items-center gap-2 sm:w-60">
-          <label for="sortSelect" class="text-xs font-semibold text-slate-500 whitespace-nowrap">Sort by:</label>
+          <label for="sortSelect" class="text-xs font-semibold text-slate-500 whitespace-nowrap" data-i18n="sortByLabel">Sort by:</label>
           <select id="sortSelect" class="w-full py-2.5 px-3 rounded-xl border border-slate-200 text-xs font-medium text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-cyan-500">
-            <option value="name_asc">Name (A – Z)</option>
-            <option value="name_desc">Name (Z – A)</option>
-            <option value="country_asc">Country / Nationality</option>
+            <option value="name_asc" data-i18n="sortNameAsc">Name (A – Z)</option>
+            <option value="name_desc" data-i18n="sortNameDesc">Name (Z – A)</option>
+            <option value="country_asc" data-i18n="sortCountryAsc">Country / Nationality</option>
           </select>
         </div>
       </div>
@@ -191,7 +195,7 @@
       <!-- Country Filter Buttons Bar -->
       <div>
         <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-          <i data-lucide="globe-2" class="w-3.5 h-3.5 text-slate-500"></i> Filter by ASEAN Nationality:
+          <i data-lucide="globe-2" class="w-3.5 h-3.5 text-slate-500"></i> <span data-i18n="filterNationalityLabel">Filter by ASEAN Nationality:</span>
         </div>
         <div id="countryFilterButtons" class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
           <!-- Populated by app.js -->
@@ -201,7 +205,7 @@
       <!-- Expertise Filter Tags (Participants Only) -->
       <div id="expertiseFilterContainer">
         <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-          <i data-lucide="layers" class="w-3.5 h-3.5 text-slate-500"></i> Filter by Expertise / Topic:
+          <i data-lucide="layers" class="w-3.5 h-3.5 text-slate-500"></i> <span data-i18n="filterExpertiseLabel">Filter by Expertise / Topic:</span>
         </div>
         <div id="expertiseFilterPills" class="flex flex-wrap items-center gap-1.5 text-xs">
           <!-- Populated by app.js -->
@@ -239,11 +243,11 @@
       </div>
 
       <div class="flex flex-wrap items-center gap-4">
-        <a href="submit.html" class="hover:text-cyan-400 transition">ลงทะเบียนทำเนียบ</a>
+        <a href="submit.html" class="hover:text-cyan-400 transition" data-i18n="addProfileBtn">ลงทะเบียนทำเนียบ</a>
         <span>•</span>
-        <a href="google-apps-script/README.md" target="_blank" class="hover:text-cyan-400 transition">วิธีเชื่อมต่อ Google Sheet</a>
+        <a href="google-apps-script/README.md" target="_blank" class="hover:text-cyan-400 transition">Google Sheet Guide</a>
         <span>•</span>
-        <button onclick="window.app.openSettingsModal()" class="hover:text-cyan-400 transition">ตั้งค่าระบบ</button>
+        <button onclick="window.app.openSettingsModal()" class="hover:text-cyan-400 transition" data-i18n="googleSheetBtn">ตั้งค่าระบบ</button>
       </div>
     </div>
   </footer>
@@ -344,10 +348,10 @@
           </div>
 
           <div class="pt-3 border-t border-slate-200 flex justify-end gap-2">
-            <button type="button" onclick="window.app.closeSettingsModal()" class="px-4 py-2 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100">
+            <button type="button" onclick="window.app.closeSettingsModal()" class="px-4 py-2 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100" data-i18n="settingsBtnCancel">
               Cancel
             </button>
-            <button type="submit" class="px-5 py-2 rounded-xl text-xs font-semibold bg-cyan-600 hover:bg-cyan-700 text-white shadow-sm">
+            <button type="submit" class="px-5 py-2 rounded-xl text-xs font-semibold bg-cyan-600 hover:bg-cyan-700 text-white shadow-sm" data-i18n="settingsBtnSave">
               Save & Sync
             </button>
           </div>

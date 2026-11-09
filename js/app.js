@@ -5,6 +5,7 @@
 import { CONFIG } from './config.js';
 import { SAMPLE_PARTICIPANTS, SAMPLE_LECTURERS } from './data.js';
 import { fetchLiveParticipants, fetchLiveLecturers, getCountryMeta } from './sheet-sync.js';
+import { renderLanguageSwitcher, applyTranslations, t, getCurrentLang } from './i18n.js';
 
 class DirectoryApp {
   constructor() {
@@ -22,6 +23,18 @@ class DirectoryApp {
   }
 
   async init() {
+    // Initialize Language Switcher & Translations
+    renderLanguageSwitcher('langSwitcherContainer');
+    applyTranslations();
+
+    window.addEventListener('languageChanged', () => {
+      this.renderCountryFilters();
+      this.renderExpertiseFilters();
+      this.render();
+      this.updateStats();
+      this.updateStatusBadge();
+    });
+
     this.bindEvents();
     this.renderCountryFilters();
     this.renderExpertiseFilters();
@@ -222,7 +235,7 @@ class DirectoryApp {
 
     let html = `
       <button data-country="ALL" class="country-filter-btn px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition bg-slate-900 text-white shadow-sm">
-        🌏 All Countries
+        🌏 ${t('filterAllCountries')}
       </button>
     `;
 
@@ -254,7 +267,7 @@ class DirectoryApp {
 
     let html = `
       <button data-expertise="ALL" class="expertise-pill px-2.5 py-1 rounded-md text-xs font-medium transition bg-cyan-100 text-cyan-800 border border-cyan-300">
-        All Fields
+        ${t('filterAllExpertise')}
       </button>
     `;
 
@@ -338,8 +351,11 @@ class DirectoryApp {
     const resultsCountEl = document.getElementById('resultsCount');
     if (!container) return;
 
+    const dataset = this.activeTab === 'participants' ? this.participants : this.lecturers;
     const filtered = this.getFilteredData();
-    if (resultsCountEl) resultsCountEl.innerText = `${filtered.length} found`;
+    if (resultsCountEl) {
+      resultsCountEl.innerText = `${t('showingText')} ${filtered.length} ${t('ofText')} ${dataset.length} ${t('membersText')}`;
+    }
 
     if (filtered.length === 0) {
       container.innerHTML = `
@@ -347,10 +363,10 @@ class DirectoryApp {
           <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
             <i data-lucide="search-x" class="w-8 h-8"></i>
           </div>
-          <h3 class="text-base font-semibold text-slate-800">No participants or lecturers found</h3>
-          <p class="text-sm text-slate-500 mt-1 max-w-sm mx-auto">Try clearing your filters or search keywords to see all seminar attendees.</p>
+          <h3 class="text-base font-semibold text-slate-800">${t('emptyTitle')}</h3>
+          <p class="text-sm text-slate-500 mt-1 max-w-sm mx-auto">${t('emptyDesc')}</p>
           <button onclick="document.getElementById('searchInput').value=''; window.app.searchQuery=''; window.app.selectedCountry='ALL'; window.app.selectedExpertise='ALL'; window.app.render();" class="mt-4 px-4 py-2 bg-slate-900 text-white text-xs font-semibold rounded-lg hover:bg-slate-800 transition">
-            Reset Filters
+            ${t('btnResetFilters')}
           </button>
         </div>
       `;
@@ -379,7 +395,7 @@ class DirectoryApp {
           <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-white/10 backdrop-blur-md text-white border border-white/20">
             <span>${countryMeta.flag}</span> <span>${countryMeta.name}</span>
           </span>
-          ${p.nickname ? `<span class="px-2 py-0.5 rounded-full text-[11px] font-medium bg-cyan-400/20 text-cyan-200 border border-cyan-400/30">Nickname: ${p.nickname}</span>` : ''}
+          ${p.nickname ? `<span class="px-2 py-0.5 rounded-full text-[11px] font-medium bg-cyan-400/20 text-cyan-200 border border-cyan-400/30">${t('cardPreferred')} ${p.nickname}</span>` : ''}
         </div>
 
         <div class="px-5 pt-0 pb-5 flex-1 flex flex-col -mt-12">
