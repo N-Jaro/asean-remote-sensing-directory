@@ -553,12 +553,13 @@ class DirectoryApp {
             <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${roleBadgeClass} border">
               ${roleBadgeText}
             </span>
+            ${l.sessionDate ? `
             <span class="text-xs font-medium text-slate-300 flex items-center gap-1">
               <i data-lucide="calendar" class="w-3.5 h-3.5 ${isTourLead ? 'text-emerald-400' : 'text-cyan-400'}"></i> ${l.sessionDate}
-            </span>
+            </span>` : ''}
           </div>
           <h4 class="font-semibold text-sm ${isTourLead ? 'text-emerald-50' : 'text-cyan-50'} line-clamp-2 leading-tight">
-            ${l.sessionTitle}
+            ${l.sessionTitle || l.title || (isTourLead ? 'Tour Lead & Field Trip Coordinator' : 'Seminar Session')}
           </h4>
         </div>
 
@@ -860,14 +861,17 @@ class DirectoryApp {
         </div>
 
         <div class="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
-          <!-- Session / Tour Details -->
+          <!-- Session / Tour Details (if available) -->
+          ${(item.sessionTitle || item.sessionDate) ? `
           <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
             <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">${isTourLead ? 'Field Trip / Technical Tour' : 'Seminar Session'}</p>
-            <h3 class="text-base font-bold text-slate-900 mb-1">${item.sessionTitle}</h3>
+            ${item.sessionTitle ? `<h3 class="text-base font-bold text-slate-900 mb-1">${item.sessionTitle}</h3>` : ''}
+            ${item.sessionDate ? `
             <p class="text-xs ${isTourLead ? 'text-emerald-700' : 'text-cyan-700'} font-medium flex items-center gap-1.5">
               <i data-lucide="calendar" class="w-3.5 h-3.5"></i> ${item.sessionDate}
-            </p>
+            </p>` : ''}
           </div>
+          ` : ''}
 
           <!-- Topics / Highlights -->
           ${item.topics ? `
