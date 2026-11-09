@@ -400,13 +400,22 @@ class DirectoryApp {
       if (window.lucide) lucide.createIcons();
     } else {
       statusBadge.innerHTML = `
-        <button id="btnOpenSettingsFromBadge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition cursor-pointer">
-          <span class="w-2 h-2 rounded-full bg-slate-400"></span>
-          <span>Connect Google Sheet</span>
+        <button id="btnRetrySync" title="Using cached directory. Click to retry connecting to Google Sheet." class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition cursor-pointer">
+          <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+          <span>Cached • Click to Retry Sync</span>
+          <i data-lucide="refresh-cw" class="w-3 h-3 text-slate-600 ml-0.5"></i>
         </button>
       `;
-      const btn = document.getElementById('btnOpenSettingsFromBadge');
-      if (btn) btn.onclick = () => this.openSettingsModal();
+      const btnRetry = document.getElementById('btnRetrySync');
+      if (btnRetry) {
+        btnRetry.onclick = async () => {
+          btnRetry.disabled = true;
+          await this.loadData();
+          this.render();
+          btnRetry.disabled = false;
+        };
+      }
+      if (window.lucide) lucide.createIcons();
     }
   }
 
@@ -464,25 +473,6 @@ class DirectoryApp {
         tabParticipants.className = "px-5 py-2.5 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-100 flex items-center gap-2 transition";
         document.getElementById('expertiseFilterContainer')?.classList.add('hidden');
         this.render();
-      });
-    }
-
-    // Settings Modal
-    const btnSettings = document.getElementById('btnOpenSettings');
-    if (btnSettings) {
-      btnSettings.addEventListener('click', () => this.openSettingsModal());
-    }
-
-    const btnCloseSettings = document.getElementById('btnCloseSettings');
-    if (btnCloseSettings) {
-      btnCloseSettings.addEventListener('click', () => this.closeSettingsModal());
-    }
-
-    const formSettings = document.getElementById('settingsForm');
-    if (formSettings) {
-      formSettings.addEventListener('submit', (e) => {
-        e.preventDefault();
-        this.saveSettings();
       });
     }
 
@@ -1364,45 +1354,6 @@ END:VCARD`;
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-  }
-
-  openSettingsModal() {
-    const modal = document.getElementById('settingsModal');
-    if (!modal) return;
-
-    document.getElementById('inputParticipantsCsv').value = CONFIG.googleIntegration.participantsCsvUrl;
-    document.getElementById('inputLecturersCsv').value = CONFIG.googleIntegration.lecturersCsvUrl;
-    document.getElementById('inputAppsScriptUrl').value = CONFIG.googleIntegration.appsScriptUrl;
-    document.getElementById('inputGoogleFormUrl').value = CONFIG.googleIntegration.googleFormUrl;
-
-    modal.classList.remove('hidden');
-    if (window.lucide) lucide.createIcons();
-  }
-
-  closeSettingsModal() {
-    const modal = document.getElementById('settingsModal');
-    if (modal) modal.classList.add('hidden');
-  }
-
-  async saveSettings() {
-    const pUrl = document.getElementById('inputParticipantsCsv').value.trim();
-    const lUrl = document.getElementById('inputLecturersCsv').value.trim();
-    const scriptUrl = document.getElementById('inputAppsScriptUrl').value.trim();
-    const formUrl = document.getElementById('inputGoogleFormUrl').value.trim();
-
-    localStorage.setItem('rs_participants_csv_url', pUrl);
-    localStorage.setItem('rs_lecturers_csv_url', lUrl);
-    localStorage.setItem('rs_apps_script_url', scriptUrl);
-    localStorage.setItem('rs_google_form_url', formUrl);
-
-    CONFIG.googleIntegration.participantsCsvUrl = pUrl;
-    CONFIG.googleIntegration.lecturersCsvUrl = lUrl;
-    CONFIG.googleIntegration.appsScriptUrl = scriptUrl;
-    CONFIG.googleIntegration.googleFormUrl = formUrl;
-
-    this.closeSettingsModal();
-    await this.loadData();
-    this.render();
   }
 
   openAddLecturerModal() {

@@ -3,14 +3,16 @@
  * Seminar on Remote Sensing Technology for ASEAN Countries (28 Oct – 10 Nov 2026)
  */
 
-const getStored = (key, fallback) => {
-  try {
-    const val = localStorage.getItem(key);
-    return (val && val.trim().length > 0) ? val.trim() : fallback;
-  } catch (e) {
-    return fallback;
-  }
-};
+// Purge legacy local storage overrides so users cannot accidentally or maliciously modify configuration URLs
+try {
+  localStorage.removeItem('rs_participants_csv_url');
+  localStorage.removeItem('rs_lecturers_csv_url');
+  localStorage.removeItem('rs_apps_script_url');
+  localStorage.removeItem('rs_google_form_url');
+  localStorage.removeItem('rs_google_sheet_view_url');
+} catch (e) {
+  // Ignore in private browsing mode
+}
 
 export const CONFIG = {
   seminar: {
@@ -29,23 +31,22 @@ export const CONFIG = {
     theme: "Remote Sensing Technology Empowering New Quality Productive Forces for ASEAN Countries",
   },
 
-  // Google Sheet & Form Integration Settings
-  // Pre-configured with live active sheets. Can be customized in Settings modal.
+  // Locked Production Google Sheet & Cloud API Integration Settings (Immutable)
   googleIntegration: {
     // 1. Google Sheets "Publish to the web" CSV URL for Participants
-    participantsCsvUrl: getStored('rs_participants_csv_url', "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvyKOBDiAEtxzkr3ETAYT8SLg_L4NeeZnyblKl1C3BFiTa8a66AZzTYZeNMKNYw4UKIEkH1US8PcI7/pub?gid=1959497488&single=true&output=csv"),
+    participantsCsvUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvyKOBDiAEtxzkr3ETAYT8SLg_L4NeeZnyblKl1C3BFiTa8a66AZzTYZeNMKNYw4UKIEkH1US8PcI7/pub?gid=1959497488&single=true&output=csv",
 
     // 2. Google Sheets "Publish to the web" CSV URL for Lecturers
-    lecturersCsvUrl: getStored('rs_lecturers_csv_url', "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvyKOBDiAEtxzkr3ETAYT8SLg_L4NeeZnyblKl1C3BFiTa8a66AZzTYZeNMKNYw4UKIEkH1US8PcI7/pub?gid=998993160&single=true&output=csv"),
+    lecturersCsvUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvyKOBDiAEtxzkr3ETAYT8SLg_L4NeeZnyblKl1C3BFiTa8a66AZzTYZeNMKNYw4UKIEkH1US8PcI7/pub?gid=998993160&single=true&output=csv",
 
     // 3. Google Apps Script Web App URL (for direct web form submissions and fast JSON API)
-    appsScriptUrl: getStored('rs_apps_script_url', "https://script.google.com/macros/s/AKfycbzDqSebJZ0pRmAmt1eTN0VauiM-zi8m3tkLM8qman29yZf45vRayv-xdgG4GfBgzO7B/exec"),
+    appsScriptUrl: "https://script.google.com/macros/s/AKfycbzDqSebJZ0pRmAmt1eTN0VauiM-zi8m3tkLM8qman29yZf45vRayv-xdgG4GfBgzO7B/exec",
 
     // 4. (Optional) Direct Google Form Link
-    googleFormUrl: getStored('rs_google_form_url', ""),
+    googleFormUrl: "",
 
     // 5. Google Sheet View Link
-    googleSheetViewUrl: getStored('rs_google_sheet_view_url', "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvyKOBDiAEtxzkr3ETAYT8SLg_L4NeeZnyblKl1C3BFiTa8a66AZzTYZeNMKNYw4UKIEkH1US8PcI7/pubhtml"),
+    googleSheetViewUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvyKOBDiAEtxzkr3ETAYT8SLg_L4NeeZnyblKl1C3BFiTa8a66AZzTYZeNMKNYw4UKIEkH1US8PcI7/pubhtml",
   },
 
   // ASEAN Member States with flags and localized labels
