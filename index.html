@@ -41,6 +41,122 @@
 </head>
 <body class="orbit-pattern min-h-screen flex flex-col">
 
+  <!-- Full-Page Thematic Remote Sensing Loading Screen -->
+  <div id="fullPageLoader" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950 text-white overflow-hidden transition-opacity duration-700">
+    <!-- Starfield & Ambient Earth Glow -->
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-cyan-950/40 via-slate-950 to-slate-950"></div>
+    <div class="absolute inset-0 opacity-30 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:28px_28px]"></div>
+    
+    <!-- Central HUD & Planet Animation -->
+    <div class="relative z-10 flex flex-col items-center max-w-lg mx-auto px-6 text-center">
+      
+      <!-- Remote Sensing Satellite & Earth Visualization -->
+      <div class="relative w-60 h-60 sm:w-68 sm:h-68 flex items-center justify-center mb-6">
+        
+        <!-- Radar Scanning Wave Effect -->
+        <div class="absolute inset-0 rounded-full border border-cyan-500/20 animate-ping opacity-25"></div>
+        <div class="absolute w-52 h-52 sm:w-60 sm:h-60 rounded-full border border-cyan-500/30"></div>
+        <div class="absolute w-44 h-44 sm:w-52 sm:h-52 rounded-full border border-dashed border-cyan-400/40 animate-[spin_30s_linear_infinite]"></div>
+        
+        <!-- Radar Sweep Cone -->
+        <div class="absolute w-52 h-52 sm:w-60 sm:h-60 rounded-full pointer-events-none opacity-60 animate-radar-sweep"
+             style="background: conic-gradient(from 0deg, transparent 0deg, transparent 270deg, rgba(6, 182, 212, 0.45) 360deg);"></div>
+        
+        <!-- Orbit Path Ring -->
+        <div class="absolute w-60 h-28 sm:w-68 sm:h-32 rounded-[100%] border border-cyan-400/40 -rotate-45 pointer-events-none"></div>
+
+        <!-- Orbiting Satellite along path -->
+        <div class="absolute inset-0 animate-satellite-orbit pointer-events-none">
+          <div class="absolute top-1 left-1/2 -translate-x-1/2 flex items-center gap-1 -rotate-12 bg-slate-900/90 border border-cyan-400/80 px-2 py-1 rounded-md shadow-lg shadow-cyan-500/50">
+            <!-- Left Solar Panel -->
+            <div class="w-2.5 h-3.5 bg-gradient-to-b from-sky-400 to-blue-600 rounded-[2px] border border-cyan-300"></div>
+            <!-- Satellite Body -->
+            <div class="w-3.5 h-3.5 bg-gradient-to-tr from-amber-400 to-yellow-200 rounded-sm flex items-center justify-center">
+              <span class="w-1.5 h-1.5 bg-red-500 rounded-full animate-ping"></span>
+            </div>
+            <!-- Right Solar Panel -->
+            <div class="w-2.5 h-3.5 bg-gradient-to-b from-sky-400 to-blue-600 rounded-[2px] border border-cyan-300"></div>
+          </div>
+        </div>
+
+        <!-- Central Earth Globe with Grid Coordinates -->
+        <div class="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-gradient-to-br from-cyan-600 via-sky-800 to-slate-950 shadow-[0_0_50px_rgba(6,182,212,0.6)] flex items-center justify-center overflow-hidden border-2 border-cyan-300/60">
+          <!-- Atmosphere rim light -->
+          <div class="absolute inset-0 rounded-full shadow-[inset_-12px_-12px_24px_rgba(2,6,23,0.8),inset_6px_6px_16px_rgba(56,189,248,0.7)] pointer-events-none"></div>
+          
+          <!-- Latitude and Longitude Grid lines -->
+          <div class="absolute inset-0 border border-cyan-200/20 rounded-full"></div>
+          <div class="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[1px] bg-cyan-200/30"></div>
+          <div class="absolute inset-y-0 left-1/2 -translate-x-1/2 w-[1px] bg-cyan-200/30"></div>
+          <div class="absolute inset-2 border border-cyan-200/20 rounded-[100%] rotate-45"></div>
+
+          <!-- Earth Continent silhouettes / Wireframe Globe -->
+          <svg class="w-16 h-16 text-cyan-200/80 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
+            <path d="M2 12h20"></path>
+          </svg>
+
+          <!-- ASEAN Geographic Pulse Marker -->
+          <div class="absolute top-10 right-9 flex items-center justify-center">
+            <span class="absolute w-4 h-4 bg-emerald-400 rounded-full animate-ping opacity-75"></span>
+            <span class="w-2 h-2 bg-emerald-400 rounded-full shadow-lg shadow-emerald-400"></span>
+          </div>
+        </div>
+
+        <!-- Sensor Payload Indicators -->
+        <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1.5 pointer-events-none whitespace-nowrap">
+          <span class="text-[10px] font-mono tracking-widest text-cyan-300 bg-cyan-950/90 border border-cyan-500/50 px-2.5 py-0.5 rounded-full shadow-md">
+            🛰️ SAR • OPTICAL • LiDAR
+          </span>
+        </div>
+      </div>
+
+      <!-- Seminar Tag -->
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-cyan-950/90 text-cyan-300 border border-cyan-700/60 shadow-lg shadow-cyan-950/50 mb-3">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="tracking-wider">ASEAN RS 2026 • EARTH OBSERVATION DIRECTORY</span>
+      </div>
+
+      <!-- Main Headline -->
+      <h2 class="text-xl sm:text-2xl font-extrabold text-white tracking-tight mb-2">
+        Remote Sensing Technology Directory
+      </h2>
+      <p class="text-xs sm:text-sm text-cyan-200/80 max-w-md mx-auto mb-5 leading-relaxed">
+        Empowering New Quality Productive Forces for ASEAN Countries
+      </p>
+
+      <!-- Telemetry Status Line (Animated Text & Progress Bar) -->
+      <div class="w-full bg-slate-900/90 border border-cyan-500/30 rounded-2xl p-4 shadow-2xl backdrop-blur-md mb-4">
+        <div class="flex items-center justify-between text-xs mb-2.5">
+          <span id="loaderTelemetryLabel" class="font-mono text-cyan-300 flex items-center gap-2">
+            <svg class="animate-spin w-3.5 h-3.5 text-cyan-400 flex-shrink-0" viewBox="0 0 24 24" fill="none">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+            </svg>
+            <span id="loaderStatusText" class="truncate max-w-[260px] sm:max-w-xs text-left">Connecting satellite link & participant profiles...</span>
+          </span>
+          <span id="loaderPercent" class="font-mono font-bold text-cyan-400 ml-2">15%</span>
+        </div>
+
+        <!-- High-tech Progress Bar -->
+        <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden p-0.5 border border-cyan-900">
+          <div id="loaderProgressBar" class="h-full bg-gradient-to-r from-cyan-500 via-teal-400 to-blue-500 rounded-full transition-all duration-300 shadow-[0_0_12px_rgba(6,182,212,0.8)]" style="width: 15%;"></div>
+        </div>
+      </div>
+
+      <!-- Location, Host & Quick Dismiss -->
+      <div class="text-[11px] text-slate-400 flex flex-wrap items-center justify-center gap-2">
+        <span>📍 Nanning & Beijing, China</span>
+        <span>•</span>
+        <span>GXIBVC Hosted</span>
+        <span>•</span>
+        <button id="btnSkipLoader" class="text-cyan-400 hover:text-cyan-300 underline cursor-pointer ml-1">Skip to directory</button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- Top Navigation Bar -->
   <header class="sticky top-0 z-40 glass-header text-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">

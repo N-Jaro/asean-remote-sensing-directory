@@ -30,11 +30,15 @@ class DirectoryApp {
     this.sortBy = 'name_asc';
     this.isLiveConnected = false;
     this.selectedPerson = null;
+    this.loaderDismissed = false;
 
     this.init();
   }
 
   async init() {
+    // 0. SETUP THEMATIC REMOTE SENSING LOADER
+    this.setupThematicLoader();
+
     // Initialize Language Switcher & Translations
     renderLanguageSwitcher('langSwitcherContainer');
     applyTranslations();
@@ -66,6 +70,73 @@ class DirectoryApp {
     } else {
       this.render();
     }
+
+    // 4. DISMISS THEMATIC FULL-PAGE LOADER
+    this.dismissLoader();
+  }
+
+  /**
+   * Set up and drive the full-page Remote Sensing thematic loading animation
+   */
+  setupThematicLoader() {
+    const loader = document.getElementById('fullPageLoader');
+    if (!loader) return;
+
+    const btnSkip = document.getElementById('btnSkipLoader');
+    if (btnSkip) {
+      btnSkip.onclick = (e) => {
+        e.stopPropagation();
+        this.dismissLoader();
+      };
+    }
+
+    loader.onclick = () => this.dismissLoader();
+
+    // Realistic telemetry progress sequence
+    const telemetrySteps = [
+      { at: 200, pct: 30, text: "Calibrating Earth Observation Sensors (SAR & Optical)..." },
+      { at: 600, pct: 60, text: "Acquiring ASEAN Member States & GXIBVC Cloud Telemetry..." },
+      { at: 1100, pct: 85, text: "Compiling Directory & Connecting Ground Stations..." }
+    ];
+
+    telemetrySteps.forEach(step => {
+      setTimeout(() => {
+        if (!this.loaderDismissed) {
+          this.updateLoader(step.pct, step.text);
+        }
+      }, step.at);
+    });
+
+    // Safety fallback: auto-dismiss after 6 seconds to prevent any blocking
+    setTimeout(() => {
+      this.dismissLoader();
+    }, 6000);
+  }
+
+  updateLoader(pct, text) {
+    const pctEl = document.getElementById('loaderPercent');
+    const barEl = document.getElementById('loaderProgressBar');
+    const textEl = document.getElementById('loaderStatusText');
+
+    if (pctEl) pctEl.innerText = `${pct}%`;
+    if (barEl) barEl.style.width = `${pct}%`;
+    if (textEl && text) textEl.innerText = text;
+  }
+
+  dismissLoader() {
+    if (this.loaderDismissed) return;
+    this.loaderDismissed = true;
+
+    this.updateLoader(100, "Earth Observation Directory Ready!");
+    const loader = document.getElementById('fullPageLoader');
+    if (!loader) return;
+
+    setTimeout(() => {
+      loader.classList.add('opacity-0', 'pointer-events-none');
+      setTimeout(() => {
+        if (loader.parentNode) loader.parentNode.removeChild(loader);
+      }, 700);
+    }, 350);
   }
 
   /**

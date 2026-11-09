@@ -124,3 +124,31 @@ body {
   }
 }
 
+/* Satellite Radar Sweep & Orbit Keyframes */
+@keyframes radarSweep {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-radar-sweep {
+  animation: radarSweep 3.5s linear infinite;
+}
+
+@keyframes satelliteOrbit {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-satellite-orbit {
+  animation: satelliteOrbit 7s linear infinite;
+}
+
+
