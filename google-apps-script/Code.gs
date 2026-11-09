@@ -78,8 +78,12 @@ function setupDatabase() {
       .setFontColor("#ffffff")
       .setFontSize(10);
     partSheet.setFrozenRows(1);
-    
-    // Insert multilingual sample rows (Laos, Thailand, China, Myanmar, Cambodia)
+  } else {
+    ensureContactColumns(partSheet, PARTICIPANT_HEADERS);
+  }
+
+  // If sheet only has headers, seed the sample rows
+  if (partSheet.getLastRow() <= 1) {
     const sampleRows = [
       [
         new Date(),
@@ -184,9 +188,6 @@ function setupDatabase() {
     ];
     
     sampleRows.forEach(row => partSheet.appendRow(row));
-  } else {
-    // Sheet already has rows: dynamically ensure all contact columns exist without touching existing data
-    ensureContactColumns(partSheet, PARTICIPANT_HEADERS);
   }
   
   // 2. Setup Lecturers Sheet
@@ -203,7 +204,12 @@ function setupDatabase() {
       .setFontColor("#ffffff")
       .setFontSize(10);
     lecSheet.setFrozenRows(1);
-    
+  } else {
+    ensureContactColumns(lecSheet, LECTURER_HEADERS);
+  }
+
+  // If sheet only has headers, seed the sample lecturer rows
+  if (lecSheet.getLastRow() <= 1) {
     lecSheet.appendRow([
       "Session 1: Advanced SAR & Interferometry (InSAR) for Geohazards",
       "29 Oct 2026, 09:00 – 12:00",
@@ -245,8 +251,6 @@ function setupDatabase() {
       "https://drive.google.com",
       "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80"
     ]);
-  } else {
-    ensureContactColumns(lecSheet, LECTURER_HEADERS);
   }
   
   // 3. Ensure Google Drive photo folder exists

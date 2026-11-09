@@ -71,8 +71,8 @@ class DirectoryApp {
       this.render();
     }
 
-    // 4. DISMISS THEMATIC FULL-PAGE LOADER
-    this.dismissLoader();
+    // 4. DISMISS THEMATIC FULL-PAGE LOADER after demonstrating successful sync
+    this.dismissLoader(800);
   }
 
   /**
@@ -86,48 +86,79 @@ class DirectoryApp {
     if (btnSkip) {
       btnSkip.onclick = (e) => {
         e.stopPropagation();
-        this.dismissLoader();
+        this.dismissLoader(0);
       };
     }
 
-    loader.onclick = () => this.dismissLoader();
+    loader.onclick = () => this.dismissLoader(0);
 
-    // Realistic telemetry progress sequence
-    const telemetrySteps = [
-      { at: 200, pct: 30, text: "Calibrating Earth Observation Sensors (SAR & Optical)..." },
-      { at: 600, pct: 60, text: "Acquiring ASEAN Member States & GXIBVC Cloud Telemetry..." },
-      { at: 1100, pct: 85, text: "Compiling Directory & Connecting Ground Stations..." }
-    ];
+    // Initial telemetry initialization
+    this.updateLoader(20, "Calibrating Earth Observation Sensors (SAR & Optical)...");
 
-    telemetrySteps.forEach(step => {
-      setTimeout(() => {
-        if (!this.loaderDismissed) {
-          this.updateLoader(step.pct, step.text);
-        }
-      }, step.at);
-    });
-
-    // Safety fallback: auto-dismiss after 6 seconds to prevent any blocking
+    // Safety fallback: auto-dismiss after 15 seconds in case of extreme network freeze
     setTimeout(() => {
-      this.dismissLoader();
-    }, 6000);
+      if (!this.loaderDismissed) {
+        this.dismissLoader(0);
+      }
+    }, 15000);
   }
 
-  updateLoader(pct, text) {
+  updateLoader(pct, text, isSuccess = false) {
     const pctEl = document.getElementById('loaderPercent');
     const barEl = document.getElementById('loaderProgressBar');
     const textEl = document.getElementById('loaderStatusText');
+    const labelEl = document.getElementById('loaderTelemetryLabel');
+    const payloadEl = document.getElementById('loaderPayloadBadge');
+    const markerEl = document.getElementById('loaderPlanetMarker');
 
-    if (pctEl) pctEl.innerText = `${pct}%`;
-    if (barEl) barEl.style.width = `${pct}%`;
-    if (textEl && text) textEl.innerText = text;
+    if (pctEl) {
+      pctEl.innerText = `${pct}%`;
+      if (isSuccess) {
+        pctEl.className = 'font-mono font-bold text-emerald-400 ml-2 text-sm';
+      }
+    }
+    if (barEl) {
+      barEl.style.width = `${pct}%`;
+      if (isSuccess) {
+        barEl.className = 'h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 rounded-full transition-all duration-500 shadow-[0_0_18px_rgba(16,185,129,0.9)]';
+      }
+    }
+    if (textEl && text) {
+      textEl.innerText = text;
+      if (isSuccess) {
+        textEl.className = 'truncate max-w-[280px] sm:max-w-md text-left font-semibold text-emerald-300';
+      }
+    }
+
+    if (isSuccess && labelEl) {
+      labelEl.className = 'font-mono text-emerald-300 flex items-center gap-2';
+      const iconContainer = labelEl.querySelector('svg');
+      if (iconContainer) {
+        iconContainer.outerHTML = `
+          <svg class="w-4 h-4 text-emerald-400 flex-shrink-0 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+          </svg>
+        `;
+      }
+    }
+
+    if (isSuccess && payloadEl) {
+      payloadEl.innerHTML = '🟢 UPLINK ACTIVE • GOOGLE SHEET SYNCED';
+      payloadEl.className = 'text-[10px] font-mono tracking-widest text-emerald-300 bg-emerald-950/90 border border-emerald-500/60 px-3 py-0.5 rounded-full shadow-lg shadow-emerald-950/60 animate-pulse';
+    }
+
+    if (isSuccess && markerEl) {
+      markerEl.innerHTML = `
+        <span class="absolute w-6 h-6 bg-emerald-400 rounded-full animate-ping opacity-90"></span>
+        <span class="w-3 h-3 bg-emerald-300 rounded-full shadow-[0_0_12px_#34d399]"></span>
+      `;
+    }
   }
 
-  dismissLoader() {
+  dismissLoader(delayMs = 800) {
     if (this.loaderDismissed) return;
     this.loaderDismissed = true;
 
-    this.updateLoader(100, "Earth Observation Directory Ready!");
     const loader = document.getElementById('fullPageLoader');
     if (!loader) return;
 
@@ -136,7 +167,7 @@ class DirectoryApp {
       setTimeout(() => {
         if (loader.parentNode) loader.parentNode.removeChild(loader);
       }, 700);
-    }, 350);
+    }, delayMs);
   }
 
   /**
@@ -264,7 +295,7 @@ class DirectoryApp {
   }
 
   /**
-   * Load data from Live Google Sheet CSV or Apps Script API in parallel with caching
+   * Load data from Live Google Sheet CSV or Apps Script API in parallel with caching and progressive loader updates
    */
   async loadData() {
     this.updateStatusBadge(true);
@@ -272,6 +303,8 @@ class DirectoryApp {
     if (topBar) {
       topBar.classList.remove('hidden', 'opacity-0');
     }
+
+    this.updateLoader(35, "Connecting to live Google Sheet database (GXIBVC Remote Sensing)...");
 
     const participantsUrl = CONFIG.googleIntegration.participantsCsvUrl;
     const lecturersUrl = CONFIG.googleIntegration.lecturersCsvUrl;
@@ -282,10 +315,21 @@ class DirectoryApp {
     let liveL = null;
 
     try {
-      const [resP, resL] = await Promise.all([
-        fetchLiveParticipants(participantsUrl, appsScriptUrl),
-        fetchLiveLecturers(lecturersUrl, appsScriptUrl)
-      ]);
+      const pPromise = fetchLiveParticipants(participantsUrl, appsScriptUrl).then(res => {
+        if (res !== null) {
+          this.updateLoader(65, "Uplink verified: Participant profiles retrieved from Google Sheet...");
+        }
+        return res;
+      });
+
+      const lPromise = fetchLiveLecturers(lecturersUrl, appsScriptUrl).then(res => {
+        if (res !== null) {
+          this.updateLoader(85, "Uplink verified: Lecturer & tour lead schedules retrieved...");
+        }
+        return res;
+      });
+
+      const [resP, resL] = await Promise.all([pPromise, lPromise]);
       liveP = resP;
       liveL = resL;
     } catch (err) {
@@ -310,8 +354,10 @@ class DirectoryApp {
       });
     };
 
-    if (liveP && liveP.length > 0) {
-      // Save fresh data into localStorage cache for instant loading next time
+    const isConnected = (liveP !== null) || (liveL !== null);
+
+    // 1. Process Participants
+    if (liveP !== null && liveP.length > 0) {
       try {
         localStorage.setItem('rs_cached_participants', JSON.stringify(liveP));
       } catch (e) {
@@ -329,14 +375,23 @@ class DirectoryApp {
       localStorage.setItem('rs_local_participants', JSON.stringify(localParticipants));
 
       this.participants = dedupe([...localParticipants, ...liveP]);
-      this.isLiveConnected = true;
-    } else if (!this.participants || this.participants.length === 0) {
-      this.participants = dedupe([...localParticipants, ...SAMPLE_PARTICIPANTS]);
-      this.isLiveConnected = false;
+    } else if (liveP !== null && liveP.length === 0) {
+      // Connected to live sheet, but sheet has 0 entries yet -> show local/sample with active live status
+      this.participants = localParticipants.length > 0 
+        ? dedupe(localParticipants) 
+        : dedupe([...SAMPLE_PARTICIPANTS]);
+    } else {
+      // Offline fallback
+      let cachedP = JSON.parse(localStorage.getItem('rs_cached_participants') || 'null');
+      if (cachedP && cachedP.length > 0) {
+        this.participants = dedupe([...localParticipants, ...cachedP]);
+      } else {
+        this.participants = dedupe([...localParticipants, ...SAMPLE_PARTICIPANTS]);
+      }
     }
 
-    if (liveL && liveL.length > 0) {
-      // Save fresh data into localStorage cache
+    // 2. Process Lecturers
+    if (liveL !== null && liveL.length > 0) {
       try {
         localStorage.setItem('rs_cached_lecturers', JSON.stringify(liveL));
       } catch (e) {
@@ -353,12 +408,38 @@ class DirectoryApp {
       localStorage.setItem('rs_local_lecturers', JSON.stringify(localLecturers));
 
       this.lecturers = dedupe([...localLecturers, ...liveL]);
-    } else if (!this.lecturers || this.lecturers.length === 0) {
+    } else if (liveL !== null && liveL.length === 0) {
+      // Connected to live sheet, but sheet has 0 entries yet -> keep default seminar schedule
       this.lecturers = dedupe([...localLecturers, ...SAMPLE_LECTURERS]);
+    } else {
+      let cachedL = JSON.parse(localStorage.getItem('rs_cached_lecturers') || 'null');
+      if (cachedL && cachedL.length > 0) {
+        this.lecturers = dedupe([...localLecturers, ...cachedL]);
+      } else {
+        this.lecturers = dedupe([...localLecturers, ...SAMPLE_LECTURERS]);
+      }
     }
 
+    this.isLiveConnected = isConnected;
     this.updateStatusBadge(false);
     this.updateStats();
+
+    // Trigger Success Telemetry on full-page loader based directly on real Google Sheet loading
+    if (this.isLiveConnected) {
+      const partCount = this.participants.length;
+      const lecCount = this.lecturers.length;
+      this.updateLoader(
+        100,
+        `✓ Successfully synced data from Google Sheet! (${partCount} participants, ${lecCount} lecturers)`,
+        true
+      );
+    } else {
+      this.updateLoader(
+        100,
+        `✓ Directory ready (${this.participants.length} participants, ${this.lecturers.length} lecturers cached)`,
+        true
+      );
+    }
 
     if (topBar) {
       topBar.classList.add('opacity-0');
