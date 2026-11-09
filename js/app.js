@@ -71,22 +71,55 @@ class DirectoryApp {
       liveL = await fetchLiveLecturers(lecturersUrl);
     }
 
-    // Merge with any local submissions from localStorage
-    const localParticipants = JSON.parse(localStorage.getItem('rs_local_participants') || '[]');
-    const localLecturers = JSON.parse(localStorage.getItem('rs_local_lecturers') || '[]');
+    // Load local submissions from localStorage
+    let localParticipants = JSON.parse(localStorage.getItem('rs_local_participants') || '[]');
+    let localLecturers = JSON.parse(localStorage.getItem('rs_local_lecturers') || '[]');
+
+    // Deduplication helper (by email or English name)
+    const dedupe = (list) => {
+      const seen = new Set();
+      return list.filter(item => {
+        const emailKey = (item.email || '').toLowerCase().trim();
+        const nameKey = (item.nameEnglish || '').toLowerCase().trim();
+        const key = emailKey || nameKey;
+        if (!key) return true;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+    };
 
     if (liveP && liveP.length > 0) {
-      this.participants = [...localParticipants, ...liveP];
+      // Prune local submissions once they have synced into the live Google Sheet
+      const liveEmails = new Set(liveP.map(p => (p.email || '').toLowerCase().trim()).filter(Boolean));
+      const liveNames = new Set(liveP.map(p => (p.nameEnglish || '').toLowerCase().trim()).filter(Boolean));
+      localParticipants = localParticipants.filter(p => {
+        const email = (p.email || '').toLowerCase().trim();
+        const name = (p.nameEnglish || '').toLowerCase().trim();
+        return !(email && liveEmails.has(email)) && !(name && liveNames.has(name));
+      });
+      localStorage.setItem('rs_local_participants', JSON.stringify(localParticipants));
+
+      this.participants = dedupe([...localParticipants, ...liveP]);
       this.isLiveConnected = true;
     } else {
-      this.participants = [...localParticipants, ...SAMPLE_PARTICIPANTS];
+      this.participants = dedupe([...localParticipants, ...SAMPLE_PARTICIPANTS]);
       this.isLiveConnected = false;
     }
 
     if (liveL && liveL.length > 0) {
-      this.lecturers = [...localLecturers, ...liveL];
+      const liveEmails = new Set(liveL.map(l => (l.email || '').toLowerCase().trim()).filter(Boolean));
+      const liveNames = new Set(liveL.map(l => (l.nameEnglish || '').toLowerCase().trim()).filter(Boolean));
+      localLecturers = localLecturers.filter(l => {
+        const email = (l.email || '').toLowerCase().trim();
+        const name = (l.nameEnglish || '').toLowerCase().trim();
+        return !(email && liveEmails.has(email)) && !(name && liveNames.has(name));
+      });
+      localStorage.setItem('rs_local_lecturers', JSON.stringify(localLecturers));
+
+      this.lecturers = dedupe([...localLecturers, ...liveL]);
     } else {
-      this.lecturers = [...localLecturers, ...SAMPLE_LECTURERS];
+      this.lecturers = dedupe([...localLecturers, ...SAMPLE_LECTURERS]);
     }
 
     this.updateStatusBadge();

@@ -203,8 +203,12 @@ class ProfileSubmission {
         }
       }
 
-      // 2. Also save to local storage so user sees themselves instantly in the directory
-      const localParticipants = JSON.parse(localStorage.getItem('rs_local_participants') || '[]');
+      // 2. Also save to local storage so user sees themselves instantly in the directory (deduplicated)
+      let localParticipants = JSON.parse(localStorage.getItem('rs_local_participants') || '[]');
+      localParticipants = localParticipants.filter(p => 
+        (p.email || '').toLowerCase().trim() !== (payload.email || '').toLowerCase().trim() &&
+        (p.nameEnglish || '').toLowerCase().trim() !== (payload.nameEnglish || '').toLowerCase().trim()
+      );
       localParticipants.unshift(payload);
       localStorage.setItem('rs_local_participants', JSON.stringify(localParticipants));
 
