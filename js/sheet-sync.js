@@ -304,13 +304,29 @@ export function mapCsvToLecturers(rows) {
 }
 
 /**
+ * Helper to fetch with a timeout using AbortController
+ */
+async function fetchWithTimeout(url, timeoutMs = 7000) {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(url, { signal: controller.signal });
+    clearTimeout(id);
+    return response;
+  } catch (err) {
+    clearTimeout(id);
+    throw err;
+  }
+}
+
+/**
  * Fetch live data from configured Google Sheet CSV
  */
 export async function fetchLiveParticipants(csvUrl) {
   if (!csvUrl) return null;
 
   try {
-    const response = await fetch(csvUrl, { cache: 'no-cache' });
+    const response = await fetchWithTimeout(csvUrl, 7000);
     if (!response.ok) {
       throw new Error(`Failed to fetch Google Sheet CSV: HTTP ${response.status}`);
     }
@@ -330,7 +346,7 @@ export async function fetchLiveLecturers(csvUrl) {
   if (!csvUrl) return null;
 
   try {
-    const response = await fetch(csvUrl, { cache: 'no-cache' });
+    const response = await fetchWithTimeout(csvUrl, 7000);
     if (!response.ok) {
       throw new Error(`Failed to fetch Google Sheet Lecturers CSV: HTTP ${response.status}`);
     }

@@ -36,9 +36,10 @@ class DirectoryApp {
     });
 
     this.bindEvents();
+
+    // 1. FAST INITIAL RENDER (<50ms): Load cached or local data immediately so cards appear instantly
+    this.loadInitialData();
     this.renderCountryFilters();
-    this.renderExpertiseFilters();
-    await this.loadData();
     this.renderExpertiseFilters();
 
     // Check URL hash for direct tab linking (e.g. index.html#lecturers)
@@ -48,28 +49,83 @@ class DirectoryApp {
     } else {
       this.render();
     }
+
+    // 2. PARALLEL BACKGROUND SYNC: Silently fetch latest Google Sheet data in parallel
+    await this.loadData();
+    this.renderExpertiseFilters();
+    this.render();
   }
 
   /**
-   * Load data from Live Google Sheet CSV or fallback to SAMPLE data
+   * Fast synchronous initial data loader from localStorage cache / local submissions / samples
+   */
+  loadInitialData() {
+    const dedupe = (list) => {
+      const seen = new Set();
+      return list.filter(item => {
+        const emailKey = (item.email || '').toLowerCase().trim();
+        const nameKey = (item.nameEnglish || '').toLowerCase().trim();
+        const key = emailKey || nameKey;
+        if (!key) return true;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+    };
+
+    let localParticipants = JSON.parse(localStorage.getItem('rs_local_participants') || '[]');
+    let localLecturers = JSON.parse(localStorage.getItem('rs_local_lecturers') || '[]');
+    let cachedParticipants = JSON.parse(localStorage.getItem('rs_cached_participants') || 'null');
+    let cachedLecturers = JSON.parse(localStorage.getItem('rs_cached_lecturers') || 'null');
+
+    if (cachedParticipants && cachedParticipants.length > 0) {
+      this.participants = dedupe([...localParticipants, ...cachedParticipants]);
+      this.isLiveConnected = true;
+    } else {
+      this.participants = dedupe([...localParticipants, ...SAMPLE_PARTICIPANTS]);
+      this.isLiveConnected = false;
+    }
+
+    if (cachedLecturers && cachedLecturers.length > 0) {
+      this.lecturers = dedupe([...localLecturers, ...cachedLecturers]);
+    } else {
+      this.lecturers = dedupe([...localLecturers, ...SAMPLE_LECTURERS]);
+    }
+
+    this.updateStats();
+    this.updateStatusBadge();
+  }
+
+  /**
+   * Load data from Live Google Sheet CSV in parallel with caching
    */
   async loadData() {
     const statusBadge = document.getElementById('sheetStatusBadge');
     if (statusBadge) {
-      statusBadge.innerHTML = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800"><span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span> Syncing with Google Sheet...</span>`;
+      statusBadge.innerHTML = `
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-800 border border-amber-200">
+          <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+          <span>Syncing with Google Sheet...</span>
+        </span>
+      `;
     }
 
     const participantsUrl = CONFIG.googleIntegration.participantsCsvUrl;
     const lecturersUrl = CONFIG.googleIntegration.lecturersCsvUrl;
 
+    // Fetch both Google Sheet CSVs in PARALLEL to cut wait time in half
     let liveP = null;
     let liveL = null;
 
-    if (participantsUrl) {
-      liveP = await fetchLiveParticipants(participantsUrl);
-    }
-    if (lecturersUrl) {
-      liveL = await fetchLiveLecturers(lecturersUrl);
+    try {
+      const [resP, resL] = await Promise.all([
+        participantsUrl ? fetchLiveParticipants(participantsUrl) : Promise.resolve(null),
+        lecturersUrl ? fetchLiveLecturers(lecturersUrl) : Promise.resolve(null)
+      ]);
+      liveP = resP;
+      liveL = resL;
+    } catch (err) {
+      console.warn("Parallel sheet fetch error:", err);
     }
 
     // Load local submissions from localStorage
@@ -91,6 +147,13 @@ class DirectoryApp {
     };
 
     if (liveP && liveP.length > 0) {
+      // Save fresh data into localStorage cache for instant loading next time
+      try {
+        localStorage.setItem('rs_cached_participants', JSON.stringify(liveP));
+      } catch (e) {
+        console.warn('Could not cache participants:', e);
+      }
+
       // Prune local submissions once they have synced into the live Google Sheet
       const liveEmails = new Set(liveP.map(p => (p.email || '').toLowerCase().trim()).filter(Boolean));
       const liveNames = new Set(liveP.map(p => (p.nameEnglish || '').toLowerCase().trim()).filter(Boolean));
@@ -103,12 +166,18 @@ class DirectoryApp {
 
       this.participants = dedupe([...localParticipants, ...liveP]);
       this.isLiveConnected = true;
-    } else {
+    } else if (!this.participants || this.participants.length === 0) {
       this.participants = dedupe([...localParticipants, ...SAMPLE_PARTICIPANTS]);
-      this.isLiveConnected = false;
     }
 
     if (liveL && liveL.length > 0) {
+      // Save fresh data into localStorage cache
+      try {
+        localStorage.setItem('rs_cached_lecturers', JSON.stringify(liveL));
+      } catch (e) {
+        console.warn('Could not cache lecturers:', e);
+      }
+
       const liveEmails = new Set(liveL.map(l => (l.email || '').toLowerCase().trim()).filter(Boolean));
       const liveNames = new Set(liveL.map(l => (l.nameEnglish || '').toLowerCase().trim()).filter(Boolean));
       localLecturers = localLecturers.filter(l => {
@@ -119,7 +188,7 @@ class DirectoryApp {
       localStorage.setItem('rs_local_lecturers', JSON.stringify(localLecturers));
 
       this.lecturers = dedupe([...localLecturers, ...liveL]);
-    } else {
+    } else if (!this.lecturers || this.lecturers.length === 0) {
       this.lecturers = dedupe([...localLecturers, ...SAMPLE_LECTURERS]);
     }
 
@@ -133,16 +202,27 @@ class DirectoryApp {
 
     if (this.isLiveConnected) {
       statusBadge.innerHTML = `
-        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-300">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          Live Google Sheet Connected
-        </span>
+        <button id="btnRefreshSync" title="Connected to Google Sheet. Click to refresh." class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 hover:bg-emerald-200 text-emerald-800 border border-emerald-300 transition cursor-pointer">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          <span>Live Google Sheet</span>
+          <i data-lucide="refresh-cw" class="w-3 h-3 text-emerald-700 ml-0.5"></i>
+        </button>
       `;
+      const btnRefresh = document.getElementById('btnRefreshSync');
+      if (btnRefresh) {
+        btnRefresh.onclick = async () => {
+          btnRefresh.disabled = true;
+          await this.loadData();
+          this.render();
+          btnRefresh.disabled = false;
+        };
+      }
+      if (window.lucide) lucide.createIcons();
     } else {
       statusBadge.innerHTML = `
-        <button id="btnOpenSettingsFromBadge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition">
+        <button id="btnOpenSettingsFromBadge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition cursor-pointer">
           <span class="w-2 h-2 rounded-full bg-slate-400"></span>
-          Demo Mode (Connect Google Sheet)
+          <span>Demo Mode (Connect Google Sheet)</span>
         </button>
       `;
       const btn = document.getElementById('btnOpenSettingsFromBadge');
