@@ -5,12 +5,19 @@
 
 export const CONFIG = {
   seminar: {
-    title: "Seminar on Remote Sensing Technology for ASEAN Countries",
-    titleTh: "ทำเนียบผู้เข้าร่วมสัมมนาเทคโนโลยีสำรวจระยะไกลสำหรับประเทศกลุ่มอาเซียน",
+    title: "Seminar on Remote Sensing Technology Empowering New Quality Productive Forces for ASEAN Countries",
+    titleZh: "东盟国家遥感技术赋能新质生产力研修班",
+    titleTh: "การสัมมนาเชิงปฏิบัติการเทคโนโลยีสำรวจระยะไกลเพื่อเสริมสร้างพลังการผลิตคุณภาพใหม่สำหรับกลุ่มประเทศอาเซียน",
     dates: "28 October – 10 November 2026",
+    datesZh: "2026年10月28日至11月10日",
     datesTh: "28 ตุลาคม – 10 พฤศจิกายน 2569",
-    location: "Bangkok & Space Technology Center, Thailand",
-    theme: "Earth Observation & Geospatial Innovations for ASEAN Sustainable Development",
+    location: "Nanning, Guangxi & Beijing, China",
+    locationZh: "中国广西南宁市及北京市",
+    locationTh: "เมืองหนานหนิง เขตปกครองตนเองกว่างซี และกรุงปักกิ่ง ประเทศจีน",
+    organizer: "Guangxi International Business Vocational College (GXIBVC)",
+    organizerZh: "广西国际商务职业技术学院",
+    organizerContact: "Ms. Xie Jing (0086-771-3244221 / xiejing0771@qq.com)",
+    theme: "Remote Sensing Technology Empowering New Quality Productive Forces for ASEAN Countries",
   },
 
   // Google Sheet & Form Integration Settings
