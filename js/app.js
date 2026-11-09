@@ -99,23 +99,27 @@ class DirectoryApp {
     for (let i = 0; i < 8; i++) {
       skeletonsHtml += `
         <div class="glass-card rounded-2xl overflow-hidden border border-slate-200/80 bg-white shadow-sm flex flex-col animate-pulse">
-          <div class="bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 h-24 p-3 flex justify-between items-start">
-            <div class="w-20 h-5 rounded-full bg-slate-300"></div>
-            <div class="w-14 h-4 rounded-full bg-slate-300/60"></div>
+          <div class="aspect-[4/3] w-full bg-slate-200 relative">
+            <div class="absolute top-3 left-3 w-24 h-6 rounded-full bg-slate-300"></div>
+            <div class="absolute top-3 right-3 w-20 h-6 rounded-full bg-slate-300"></div>
           </div>
           <div class="p-5 flex-1 flex flex-col space-y-3">
-            <div class="w-16 h-16 -mt-11 rounded-2xl bg-slate-300 border-4 border-white shadow-sm flex-shrink-0"></div>
-            <div class="space-y-1.5 pt-1">
-              <div class="h-4.5 w-3/4 bg-slate-300 rounded-md"></div>
+            <div class="space-y-1.5">
+              <div class="h-5 w-3/4 bg-slate-300 rounded-md"></div>
               <div class="h-3.5 w-1/2 bg-slate-200 rounded-md"></div>
             </div>
-            <div class="space-y-1.5 pt-2">
-              <div class="h-3 w-5/6 bg-slate-200 rounded"></div>
-              <div class="h-3 w-2/3 bg-slate-200 rounded"></div>
+            <div class="space-y-1.5 pt-1">
+              <div class="h-4 w-1/3 bg-slate-200 rounded"></div>
+              <div class="h-3.5 w-4/5 bg-slate-200 rounded"></div>
             </div>
-            <div class="flex flex-wrap gap-1.5 pt-3 mt-auto">
-              <div class="h-5 w-20 bg-slate-200 rounded-full"></div>
-              <div class="h-5 w-24 bg-slate-200 rounded-full"></div>
+            <div class="space-y-2 pt-2 border-t border-slate-100">
+              <div class="h-3.5 w-3/4 bg-slate-200 rounded"></div>
+              <div class="h-3.5 w-1/2 bg-slate-200 rounded"></div>
+            </div>
+            <div class="flex flex-wrap gap-1.5 pt-2 border-t border-slate-100 mt-auto">
+              <div class="h-5 w-16 bg-slate-200 rounded-md"></div>
+              <div class="h-5 w-20 bg-slate-200 rounded-md"></div>
+              <div class="h-5 w-24 bg-slate-200 rounded-md"></div>
             </div>
           </div>
         </div>
@@ -616,69 +620,131 @@ class DirectoryApp {
 
   renderParticipantCard(p) {
     const countryMeta = getCountryMeta(p.nationality);
-    const photo = p.photoUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(p.nameEnglish)}&background=0b132b&color=38bdf8&size=256`;
+    const photo = p.photoUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(p.nameEnglish)}&background=0b132b&color=38bdf8&size=512`;
 
     return `
-      <div class="glass-card rounded-2xl overflow-hidden shadow-sm flex flex-col cursor-pointer border border-slate-200/90 group" data-id="${p.id}" data-type="participant">
-        <!-- Top banner & avatar -->
-        <div class="relative bg-gradient-to-r from-slate-900 via-sky-950 to-slate-900 h-24 p-3 flex justify-between items-start">
-          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-white/10 backdrop-blur-md text-white border border-white/20">
-            <span>${countryMeta.flag}</span> <span>${countryMeta.name}</span>
-          </span>
-          ${p.nickname ? `<span class="px-2 py-0.5 rounded-full text-[11px] font-medium bg-cyan-400/20 text-cyan-200 border border-cyan-400/30">${t('cardPreferred')} ${p.nickname}</span>` : ''}
+      <div class="glass-card rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col cursor-pointer border border-slate-200/90 group bg-white" data-id="${p.id}" data-type="participant">
+        <!-- Hero Photo at Top with Badges -->
+        <div class="relative w-full aspect-[4/3] overflow-hidden bg-slate-100 flex-shrink-0">
+          <img src="${photo}" alt="${p.nameEnglish}" loading="lazy" class="w-full h-full object-cover object-top transition-transform duration-500 ease-out group-hover:scale-105" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nameEnglish)}&background=0b132b&color=38bdf8';"/>
+          
+          <!-- Subtle Top & Bottom Gradient Overlay for contrast -->
+          <div class="absolute inset-x-0 top-0 h-14 bg-gradient-to-b from-black/60 via-black/20 to-transparent pointer-events-none"></div>
+          <div class="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none"></div>
+
+          <!-- Top-Left Country Badge -->
+          <div class="absolute top-3 left-3 z-10">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-900/80 backdrop-blur-md text-white border border-white/20 shadow-sm">
+              <span>${countryMeta.flag}</span> <span class="tracking-wide">${countryMeta.name}</span>
+            </span>
+          </div>
+
+          <!-- Top-Right Nickname Badge -->
+          ${p.nickname ? `
+            <div class="absolute top-3 right-3 z-10">
+              <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-cyan-600/90 backdrop-blur-md text-white border border-cyan-300/40 shadow-sm">
+                <span class="opacity-90 font-medium text-[10px]">${t('cardPreferred') || 'Nickname:'}</span> ${p.nickname}
+              </span>
+            </div>
+          ` : ''}
         </div>
 
-        <div class="px-5 pt-0 pb-5 flex-1 flex flex-col -mt-12">
-          <!-- Photo -->
-          <div class="flex items-end justify-between mb-3">
-            <div class="w-20 h-20 rounded-2xl avatar-container shadow-md border-2 border-white ring-2 ring-slate-100 flex-shrink-0">
-              <img src="${photo}" alt="${p.nameEnglish}" loading="lazy" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nameEnglish)}&background=0b132b&color=38bdf8';"/>
-            </div>
-            <div class="flex flex-wrap gap-1.5 pb-1 justify-end max-w-[150px]">
-              ${p.email ? `<a href="mailto:${p.email}" onclick="event.stopPropagation()" title="Email: ${p.email}" class="w-7 h-7 rounded-full bg-slate-100 hover:bg-cyan-50 hover:text-cyan-600 text-slate-600 flex items-center justify-center transition text-xs"><i data-lucide="mail" class="w-3.5 h-3.5"></i></a>` : ''}
-              ${p.wechatId ? `<span onclick="event.stopPropagation(); navigator.clipboard.writeText('${p.wechatId}'); alert('Copied WeChat ID: ${p.wechatId}');" title="WeChat: ${p.wechatId} (Click to copy)" class="w-7 h-7 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 flex items-center justify-center transition text-[11px] font-bold cursor-pointer border border-emerald-200">微</span>` : ''}
-              ${p.lineId ? `<a href="https://line.me/R/ti/p/~${p.lineId}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="LINE: ${p.lineId}" class="w-7 h-7 rounded-full bg-green-50 hover:bg-green-100 text-[#06c755] flex items-center justify-center transition text-xs"><i data-lucide="message-circle" class="w-3.5 h-3.5"></i></a>` : ''}
-              ${p.whatsapp ? `<a href="https://wa.me/${p.whatsapp.replace(/[^0-9]/g, '')}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="WhatsApp: ${p.whatsapp}" class="w-7 h-7 rounded-full bg-teal-50 hover:bg-teal-100 text-[#25d366] flex items-center justify-center transition text-xs"><i data-lucide="phone-call" class="w-3.5 h-3.5"></i></a>` : ''}
-              ${p.facebook ? `<a href="${p.facebook.startsWith('http') ? p.facebook : 'https://facebook.com/' + p.facebook}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Facebook" class="w-7 h-7 rounded-full bg-blue-50 hover:bg-blue-100 text-[#1877f2] flex items-center justify-center transition text-xs"><i data-lucide="facebook" class="w-3.5 h-3.5"></i></a>` : ''}
-              ${p.linkedin ? `<a href="${p.linkedin}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="LinkedIn Profile" class="w-7 h-7 rounded-full bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-600 flex items-center justify-center transition text-xs"><i data-lucide="linkedin" class="w-3.5 h-3.5"></i></a>` : ''}
-            </div>
-          </div>
-
-          <!-- Names -->
-          <div class="mb-2">
-            <h3 class="font-bold text-slate-900 text-base leading-snug group-hover:text-cyan-600 transition flex items-center gap-1.5">
-              ${p.nameEnglish}
+        <!-- Card Body -->
+        <div class="p-5 flex-1 flex flex-col justify-between space-y-3.5 bg-white">
+          <!-- Name Section -->
+          <div>
+            <h3 class="font-bold text-slate-900 text-lg leading-snug group-hover:text-cyan-600 transition flex items-baseline gap-1.5 flex-wrap">
+              <span>${p.nameEnglish}</span>
+              ${p.nickname ? `<span class="text-cyan-600 font-semibold text-base">(${p.nickname})</span>` : ''}
             </h3>
-            ${p.nameNative && p.nameNative !== p.nameEnglish ? `<p class="text-xs text-slate-500 font-medium">${p.nameNative}</p>` : ''}
+            ${p.nameNative && p.nameNative !== p.nameEnglish ? `<p class="text-xs text-slate-500 font-medium mt-0.5">${p.nameNative}</p>` : ''}
           </div>
 
-          <!-- Position & Affiliation -->
-          <div class="text-xs text-slate-600 mb-3 space-y-1">
-            <p class="font-medium text-slate-800 line-clamp-1 flex items-center gap-1.5">
-              <i data-lucide="briefcase" class="w-3.5 h-3.5 text-slate-400 flex-shrink-0"></i>
-              ${p.position || 'Specialist'}
-            </p>
-            <p class="text-slate-500 line-clamp-1 flex items-center gap-1.5">
-              <i data-lucide="building-2" class="w-3.5 h-3.5 text-slate-400 flex-shrink-0"></i>
-              ${p.affiliation || 'Geospatial Institution'}
-            </p>
-          </div>
-
-          <!-- Expertise Badges -->
-          <div class="mt-auto pt-3 border-t border-slate-100">
-            <div class="flex flex-wrap gap-1">
-              ${(p.expertise || '').split(',').slice(0, 2).map(tag => `
-                <span class="inline-block px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-700">
-                  ${tag.trim()}
-                </span>
-              `).join('')}
-              ${(p.expertise || '').split(',').length > 2 ? `<span class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-500">+${(p.expertise || '').split(',').length - 2}</span>` : ''}
+          <!-- Role / Position & Affiliation -->
+          <div class="space-y-1.5 text-xs">
+            <div class="flex items-center justify-between gap-2">
+              <span class="inline-flex items-center gap-1.5 font-bold text-rose-700 bg-rose-50 border border-rose-200/80 px-2.5 py-1 rounded-md text-xs">
+                <i data-lucide="briefcase" class="w-3.5 h-3.5 text-rose-500 flex-shrink-0"></i>
+                <span class="line-clamp-1">${p.position || 'Participant / Specialist'}</span>
+              </span>
             </div>
+            <p class="text-slate-600 line-clamp-1 flex items-center gap-1.5 pt-0.5" title="${p.affiliation || ''}">
+              <i data-lucide="building-2" class="w-3.5 h-3.5 text-slate-400 flex-shrink-0"></i>
+              <span class="line-clamp-1">${p.affiliation || 'Geospatial Institution'}</span>
+            </p>
           </div>
+
+          <!-- Contact Channels (Email, Phone, Messaging Shortcuts) -->
+          <div class="space-y-1.5 pt-2.5 border-t border-slate-100 text-xs">
+            ${p.email ? `
+              <a href="mailto:${p.email}" onclick="event.stopPropagation()" class="flex items-center gap-2 text-slate-600 hover:text-cyan-600 transition group/mail">
+                <i data-lucide="mail" class="w-3.5 h-3.5 text-slate-400 group-hover/mail:text-cyan-600 flex-shrink-0"></i>
+                <span class="truncate text-xs">${p.email}</span>
+              </a>
+            ` : ''}
+
+            ${p.phone ? `
+              <a href="tel:${p.phone}" onclick="event.stopPropagation()" class="flex items-center gap-2 text-slate-600 hover:text-cyan-600 transition group/phone">
+                <i data-lucide="phone" class="w-3.5 h-3.5 text-slate-400 group-hover/phone:text-cyan-600 flex-shrink-0"></i>
+                <span class="truncate text-xs">${p.phone}</span>
+              </a>
+            ` : ''}
+
+            ${(p.wechatId || p.lineId || p.whatsapp || p.facebook || p.linkedin) ? `
+              <div class="flex flex-wrap items-center gap-1.5 pt-1">
+                ${p.wechatId ? `
+                  <button type="button" onclick="event.stopPropagation(); navigator.clipboard.writeText('${p.wechatId}'); alert('Copied WeChat ID: ${p.wechatId}');" title="WeChat ID: ${p.wechatId} (Click to copy)" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 transition cursor-pointer">
+                    <span class="font-bold text-[10px]">微</span> <span>${p.wechatId}</span>
+                  </button>
+                ` : ''}
+                ${p.lineId ? `
+                  <a href="https://line.me/R/ti/p/~${p.lineId}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="LINE: ${p.lineId}" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-green-50 text-[#06c755] hover:bg-green-100 border border-green-200 transition">
+                    <i data-lucide="message-circle" class="w-3 h-3"></i> <span>LINE</span>
+                  </a>
+                ` : ''}
+                ${p.whatsapp ? `
+                  <a href="https://wa.me/${p.whatsapp.replace(/[^0-9]/g, '')}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="WhatsApp: ${p.whatsapp}" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-teal-50 text-[#25d366] hover:bg-teal-100 border border-teal-200 transition">
+                    <i data-lucide="phone-call" class="w-3 h-3"></i> <span>WhatsApp</span>
+                  </a>
+                ` : ''}
+                ${p.facebook ? `
+                  <a href="${p.facebook.startsWith('http') ? p.facebook : 'https://facebook.com/' + p.facebook}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Facebook Profile" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-blue-50 text-[#1877f2] hover:bg-blue-100 border border-blue-200 transition">
+                    <i data-lucide="facebook" class="w-3 h-3"></i> <span>FB</span>
+                  </a>
+                ` : ''}
+                ${p.linkedin ? `
+                  <a href="${p.linkedin}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="LinkedIn Profile" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-sky-50 text-[#0077b5] hover:bg-sky-100 border border-sky-200 transition">
+                    <i data-lucide="linkedin" class="w-3 h-3"></i> <span>LinkedIn</span>
+                  </a>
+                ` : ''}
+              </div>
+            ` : ''}
+          </div>
+
+          <!-- Areas of Interest / Specialization ("สาขาวิจัยที่สนใจ") -->
+          ${p.expertise ? `
+            <div class="pt-2.5 border-t border-slate-100 mt-auto">
+              <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1">
+                <i data-lucide="tag" class="w-3 h-3 text-slate-400"></i> ${t('cardExpertise') || 'Research Areas & Interests'}
+              </p>
+              <div class="flex flex-wrap gap-1.5">
+                ${(Array.isArray(p.expertise) ? p.expertise : p.expertise.split(/[,，]/)).slice(0, 3).map(tag => `
+                  <span class="inline-block px-2.5 py-1 rounded-md text-[11px] font-medium bg-cyan-50 text-cyan-800 border border-cyan-200/80">
+                    ${tag.trim()}
+                  </span>
+                `).join('')}
+                ${(Array.isArray(p.expertise) ? p.expertise : p.expertise.split(/[,，]/)).length > 3 ? `
+                  <span class="px-2 py-1 rounded-md text-[11px] font-medium bg-slate-100 text-slate-600 border border-slate-200">
+                    +${(Array.isArray(p.expertise) ? p.expertise : p.expertise.split(/[,，]/)).length - 3}
+                  </span>
+                ` : ''}
+              </div>
+            </div>
+          ` : ''}
 
           <!-- Message snippet if available -->
           ${p.message ? `
-            <div class="mt-2.5 p-2 bg-slate-50 rounded-lg text-[11px] text-slate-600 italic line-clamp-2 border border-slate-100 flex items-start gap-1.5">
+            <div class="p-2.5 bg-slate-50 rounded-xl text-[11px] text-slate-600 italic line-clamp-2 border border-slate-100 flex items-start gap-1.5">
               <i data-lucide="quote" class="w-3 h-3 text-cyan-500 flex-shrink-0 mt-0.5"></i>
               <span>${p.message}</span>
             </div>
@@ -690,19 +756,15 @@ class DirectoryApp {
 
   renderLecturerCard(l) {
     const countryMeta = getCountryMeta(l.country);
-    const photo = l.photoUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(l.nameEnglish)}&background=0b132b&color=38bdf8&size=256`;
+    const photo = l.photoUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(l.nameEnglish)}&background=0b132b&color=38bdf8&size=512`;
     const isTourLead = l.role === 'Tour Lead' ||
       (l.title && l.title.toLowerCase().includes('tour lead')) ||
       (l.title && l.title.includes('ผู้นำทัศนศึกษา')) ||
       (l.sessionTitle && (l.sessionTitle.toLowerCase().includes('tour') || l.sessionTitle.toLowerCase().includes('field trip') || l.sessionTitle.toLowerCase().includes('excursion')));
 
-    const headerGradient = isTourLead 
-      ? 'bg-gradient-to-r from-emerald-900 via-slate-900 to-teal-950'
-      : 'bg-gradient-to-r from-cyan-900 via-slate-900 to-sky-950';
-
     const roleBadgeClass = isTourLead
-      ? 'bg-emerald-500/20 text-emerald-200 border-emerald-400/30'
-      : 'bg-cyan-500/20 text-cyan-200 border-cyan-400/30';
+      ? 'bg-emerald-600/90 text-white border-emerald-400/40'
+      : 'bg-cyan-600/90 text-white border-cyan-400/40';
 
     const roleBadgeText = isTourLead
       ? `🚌 ${t('badgeTourLead') || 'Tour Lead'}`
@@ -719,61 +781,125 @@ class DirectoryApp {
     const linkButtonIcon = isTourLead ? 'compass' : 'file-text';
 
     return `
-      <div class="glass-card rounded-2xl overflow-hidden shadow-sm flex flex-col cursor-pointer border border-slate-200/90 group" data-id="${l.id}" data-type="lecturer">
-        <!-- Session badge top -->
-        <div class="relative ${headerGradient} p-4 text-white">
-          <div class="flex justify-between items-start gap-2 mb-1.5">
-            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${roleBadgeClass} border">
+      <div class="glass-card rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col cursor-pointer border border-slate-200/90 group bg-white" data-id="${l.id}" data-type="lecturer">
+        <!-- Hero Photo at Top with Badges -->
+        <div class="relative w-full aspect-[4/3] overflow-hidden bg-slate-100 flex-shrink-0">
+          <img src="${photo}" alt="${l.nameEnglish}" loading="lazy" class="w-full h-full object-cover object-top transition-transform duration-500 ease-out group-hover:scale-105" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(l.nameEnglish)}&background=0b132b&color=38bdf8';"/>
+          
+          <!-- Subtle Top & Bottom Gradient Overlay -->
+          <div class="absolute inset-x-0 top-0 h-14 bg-gradient-to-b from-black/60 via-black/20 to-transparent pointer-events-none"></div>
+          <div class="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none"></div>
+
+          <!-- Top-Left Role Badge -->
+          <div class="absolute top-3 left-3 z-10">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${roleBadgeClass} backdrop-blur-md border shadow-sm">
               ${roleBadgeText}
             </span>
-            ${l.sessionDate ? `
-            <span class="text-xs font-medium text-slate-300 flex items-center gap-1">
-              <i data-lucide="calendar" class="w-3.5 h-3.5 ${isTourLead ? 'text-emerald-400' : 'text-cyan-400'}"></i> ${l.sessionDate}
-            </span>` : ''}
           </div>
-          <h4 class="font-semibold text-sm ${isTourLead ? 'text-emerald-50' : 'text-cyan-50'} line-clamp-2 leading-tight">
-            ${l.sessionTitle || l.title || (isTourLead ? 'Tour Lead & Field Trip Coordinator' : 'Seminar Session')}
-          </h4>
+
+          <!-- Top-Right Country Badge -->
+          <div class="absolute top-3 right-3 z-10">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-900/80 backdrop-blur-md text-white border border-white/20 shadow-sm">
+              <span>${countryMeta.flag}</span> <span class="tracking-wide">${countryMeta.name}</span>
+            </span>
+          </div>
         </div>
 
-        <div class="p-5 flex-1 flex flex-col">
-          <!-- Lecturer / Tour Lead profile row -->
-          <div class="flex items-center gap-3.5 mb-3">
-            <div class="w-14 h-14 rounded-xl avatar-container shadow-sm border border-slate-200 flex-shrink-0">
-              <img src="${photo}" alt="${l.nameEnglish}" loading="lazy" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(l.nameEnglish)}&background=0b132b&color=38bdf8';"/>
-            </div>
-            <div>
-              <h3 class="font-bold text-slate-900 text-sm ${isTourLead ? 'group-hover:text-emerald-600' : 'group-hover:text-cyan-600'} transition">
-                ${l.nameEnglish}
-              </h3>
-              ${l.nameNative && l.nameNative !== l.nameEnglish ? `<p class="text-xs text-slate-500">${l.nameNative}</p>` : ''}
-              <p class="text-xs font-medium text-slate-600 line-clamp-1">${l.title || (isTourLead ? 'Tour Lead' : 'Lecturer')}</p>
-            </div>
+        <!-- Card Body -->
+        <div class="p-5 flex-1 flex flex-col justify-between space-y-3.5 bg-white">
+          <!-- Name Section -->
+          <div>
+            <h3 class="font-bold text-slate-900 text-lg leading-snug ${isTourLead ? 'group-hover:text-emerald-600' : 'group-hover:text-cyan-600'} transition flex items-baseline gap-1.5 flex-wrap">
+              <span>${l.nameEnglish}</span>
+              ${l.nickname ? `<span class="${isTourLead ? 'text-emerald-600' : 'text-cyan-600'} font-semibold text-base">(${l.nickname})</span>` : ''}
+            </h3>
+            ${l.nameNative && l.nameNative !== l.nameEnglish ? `<p class="text-xs text-slate-500 font-medium mt-0.5">${l.nameNative}</p>` : ''}
           </div>
 
-          <!-- Affiliation & Country -->
-          <div class="text-xs text-slate-500 mb-3 space-y-1">
-            <p class="flex items-center gap-1.5 line-clamp-1">
+          <!-- Role / Position Title & Affiliation -->
+          <div class="space-y-1.5 text-xs">
+            <div class="flex items-center justify-between gap-2">
+              <span class="inline-flex items-center gap-1.5 font-bold ${isTourLead ? 'text-emerald-700 bg-emerald-50 border-emerald-200/80' : 'text-cyan-800 bg-cyan-50 border-cyan-200/80'} border px-2.5 py-1 rounded-md text-xs">
+                <i data-lucide="briefcase" class="w-3.5 h-3.5 ${isTourLead ? 'text-emerald-500' : 'text-cyan-500'} flex-shrink-0"></i>
+                <span class="line-clamp-1">${l.title || (isTourLead ? 'Tour Lead & Field Trip Coordinator' : 'Lecturer')}</span>
+              </span>
+            </div>
+            <p class="text-slate-600 line-clamp-1 flex items-center gap-1.5 pt-0.5" title="${l.affiliation || ''}">
               <i data-lucide="building-2" class="w-3.5 h-3.5 text-slate-400 flex-shrink-0"></i>
-              ${l.affiliation}
-            </p>
-            <p class="flex items-center gap-1.5">
-              <span>${countryMeta.flag}</span> <span>${l.country}</span>
+              <span class="line-clamp-1">${l.affiliation}</span>
             </p>
           </div>
 
-          <!-- Covered Topics / Highlights -->
-          ${l.topics ? `
-            <div class="mt-auto pt-3 border-t border-slate-100">
-              <p class="text-[11px] font-medium text-slate-500 uppercase tracking-wider mb-1">${isTourLead ? 'Tour Highlights & Guide:' : 'Topics covered:'}</p>
-              <p class="text-xs text-slate-700 line-clamp-2">${l.topics}</p>
+          <!-- Seminar Session or Tour Details Box -->
+          <div class="p-3 rounded-xl ${isTourLead ? 'bg-emerald-50/70 border-emerald-100' : 'bg-slate-50 border-slate-200/80'} border space-y-1 text-xs">
+            <div class="flex items-center justify-between text-[11px] font-semibold ${isTourLead ? 'text-emerald-700' : 'text-cyan-700'}">
+              <span class="flex items-center gap-1">
+                <i data-lucide="${isTourLead ? 'compass' : 'book-open'}" class="w-3.5 h-3.5"></i>
+                <span>${isTourLead ? 'Tour & Field Trip Session' : 'Seminar Topic'}</span>
+              </span>
+              ${l.sessionDate ? `
+                <span class="text-slate-500 font-normal flex items-center gap-1">
+                  <i data-lucide="calendar" class="w-3 h-3"></i> ${l.sessionDate}
+                </span>
+              ` : ''}
             </div>
-          ` : ''}
+            <p class="font-semibold text-slate-800 line-clamp-2 text-xs leading-snug">
+              ${l.sessionTitle || l.title || (isTourLead ? 'Tour Lead & Field Trip Guide' : 'Seminar Lecture')}
+            </p>
+            ${l.topics ? `<p class="text-[11px] text-slate-500 line-clamp-2 pt-0.5">${l.topics}</p>` : ''}
+          </div>
+
+          <!-- Contact Shortcuts -->
+          <div class="space-y-1.5 pt-2.5 border-t border-slate-100 text-xs">
+            ${l.email ? `
+              <a href="mailto:${l.email}" onclick="event.stopPropagation()" class="flex items-center gap-2 text-slate-600 hover:text-cyan-600 transition group/mail">
+                <i data-lucide="mail" class="w-3.5 h-3.5 text-slate-400 group-hover/mail:text-cyan-600 flex-shrink-0"></i>
+                <span class="truncate text-xs">${l.email}</span>
+              </a>
+            ` : ''}
+
+            ${l.phone ? `
+              <a href="tel:${l.phone}" onclick="event.stopPropagation()" class="flex items-center gap-2 text-slate-600 hover:text-cyan-600 transition group/phone">
+                <i data-lucide="phone" class="w-3.5 h-3.5 text-slate-400 group-hover/phone:text-cyan-600 flex-shrink-0"></i>
+                <span class="truncate text-xs">${l.phone}</span>
+              </a>
+            ` : ''}
+
+            ${(l.wechatId || l.lineId || l.whatsapp || l.facebook || l.linkedin) ? `
+              <div class="flex flex-wrap items-center gap-1.5 pt-1">
+                ${l.wechatId ? `
+                  <button type="button" onclick="event.stopPropagation(); navigator.clipboard.writeText('${l.wechatId}'); alert('Copied WeChat ID: ${l.wechatId}');" title="WeChat ID: ${l.wechatId} (Click to copy)" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 transition cursor-pointer">
+                    <span class="font-bold text-[10px]">微</span> <span>${l.wechatId}</span>
+                  </button>
+                ` : ''}
+                ${l.lineId ? `
+                  <a href="https://line.me/R/ti/p/~${l.lineId}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="LINE: ${l.lineId}" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-green-50 text-[#06c755] hover:bg-green-100 border border-green-200 transition">
+                    <i data-lucide="message-circle" class="w-3 h-3"></i> <span>LINE</span>
+                  </a>
+                ` : ''}
+                ${l.whatsapp ? `
+                  <a href="https://wa.me/${l.whatsapp.replace(/[^0-9]/g, '')}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="WhatsApp: ${l.whatsapp}" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-teal-50 text-[#25d366] hover:bg-teal-100 border border-teal-200 transition">
+                    <i data-lucide="phone-call" class="w-3 h-3"></i> <span>WhatsApp</span>
+                  </a>
+                ` : ''}
+                ${l.facebook ? `
+                  <a href="${l.facebook.startsWith('http') ? l.facebook : 'https://facebook.com/' + l.facebook}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Facebook Profile" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-blue-50 text-[#1877f2] hover:bg-blue-100 border border-blue-200 transition">
+                    <i data-lucide="facebook" class="w-3 h-3"></i> <span>FB</span>
+                  </a>
+                ` : ''}
+                ${l.linkedin ? `
+                  <a href="${l.linkedin}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="LinkedIn Profile" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-sky-50 text-[#0077b5] hover:bg-sky-100 border border-sky-200 transition">
+                    <i data-lucide="linkedin" class="w-3 h-3"></i> <span>LinkedIn</span>
+                  </a>
+                ` : ''}
+              </div>
+            ` : ''}
+          </div>
 
           <!-- Slides or Tour Guide button if available -->
           ${l.slidesUrl ? `
-            <div class="mt-3">
-              <a href="${l.slidesUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="inline-flex items-center justify-center gap-1.5 w-full py-1.5 px-3 rounded-lg text-xs font-semibold ${linkButtonClass} transition border">
+            <div class="pt-2 mt-auto">
+              <a href="${l.slidesUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="inline-flex items-center justify-center gap-1.5 w-full py-2 px-3 rounded-xl text-xs font-semibold ${linkButtonClass} transition border shadow-sm">
                 <i data-lucide="${linkButtonIcon}" class="w-3.5 h-3.5"></i> ${linkButtonLabel}
               </a>
             </div>
