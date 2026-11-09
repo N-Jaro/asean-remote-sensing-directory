@@ -78,49 +78,53 @@ class DirectoryApp {
     let cachedParticipants = JSON.parse(localStorage.getItem('rs_cached_participants') || 'null');
     let cachedLecturers = JSON.parse(localStorage.getItem('rs_cached_lecturers') || 'null');
 
+    const hasConfiguredUrls = !!(CONFIG.googleIntegration.participantsCsvUrl || CONFIG.googleIntegration.appsScriptUrl);
+
     if (cachedParticipants && cachedParticipants.length > 0) {
       this.participants = dedupe([...localParticipants, ...cachedParticipants]);
       this.isLiveConnected = true;
     } else {
-      this.participants = dedupe([...localParticipants, ...SAMPLE_PARTICIPANTS]);
-      this.isLiveConnected = false;
+      if (localParticipants.length > 0) {
+        this.participants = dedupe(localParticipants);
+      } else {
+        // If not configured, show sample data; if configured, wait for live sync
+        this.participants = hasConfiguredUrls ? [] : [...SAMPLE_PARTICIPANTS];
+      }
+      this.isLiveConnected = hasConfiguredUrls;
     }
 
     if (cachedLecturers && cachedLecturers.length > 0) {
       this.lecturers = dedupe([...localLecturers, ...cachedLecturers]);
     } else {
-      this.lecturers = dedupe([...localLecturers, ...SAMPLE_LECTURERS]);
+      if (localLecturers.length > 0) {
+        this.lecturers = dedupe(localLecturers);
+      } else {
+        this.lecturers = hasConfiguredUrls ? [] : [...SAMPLE_LECTURERS];
+      }
     }
 
     this.updateStats();
-    this.updateStatusBadge();
+    this.updateStatusBadge(hasConfiguredUrls && (!cachedParticipants || cachedParticipants.length === 0));
   }
 
   /**
-   * Load data from Live Google Sheet CSV in parallel with caching
+   * Load data from Live Google Sheet CSV or Apps Script API in parallel with caching
    */
   async loadData() {
-    const statusBadge = document.getElementById('sheetStatusBadge');
-    if (statusBadge) {
-      statusBadge.innerHTML = `
-        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-800 border border-amber-200">
-          <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
-          <span>Syncing with Google Sheet...</span>
-        </span>
-      `;
-    }
+    this.updateStatusBadge(true);
 
     const participantsUrl = CONFIG.googleIntegration.participantsCsvUrl;
     const lecturersUrl = CONFIG.googleIntegration.lecturersCsvUrl;
+    const appsScriptUrl = CONFIG.googleIntegration.appsScriptUrl;
 
-    // Fetch both Google Sheet CSVs in PARALLEL to cut wait time in half
+    // Fetch both Google Sheet sources in PARALLEL with dual-source fallback (CSV + Web App API)
     let liveP = null;
     let liveL = null;
 
     try {
       const [resP, resL] = await Promise.all([
-        participantsUrl ? fetchLiveParticipants(participantsUrl) : Promise.resolve(null),
-        lecturersUrl ? fetchLiveLecturers(lecturersUrl) : Promise.resolve(null)
+        fetchLiveParticipants(participantsUrl, appsScriptUrl),
+        fetchLiveLecturers(lecturersUrl, appsScriptUrl)
       ]);
       liveP = resP;
       liveL = resL;
@@ -168,6 +172,7 @@ class DirectoryApp {
       this.isLiveConnected = true;
     } else if (!this.participants || this.participants.length === 0) {
       this.participants = dedupe([...localParticipants, ...SAMPLE_PARTICIPANTS]);
+      this.isLiveConnected = false;
     }
 
     if (liveL && liveL.length > 0) {
@@ -192,19 +197,29 @@ class DirectoryApp {
       this.lecturers = dedupe([...localLecturers, ...SAMPLE_LECTURERS]);
     }
 
-    this.updateStatusBadge();
+    this.updateStatusBadge(false);
     this.updateStats();
   }
 
-  updateStatusBadge() {
+  updateStatusBadge(syncing = false) {
     const statusBadge = document.getElementById('sheetStatusBadge');
     if (!statusBadge) return;
+
+    if (syncing) {
+      statusBadge.innerHTML = `
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-800 border border-amber-200">
+          <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+          <span>Syncing with Google Sheet...</span>
+        </span>
+      `;
+      return;
+    }
 
     if (this.isLiveConnected) {
       statusBadge.innerHTML = `
         <button id="btnRefreshSync" title="Connected to Google Sheet. Click to refresh." class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 hover:bg-emerald-200 text-emerald-800 border border-emerald-300 transition cursor-pointer">
           <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-          <span>Live Google Sheet</span>
+          <span>Live Google Sheet Connected</span>
           <i data-lucide="refresh-cw" class="w-3 h-3 text-emerald-700 ml-0.5"></i>
         </button>
       `;
@@ -222,7 +237,7 @@ class DirectoryApp {
       statusBadge.innerHTML = `
         <button id="btnOpenSettingsFromBadge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition cursor-pointer">
           <span class="w-2 h-2 rounded-full bg-slate-400"></span>
-          <span>Demo Mode (Connect Google Sheet)</span>
+          <span>Connect Google Sheet</span>
         </button>
       `;
       const btn = document.getElementById('btnOpenSettingsFromBadge');

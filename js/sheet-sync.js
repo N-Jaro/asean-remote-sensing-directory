@@ -304,35 +304,60 @@ export function mapCsvToLecturers(rows) {
 }
 
 /**
- * Helper to fetch with a timeout using AbortController
+ * Convert JSON array from Apps Script API into 2D table array compatible with mapCsvTo...
  */
-async function fetchWithTimeout(url, timeoutMs = 7000) {
-  const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    const response = await fetch(url, { signal: controller.signal });
-    clearTimeout(id);
-    return response;
-  } catch (err) {
-    clearTimeout(id);
-    throw err;
+export function jsonToRows(jsonArray) {
+  if (!Array.isArray(jsonArray) || jsonArray.length === 0) return [];
+  const headers = Object.keys(jsonArray[0]);
+  const rows = [headers];
+  for (let i = 0; i < jsonArray.length; i++) {
+    const item = jsonArray[i];
+    rows.push(headers.map(h => String(item[h] ?? '')));
   }
+  return rows;
 }
 
 /**
- * Fetch live data from configured Google Sheet CSV
+ * Fetch live data from configured Google Sheet CSV or Apps Script API
+ * Races both endpoints in parallel using Promise.any for sub-2-second response
  */
-export async function fetchLiveParticipants(csvUrl) {
-  if (!csvUrl) return null;
+export async function fetchLiveParticipants(csvUrl, scriptUrl) {
+  const fetchers = [];
+
+  if (csvUrl && csvUrl.trim()) {
+    fetchers.push(
+      fetch(csvUrl.trim()).then(async res => {
+        if (!res.ok) throw new Error(`CSV HTTP ${res.status}`);
+        const text = await res.text();
+        const rows = parseCSV(text);
+        const data = mapCsvToParticipants(rows);
+        if (!data || data.length === 0) throw new Error('Empty CSV data');
+        return data;
+      })
+    );
+  }
+
+  if (scriptUrl && scriptUrl.trim()) {
+    const cleanUrl = scriptUrl.trim();
+    const apiUrl = cleanUrl.includes('?') 
+      ? `${cleanUrl}&action=getParticipants` 
+      : `${cleanUrl}?action=getParticipants`;
+    fetchers.push(
+      fetch(apiUrl, { redirect: 'follow' }).then(async res => {
+        if (!res.ok) throw new Error(`API HTTP ${res.status}`);
+        const json = await res.json();
+        const rows = jsonToRows(json);
+        const data = mapCsvToParticipants(rows);
+        if (!data || data.length === 0) throw new Error('Empty API data');
+        return data;
+      })
+    );
+  }
+
+  if (fetchers.length === 0) return null;
 
   try {
-    const response = await fetchWithTimeout(csvUrl, 7000);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch Google Sheet CSV: HTTP ${response.status}`);
-    }
-    const text = await response.text();
-    const rows = parseCSV(text);
-    return mapCsvToParticipants(rows);
+    return await Promise.any(fetchers);
   } catch (err) {
     console.warn("Could not fetch live Google Sheet participants:", err);
     return null;
@@ -340,19 +365,46 @@ export async function fetchLiveParticipants(csvUrl) {
 }
 
 /**
- * Fetch live lecturers from configured Google Sheet CSV
+ * Fetch live lecturers from configured Google Sheet CSV or Apps Script API
+ * Races both endpoints in parallel using Promise.any for sub-2-second response
  */
-export async function fetchLiveLecturers(csvUrl) {
-  if (!csvUrl) return null;
+export async function fetchLiveLecturers(csvUrl, scriptUrl) {
+  const fetchers = [];
+
+  if (csvUrl && csvUrl.trim()) {
+    fetchers.push(
+      fetch(csvUrl.trim()).then(async res => {
+        if (!res.ok) throw new Error(`CSV HTTP ${res.status}`);
+        const text = await res.text();
+        const rows = parseCSV(text);
+        const data = mapCsvToLecturers(rows);
+        if (!data || data.length === 0) throw new Error('Empty CSV data');
+        return data;
+      })
+    );
+  }
+
+  if (scriptUrl && scriptUrl.trim()) {
+    const cleanUrl = scriptUrl.trim();
+    const apiUrl = cleanUrl.includes('?') 
+      ? `${cleanUrl}&action=getLecturers` 
+      : `${cleanUrl}?action=getLecturers`;
+    fetchers.push(
+      fetch(apiUrl, { redirect: 'follow' }).then(async res => {
+        if (!res.ok) throw new Error(`API HTTP ${res.status}`);
+        const json = await res.json();
+        const rows = jsonToRows(json);
+        const data = mapCsvToLecturers(rows);
+        if (!data || data.length === 0) throw new Error('Empty API data');
+        return data;
+      })
+    );
+  }
+
+  if (fetchers.length === 0) return null;
 
   try {
-    const response = await fetchWithTimeout(csvUrl, 7000);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch Google Sheet Lecturers CSV: HTTP ${response.status}`);
-    }
-    const text = await response.text();
-    const rows = parseCSV(text);
-    return mapCsvToLecturers(rows);
+    return await Promise.any(fetchers);
   } catch (err) {
     console.warn("Could not fetch live Google Sheet lecturers:", err);
     return null;
