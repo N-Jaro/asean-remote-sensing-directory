@@ -609,21 +609,35 @@ class DirectoryApp {
 
     if (type === 'participant') {
       content.innerHTML = `
-        <div class="relative bg-gradient-to-r from-slate-900 via-sky-950 to-slate-900 p-6 text-white sm:rounded-t-2xl">
-          <div class="flex items-start gap-4">
-            <div class="w-24 h-24 rounded-2xl avatar-container shadow-xl border-2 border-white/80 ring-4 ring-cyan-500/20 flex-shrink-0">
-              <img src="${photo}" alt="${item.nameEnglish}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(item.nameEnglish)}&background=0b132b&color=38bdf8';"/>
+        <div class="relative bg-gradient-to-r from-slate-900 via-sky-950 to-slate-900 p-6 sm:p-7 text-white sm:rounded-t-2xl">
+          <div class="flex flex-col sm:flex-row items-center sm:items-start gap-5 sm:gap-6 text-center sm:text-left">
+            <div class="relative group cursor-pointer flex-shrink-0" onclick="window.open('${photo}', '_blank')" title="Click to view full image">
+              <div class="w-36 h-36 sm:w-44 sm:h-44 md:w-48 md:h-48 rounded-2xl avatar-container shadow-2xl border-4 border-white/90 ring-4 ring-cyan-500/30 overflow-hidden bg-slate-800 transition transform group-hover:scale-[1.02]">
+                <img src="${photo}" alt="${item.nameEnglish}" class="w-full h-full object-cover object-top" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(item.nameEnglish)}&background=0b132b&color=38bdf8&size=512';"/>
+              </div>
+              <div class="absolute bottom-2 right-2 bg-black/60 hover:bg-black/80 backdrop-blur text-white text-[10px] px-2 py-0.5 rounded-md flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
+                <i data-lucide="zoom-in" class="w-3 h-3"></i> Full Photo
+              </div>
             </div>
-            <div class="flex-1 min-w-0">
-              <div class="flex flex-wrap items-center gap-2 mb-1">
-                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-white/20 backdrop-blur-md">
+            <div class="flex-1 min-w-0 pt-1">
+              <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-2">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white/20 backdrop-blur-md border border-white/10">
                   <span>${countryMeta.flag}</span> <span>${countryMeta.name}</span>
                 </span>
-                ${item.nickname ? `<span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-cyan-400/20 text-cyan-200 border border-cyan-400/30">Nickname: ${item.nickname}</span>` : ''}
+                ${item.nickname ? `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-cyan-400/20 text-cyan-200 border border-cyan-400/30">Nickname: ${item.nickname}</span>` : ''}
               </div>
-              <h2 class="text-xl font-bold text-white leading-tight">${item.nameEnglish}</h2>
-              ${item.nameNative && item.nameNative !== item.nameEnglish ? `<p class="text-sm text-cyan-200 mt-0.5 font-medium">${item.nameNative}</p>` : ''}
-              <p class="text-xs text-slate-300 mt-1">${item.position || 'Participant'} • ${item.affiliation}</p>
+              <h2 class="text-2xl sm:text-3xl font-extrabold text-white leading-tight tracking-tight">${item.nameEnglish}</h2>
+              ${item.nameNative && item.nameNative !== item.nameEnglish ? `<p class="text-base sm:text-lg text-cyan-200 mt-1 font-medium">${item.nameNative}</p>` : ''}
+              <div class="mt-2 text-xs sm:text-sm text-slate-300 space-y-1">
+                <p class="font-medium text-white flex items-center justify-center sm:justify-start gap-1.5">
+                  <i data-lucide="briefcase" class="w-3.5 h-3.5 text-cyan-400 flex-shrink-0"></i>
+                  ${item.position || 'Participant'}
+                </p>
+                <p class="text-slate-300 flex items-center justify-center sm:justify-start gap-1.5">
+                  <i data-lucide="building-2" class="w-3.5 h-3.5 text-slate-400 flex-shrink-0"></i>
+                  ${item.affiliation || 'Geospatial Agency'}
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -754,21 +768,26 @@ class DirectoryApp {
         : 'bg-cyan-500/20 text-cyan-200 border-cyan-400/30';
 
       content.innerHTML = `
-        <div class="relative ${headerGradient} p-6 text-white sm:rounded-t-2xl">
-          <div class="flex items-start gap-4">
-            <div class="w-24 h-24 rounded-2xl avatar-container shadow-xl border-2 border-white/80 ring-4 ${isTourLead ? 'ring-emerald-500/20' : 'ring-cyan-500/20'} flex-shrink-0">
-              <img src="${photo}" alt="${item.nameEnglish}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(item.nameEnglish)}&background=0b132b&color=38bdf8';"/>
+        <div class="relative ${headerGradient} p-6 sm:p-7 text-white sm:rounded-t-2xl">
+          <div class="flex flex-col sm:flex-row items-center sm:items-start gap-5 sm:gap-6 text-center sm:text-left">
+            <div class="relative group cursor-pointer flex-shrink-0" onclick="window.open('${photo}', '_blank')" title="Click to view full image">
+              <div class="w-36 h-36 sm:w-44 sm:h-44 md:w-48 md:h-48 rounded-2xl avatar-container shadow-2xl border-4 border-white/90 ring-4 ${isTourLead ? 'ring-emerald-500/30' : 'ring-cyan-500/30'} overflow-hidden bg-slate-800 transition transform group-hover:scale-[1.02]">
+                <img src="${photo}" alt="${item.nameEnglish}" class="w-full h-full object-cover object-top" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(item.nameEnglish)}&background=0b132b&color=38bdf8&size=512';"/>
+              </div>
+              <div class="absolute bottom-2 right-2 bg-black/60 hover:bg-black/80 backdrop-blur text-white text-[10px] px-2 py-0.5 rounded-md flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
+                <i data-lucide="zoom-in" class="w-3 h-3"></i> Full Photo
+              </div>
             </div>
-            <div class="flex-1 min-w-0">
-              <div class="flex flex-wrap items-center gap-2 mb-1">
-                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${roleBadgeClass} border">
+            <div class="flex-1 min-w-0 pt-1">
+              <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-2">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${roleBadgeClass} border">
                   ${roleBadgeText}
                 </span>
-                <span class="text-xs text-slate-300"><span>${countryMeta.flag}</span> ${item.country}</span>
+                <span class="text-xs text-slate-300 bg-black/20 px-2.5 py-1 rounded-full border border-white/10"><span>${countryMeta.flag}</span> ${item.country}</span>
               </div>
-              <h2 class="text-xl font-bold text-white leading-tight">${item.nameEnglish}</h2>
-              ${item.nameNative && item.nameNative !== item.nameEnglish ? `<p class="text-sm ${isTourLead ? 'text-emerald-200' : 'text-cyan-200'} mt-0.5 font-medium">${item.nameNative}</p>` : ''}
-              <p class="text-xs text-slate-300 mt-1">${item.title} • ${item.affiliation}</p>
+              <h2 class="text-2xl sm:text-3xl font-extrabold text-white leading-tight tracking-tight">${item.nameEnglish}</h2>
+              ${item.nameNative && item.nameNative !== item.nameEnglish ? `<p class="text-base sm:text-lg ${isTourLead ? 'text-emerald-200' : 'text-cyan-200'} mt-1 font-medium">${item.nameNative}</p>` : ''}
+              <p class="text-xs sm:text-sm text-slate-300 mt-2">${item.title} • ${item.affiliation}</p>
             </div>
           </div>
         </div>

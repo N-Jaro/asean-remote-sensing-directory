@@ -31,7 +31,8 @@ export const CONFIG = {
     googleFormUrl: localStorage.getItem('rs_google_form_url') || "",
 
     // 5. Google Sheet View Link (for organizers to open the sheet directly)
-    googleSheetViewUrl: localStorage.getItem('rs_google_sheet_view_url') || "",
+    googleSheetViewUrl: localStorage.getItem('rs_google_sheet_view_url') 
+      || "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvyKOBDiAEtxzkr3ETAYT8SLg_L4NeeZnyblKl1C3BFiTa8a66AZzTYZeNMKNYw4UKIEkH1US8PcI7/pubhtml",
   },
 
   // ASEAN Member States with flags and localized labels
