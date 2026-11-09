@@ -10,6 +10,7 @@ class ProfileSubmission {
   constructor() {
     this.photoBase64 = '';
     this.photoFileName = '';
+    this.selectedTags = new Set();
     this.init();
   }
 
@@ -19,6 +20,7 @@ class ProfileSubmission {
 
     window.addEventListener('languageChanged', () => {
       this.populateCountrySelect();
+      if (this.renderSelectedTags) this.renderSelectedTags();
     });
 
     this.bindPhotoUpload();
@@ -37,29 +39,118 @@ class ProfileSubmission {
   }
 
   setupExpertiseChips() {
-    const container = document.getElementById('expertiseChips');
+    const chipsContainer = document.getElementById('expertiseChips');
+    const selectedContainer = document.getElementById('selectedExpertiseContainer');
     const input = document.getElementById('expertiseInput');
-    if (!container || !input) return;
+    const customInput = document.getElementById('customTagInput');
+    const btnAddCustom = document.getElementById('btnAddCustomTag');
 
-    CONFIG.expertiseTags.forEach(tag => {
-      const chip = document.createElement('button');
-      chip.type = 'button';
-      chip.className = 'px-3 py-1 rounded-full text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition';
-      chip.innerText = `+ ${tag}`;
-      chip.onclick = () => {
-        let current = input.value.split(',').map(s => s.trim()).filter(Boolean);
-        if (!current.includes(tag)) {
-          current.push(tag);
-          input.value = current.join(', ');
-          chip.className = 'px-3 py-1 rounded-full text-xs font-semibold bg-cyan-600 text-white border border-cyan-700 transition';
+    if (!input) return;
+
+    const renderSelected = () => {
+      input.value = Array.from(this.selectedTags).join(', ');
+
+      if (!selectedContainer) return;
+
+      if (this.selectedTags.size === 0) {
+        selectedContainer.innerHTML = `
+          <span class="text-xs text-slate-400 italic">
+            ${t('submitNoTagsSelected') || 'No specializations selected yet. Click suggested topics below or type your own.'}
+          </span>
+        `;
+        return;
+      }
+
+      let html = '';
+      this.selectedTags.forEach(tag => {
+        const safeTag = tag.replace(/"/g, '&quot;');
+        html += `
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-cyan-600 text-white shadow-xs">
+            <span>${safeTag}</span>
+            <button type="button" data-tag="${safeTag}" class="btn-remove-tag w-4 h-4 rounded-full flex items-center justify-center hover:bg-white/25 text-white/80 hover:text-white transition cursor-pointer text-sm" title="Remove">&times;</button>
+          </span>
+        `;
+      });
+      selectedContainer.innerHTML = html;
+
+      selectedContainer.querySelectorAll('.btn-remove-tag').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tag = btn.getAttribute('data-tag');
+          this.selectedTags.delete(tag);
+          renderSelected();
+          renderChips();
+        });
+      });
+    };
+
+    const renderChips = () => {
+      if (!chipsContainer) return;
+      chipsContainer.innerHTML = '';
+
+      CONFIG.expertiseTags.forEach(tag => {
+        const isSelected = this.selectedTags.has(tag);
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        if (isSelected) {
+          chip.className = 'px-3 py-1 rounded-full text-xs font-semibold bg-cyan-100 text-cyan-800 border border-cyan-400 transition flex items-center gap-1.5 cursor-pointer';
+          chip.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5 text-cyan-700"></i><span>${tag}</span>`;
         } else {
-          current = current.filter(t => t !== tag);
-          input.value = current.join(', ');
-          chip.className = 'px-3 py-1 rounded-full text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition';
+          chip.className = 'px-3 py-1 rounded-full text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition cursor-pointer';
+          chip.innerText = `+ ${tag}`;
         }
+
+        chip.onclick = () => {
+          if (this.selectedTags.has(tag)) {
+            this.selectedTags.delete(tag);
+          } else {
+            this.selectedTags.add(tag);
+          }
+          renderSelected();
+          renderChips();
+        };
+
+        chipsContainer.appendChild(chip);
+      });
+
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
+    };
+
+    const addCustomTag = () => {
+      if (!customInput) return;
+      const raw = customInput.value.trim();
+      if (!raw) return;
+
+      const tags = raw.split(/[,，]/).map(s => s.trim()).filter(Boolean);
+      tags.forEach(t => {
+        if (t) this.selectedTags.add(t);
+      });
+
+      customInput.value = '';
+      renderSelected();
+      renderChips();
+    };
+
+    if (btnAddCustom) {
+      btnAddCustom.onclick = (e) => {
+        e.preventDefault();
+        addCustomTag();
       };
-      container.appendChild(chip);
-    });
+    }
+
+    if (customInput) {
+      customInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          addCustomTag();
+        }
+      });
+    }
+
+    this.renderSelectedTags = renderSelected;
+    renderSelected();
+    renderChips();
   }
 
   bindPhotoUpload() {
@@ -148,6 +239,13 @@ class ProfileSubmission {
       e.preventDefault();
 
       const btnOriginalText = submitBtn.innerHTML;
+
+      if (!form.expertise.value.trim()) {
+        alert(t('submitExpertiseHint') || 'Please select or add at least one expertise/specialization.');
+        document.getElementById('customTagInput')?.focus();
+        return;
+      }
+
       submitBtn.disabled = true;
       submitBtn.innerHTML = `
         <span class="inline-flex items-center gap-2">

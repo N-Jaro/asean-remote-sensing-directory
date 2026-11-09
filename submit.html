@@ -196,19 +196,53 @@
           <span data-i18n="submitLabelExpertise">8. Expertise / Specialization</span> <span class="text-red-500">*</span>
         </label>
         <p class="text-xs text-slate-400 mb-2" data-i18n="submitExpertiseHint">
-          Click tags to select, or type additional fields separated by commas (,)
+          Select from suggested tags below or type your own custom specializations
         </p>
-        <div id="expertiseChips" class="flex flex-wrap gap-1.5 mb-2.5">
-          <!-- Populated by JS -->
+
+        <!-- Selected Tags Box -->
+        <div class="mb-2.5">
+          <div class="text-[11px] font-semibold text-slate-500 mb-1 flex items-center justify-between">
+            <span data-i18n="submitSelectedTags">Your Selected Specializations:</span>
+            <span class="text-[10px] text-slate-400" data-i18n="submitRemoveTagHint">Click × to remove</span>
+          </div>
+          <div id="selectedExpertiseContainer" class="flex flex-wrap gap-1.5 p-2.5 bg-slate-50 rounded-xl border border-slate-200 min-h-[42px] items-center">
+            <!-- Populated dynamically by JS -->
+          </div>
         </div>
-        <input 
-          type="text" 
-          id="expertiseInput" 
-          name="expertise" 
-          placeholder="e.g. SAR / Radar, UAV / Drone Mapping, GIS & Spatial Modeling, Precision Agriculture" 
-          class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm" 
-          required
-        >
+
+        <!-- Suggested Preset Tags -->
+        <div class="mb-3">
+          <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5" data-i18n="submitSuggestedTags">
+            Suggested Topics (Click to add/remove):
+          </div>
+          <div id="expertiseChips" class="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-1">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- Add Custom Tag Input Bar -->
+        <div class="flex items-center gap-2">
+          <div class="relative flex-1">
+            <input 
+              type="text" 
+              id="customTagInput" 
+              placeholder="Type custom expertise (e.g. LiDAR, InSAR, Google Earth Engine, Blue Carbon) & press Enter" 
+              data-i18n-placeholder="submitCustomTagPlaceholder"
+              class="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white"
+            >
+          </div>
+          <button 
+            type="button" 
+            id="btnAddCustomTag" 
+            class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-white transition flex items-center gap-1.5 flex-shrink-0 shadow-sm"
+          >
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+            <span data-i18n="submitBtnAddTag">Add Tag</span>
+          </button>
+        </div>
+
+        <!-- Hidden input holding comma-separated list for form submission -->
+        <input type="hidden" id="expertiseInput" name="expertise" required>
       </div>
 
       <!-- Section: Working Office Location -->

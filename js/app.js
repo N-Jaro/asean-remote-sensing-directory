@@ -39,6 +39,7 @@ class DirectoryApp {
     this.renderCountryFilters();
     this.renderExpertiseFilters();
     await this.loadData();
+    this.renderExpertiseFilters();
 
     // Check URL hash for direct tab linking (e.g. index.html#lecturers)
     if (window.location.hash === '#lecturers') {
@@ -300,16 +301,35 @@ class DirectoryApp {
     const container = document.getElementById('expertiseFilterPills');
     if (!container) return;
 
+    // Harvest unique tags from preset CONFIG plus all loaded participant profiles
+    const tagSet = new Set(CONFIG.expertiseTags || []);
+    if (this.participants && this.participants.length > 0) {
+      this.participants.forEach(p => {
+        if (!p.expertise) return;
+        const tags = Array.isArray(p.expertise)
+          ? p.expertise
+          : p.expertise.split(/[,，]/).map(s => s.trim()).filter(Boolean);
+        tags.forEach(t => {
+          if (t) tagSet.add(t);
+        });
+      });
+    }
+
+    const allTags = Array.from(tagSet);
+    const isAllSelected = !this.selectedExpertise || this.selectedExpertise === 'ALL';
+
     let html = `
-      <button data-expertise="ALL" class="expertise-pill px-2.5 py-1 rounded-md text-xs font-medium transition bg-cyan-100 text-cyan-800 border border-cyan-300">
+      <button data-expertise="ALL" class="expertise-pill px-2.5 py-1 rounded-md text-xs font-medium transition cursor-pointer ${isAllSelected ? 'bg-cyan-600 text-white border border-cyan-700 font-semibold' : 'bg-cyan-100 text-cyan-800 border border-cyan-300 hover:bg-cyan-200'}">
         ${t('filterAllExpertise')}
       </button>
     `;
 
-    CONFIG.expertiseTags.forEach(tag => {
+    allTags.forEach(tag => {
+      const isSelected = this.selectedExpertise === tag;
+      const safeTag = tag.replace(/"/g, '&quot;');
       html += `
-        <button data-expertise="${tag}" class="expertise-pill px-2.5 py-1 rounded-md text-xs font-medium transition bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200">
-          ${tag}
+        <button data-expertise="${safeTag}" class="expertise-pill px-2.5 py-1 rounded-md text-xs font-medium transition cursor-pointer ${isSelected ? 'bg-cyan-600 text-white border border-cyan-700 font-semibold' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200'}">
+          ${safeTag}
         </button>
       `;
     });
@@ -320,9 +340,9 @@ class DirectoryApp {
       btn.addEventListener('click', () => {
         this.selectedExpertise = btn.dataset.expertise;
         container.querySelectorAll('.expertise-pill').forEach(b => {
-          b.className = "expertise-pill px-2.5 py-1 rounded-md text-xs font-medium transition bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200";
+          b.className = "expertise-pill px-2.5 py-1 rounded-md text-xs font-medium transition bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 cursor-pointer";
         });
-        btn.className = "expertise-pill px-2.5 py-1 rounded-md text-xs font-semibold transition bg-cyan-600 text-white border border-cyan-700";
+        btn.className = "expertise-pill px-2.5 py-1 rounded-md text-xs font-semibold transition bg-cyan-600 text-white border border-cyan-700 cursor-pointer";
         this.render();
       });
     });
@@ -365,7 +385,9 @@ class DirectoryApp {
       if (this.activeTab === 'participants' && this.selectedExpertise !== 'ALL') {
         const itemExp = (item.expertise || '').toLowerCase();
         const targetExp = this.selectedExpertise.toLowerCase();
-        if (!itemExp.includes(targetExp.split('/')[0].trim().toLowerCase())) return false;
+        const firstSegment = targetExp.split('/')[0].trim();
+        const matches = itemExp.includes(targetExp) || (firstSegment && itemExp.includes(firstSegment));
+        if (!matches) return false;
       }
 
       return true;
