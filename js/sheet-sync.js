@@ -221,6 +221,7 @@ export function mapCsvToParticipants(rows) {
   const idxPhone = findIndex(headers, ['phone', 'tel', 'mobile', 'telephone', 'เบอร์โทร', 'เบอร์ติดต่อ']);
   const idxEmail = findIndex(headers, ['email', 'mail', 'อีเมล']);
   const idxLinkedin = findIndex(headers, ['linkedin', 'linkedinurl', 'ลิงก์linkedin']);
+  const idxWebsite = findIndex(headers, ['website', 'personalwebsite', 'portfolio', 'homepage', 'lab', 'เว็บ']);
   
   // Dedicated single-channel headers (explicitly exclude combined headers)
   const idxWechat = findIndex(headers, ['wechatid', 'wechat', 'wxid', 'weixin', '微信']);
@@ -304,6 +305,7 @@ export function mapCsvToParticipants(rows) {
       phone: rawPhone,
       email: (idxEmail !== -1 && row[idxEmail]) ? String(row[idxEmail]).trim() : '',
       linkedin: (idxLinkedin !== -1 && row[idxLinkedin]) ? String(row[idxLinkedin]).trim() : '',
+      website: (idxWebsite !== -1 && row[idxWebsite]) ? String(row[idxWebsite]).trim() : '',
       wechatId: wechatVal,
       lineId: lineVal,
       whatsapp: whatsappVal,
@@ -425,6 +427,7 @@ export function mapCsvToLecturers(rows) {
       lineId: lineVal,
       whatsapp: whatsappVal,
       facebook: facebookVal,
+      website: (idxLab !== -1 && row[idxLab]) ? String(row[idxLab]).trim() : '',
       labWebsite: (idxLab !== -1 && row[idxLab]) ? String(row[idxLab]).trim() : '',
       slidesUrl: (idxSlides !== -1 && row[idxSlides]) ? String(row[idxSlides]).trim() : '',
       notes: (idxNotes !== -1 && row[idxNotes]) ? String(row[idxNotes]).trim() : '',

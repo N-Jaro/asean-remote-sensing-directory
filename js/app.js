@@ -1261,6 +1261,19 @@ class DirectoryApp {
                   </div>
                 </a>
               ` : ''}
+
+              ${(item.website || item.labWebsite) ? `
+                <a href="${(item.website || item.labWebsite).startsWith('http') ? (item.website || item.labWebsite) : 'https://' + (item.website || item.labWebsite)}" target="_blank" rel="noopener" class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:border-indigo-400 hover:bg-indigo-50/50 transition group col-span-1 sm:col-span-2">
+                  <div class="w-9 h-9 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center flex-shrink-0 group-hover:bg-indigo-600 group-hover:text-white transition">
+                    <i data-lucide="globe" class="w-4 h-4"></i>
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <p class="text-[11px] font-medium text-slate-400">Personal Website / Portfolio / Lab</p>
+                    <p class="text-xs font-semibold text-indigo-700 truncate">${(item.website || item.labWebsite).replace(/^https?:\/\//, '')}</p>
+                  </div>
+                  <i data-lucide="external-link" class="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-600 transition flex-shrink-0"></i>
+                </a>
+              ` : ''}
             </div>
           </div>
         </div>
@@ -1461,6 +1474,19 @@ class DirectoryApp {
                   </div>
                 </a>
               ` : ''}
+
+              ${(item.website || item.labWebsite) ? `
+                <a href="${(item.website || item.labWebsite).startsWith('http') ? (item.website || item.labWebsite) : 'https://' + (item.website || item.labWebsite)}" target="_blank" rel="noopener" class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:border-indigo-400 hover:bg-indigo-50/50 transition group col-span-1 sm:col-span-2">
+                  <div class="w-9 h-9 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center flex-shrink-0 group-hover:bg-indigo-600 group-hover:text-white transition">
+                    <i data-lucide="globe" class="w-4 h-4"></i>
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <p class="text-[11px] font-medium text-slate-400">Personal Website / Portfolio / Lab</p>
+                    <p class="text-xs font-semibold text-indigo-700 truncate">${(item.website || item.labWebsite).replace(/^https?:\/\//, '')}</p>
+                  </div>
+                  <i data-lucide="external-link" class="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-600 transition flex-shrink-0"></i>
+                </a>
+              ` : ''}
             </div>
           </div>
         </div>
@@ -1498,7 +1524,8 @@ class DirectoryApp {
           item.lineId ? `LINE: ${item.lineId}` : '',
           item.whatsapp ? `WhatsApp: ${item.whatsapp}` : '',
           item.facebook ? `Facebook: ${item.facebook}` : '',
-          item.linkedin ? `LinkedIn: ${item.linkedin}` : ''
+          item.linkedin ? `LinkedIn: ${item.linkedin}` : '',
+          item.website || item.labWebsite ? `Website: ${item.website || item.labWebsite}` : ''
         ].filter(Boolean);
 
         const text = lines.join('\n');
@@ -1520,6 +1547,7 @@ class DirectoryApp {
   }
 
   downloadVCard(p) {
+    const webUrl = p.website || p.labWebsite || '';
     const vcard = `BEGIN:VCARD
 VERSION:3.0
 FN:${p.nameEnglish}
@@ -1528,7 +1556,7 @@ ORG:${p.affiliation}
 TITLE:${p.position || p.title || 'Participant'}
 TEL;TYPE=CELL:${p.phone || ''}
 EMAIL;TYPE=INTERNET:${p.email || ''}
-NOTE:${p.message || p.expertise || 'Seminar on Remote Sensing Technology for ASEAN Countries 2026'}
+${webUrl ? `URL:${webUrl}\n` : ''}${p.lineId ? `X-SOCIALPROFILE;TYPE=line:https://line.me/R/ti/p/~${p.lineId}\n` : ''}${p.facebook ? `X-SOCIALPROFILE;TYPE=facebook:${p.facebook}\n` : ''}${p.linkedin ? `X-SOCIALPROFILE;TYPE=linkedin:${p.linkedin}\n` : ''}NOTE:${p.message || p.expertise || 'Seminar on Remote Sensing Technology for ASEAN Countries 2026'}
 END:VCARD`;
 
     const blob = new Blob([vcard], { type: 'text/vcard;charset=utf-8;' });

@@ -33,7 +33,8 @@ const PARTICIPANT_HEADERS = [
   "WeChat ID",
   "LINE ID",
   "WhatsApp Number",
-  "Facebook Profile"
+  "Facebook Profile",
+  "Personal Website"
 ];
 
 const LECTURER_HEADERS = [
@@ -371,7 +372,7 @@ function appendRowByHeaders(sheet, fieldMap, defaultHeaders) {
     else if (h.includes("date") || h.includes("วัน")) val = fieldMap.sessionDate || fieldMap.tourDate || "";
     else if (h.includes("key") || h.includes("highlight")) val = fieldMap.topics || fieldMap.tourHighlights || "";
     else if (h.includes("slide") || h.includes("guide")) val = fieldMap.slidesUrl || fieldMap.guideUrl || "";
-    else if (h.includes("web") || h.includes("lab")) val = fieldMap.website || fieldMap.labWebsite || "";
+    else if (h.includes("web") || h.includes("lab") || h.includes("portfolio")) val = fieldMap.website || fieldMap.personalWebsite || fieldMap.labWebsite || "";
     else if (h.includes("note") || h.includes("other") || h.includes("ข้อความ")) val = fieldMap.message || "";
 
     rowData.push(val);
@@ -491,6 +492,7 @@ function doPost(e) {
       whatsapp: data.whatsapp || "",
       facebook: data.facebook || "",
       linkedin: data.linkedin || "",
+      website: data.website || data.personalWebsite || data.labWebsite || "",
       messaging: data.messaging || "",
       message: data.message || "",
       photoUrl: photoUrl

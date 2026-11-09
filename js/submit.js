@@ -279,6 +279,7 @@ class ProfileSubmission {
         whatsapp: form.whatsapp ? form.whatsapp.value.trim() : '',
         facebook: form.facebook ? form.facebook.value.trim() : '',
         linkedin: form.linkedin ? form.linkedin.value.trim() : '',
+        website: form.website ? form.website.value.trim() : '',
         messaging: [
           form.wechatId && form.wechatId.value.trim() ? `WeChat: ${form.wechatId.value.trim()}` : '',
           form.lineId && form.lineId.value.trim() ? `LINE: ${form.lineId.value.trim()}` : '',
