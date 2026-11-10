@@ -1583,18 +1583,38 @@ END:VCARD`;
     if (modal) modal.classList.add('hidden');
   }
 
-  handleAddLecturerSubmit() {
+  async handleAddLecturerSubmit() {
     const form = document.getElementById('addLecturerForm');
     if (!form) return;
 
-    const newLecturer = {
-      id: `local-lec-${Date.now()}`,
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn ? submitBtn.innerHTML : 'Save Lecturer Info';
+
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `
+        <span class="inline-flex items-center gap-1.5">
+          <svg class="animate-spin h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+          </svg>
+          Saving to Google Sheet...
+        </span>
+      `;
+    }
+
+    const countryName = form.lecCountry.value.trim() || 'ASEAN';
+    const countryMeta = getCountryMeta(countryName);
+
+    const payload = {
+      id: `lec-${Date.now()}`,
       nameEnglish: form.lecNameEnglish.value.trim(),
-      nameNative: form.lecNameNative.value.trim(),
-      title: form.lecTitle.value.trim(),
+      nameNative: form.lecNameNative.value.trim() || form.lecNameEnglish.value.trim(),
+      title: form.lecTitle.value.trim() || 'Lecturer',
       affiliation: form.lecAffiliation.value.trim(),
-      country: form.lecCountry.value.trim(),
-      countryCode: getCountryMeta(form.lecCountry.value).code,
+      country: countryName,
+      countryCode: countryMeta.code,
+      countryFlag: countryMeta.flag,
       sessionTitle: form.lecSessionTitle.value.trim(),
       sessionDate: form.lecSessionDate.value.trim(),
       sessionDay: form.lecSessionDay.value.trim() || 'Session',
@@ -1603,21 +1623,55 @@ END:VCARD`;
       phone: form.lecPhone.value.trim(),
       linkedin: form.lecLinkedin.value.trim(),
       labWebsite: form.lecLabWebsite.value.trim(),
+      website: form.lecLabWebsite.value.trim(),
       slidesUrl: form.lecSlidesUrl.value.trim(),
       notes: form.lecNotes.value.trim(),
-      photoUrl: form.lecPhotoUrl.value.trim(),
-      role: 'Lecturer'
+      photoUrl: form.lecPhotoUrl.value.trim() || `https://ui-avatars.com/api/?name=${encodeURIComponent(form.lecNameEnglish.value)}&background=0b132b&color=38bdf8&size=256`,
+      role: 'Lecturer',
+      targetSheet: 'Lecturers'
     };
 
+    // 1. Send directly to Google Apps Script Webhook
+    const scriptUrl = localStorage.getItem('rs_apps_script_url') || CONFIG.googleIntegration.appsScriptUrl;
+    let sentToCloud = false;
+
+    if (scriptUrl) {
+      try {
+        await fetch(scriptUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        sentToCloud = true;
+      } catch (err) {
+        console.warn('Apps Script lecturer submission error:', err);
+      }
+    }
+
+    // 2. Also save locally so the user sees the newly added lecturer immediately
     const localLecturers = JSON.parse(localStorage.getItem('rs_local_lecturers') || '[]');
-    localLecturers.unshift(newLecturer);
+    localLecturers.unshift(payload);
     localStorage.setItem('rs_local_lecturers', JSON.stringify(localLecturers));
 
-    this.lecturers.unshift(newLecturer);
+    this.lecturers.unshift(payload);
+
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalBtnText;
+    }
+
     form.reset();
     this.closeAddLecturerModal();
     this.updateStats();
-    this.render();
+
+    // Switch to Lecturers tab so user sees their new entry
+    if (this.activeTab !== 'lecturers') {
+      const tabLecturers = document.getElementById('tabLecturers');
+      if (tabLecturers) tabLecturers.click();
+    } else {
+      this.render();
+    }
   }
 
   exportCsv() {

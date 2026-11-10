@@ -362,17 +362,20 @@ function appendRowByHeaders(sheet, fieldMap, defaultHeaders) {
     else if (h.includes("nick") || h.includes("preferred") || h.includes("ชื่อเล่น")) val = fieldMap.nickname || "";
     else if (h.includes("nation") || h.includes("country") || h.includes("ประเทศ")) val = fieldMap.nationality || fieldMap.country || "";
     else if (h.includes("affil") || h.includes("organ") || h.includes("หน่วยงาน")) val = fieldMap.affiliation || "";
-    else if (h.includes("pos") || h.includes("title") || h.includes("ตำแหน่ง")) val = fieldMap.position || fieldMap.title || "";
+    // Session / Course / Tour Title (Must check before generic "title")
+    else if (h.includes("session") || h.includes("course") || h.includes("tour")) val = fieldMap.sessionTitle || fieldMap.tourName || "";
+    // Key Topics / Highlights / Summary
+    else if (h.includes("topic") || h.includes("key") || h.includes("highlight")) val = fieldMap.topics || fieldMap.tourHighlights || "";
+    // Job Title / Academic Position (excluding session/course title)
+    else if ((h.includes("pos") || h.includes("title") || h.includes("ตำแหน่ง")) && !h.includes("session") && !h.includes("course")) val = fieldMap.title || fieldMap.position || "";
     else if (h.includes("expert") || h.includes("special") || h.includes("ความเชี่ยวชาญ")) val = fieldMap.expertise || "";
     else if (h.includes("office") || h.includes("location") || h.includes("ที่ทำงาน")) val = fieldMap.workingOffice || "";
     else if (h.includes("phone") || h.includes("tel") || h.includes("mobile") || h.includes("เบอร์")) val = fieldMap.phone || "";
     else if (h.includes("email") || h.includes("mail") || h.includes("อีเมล")) val = fieldMap.email || "";
     else if (h.includes("photo") || h.includes("picture") || h.includes("image") || h.includes("รูป")) val = fieldMap.photoUrl || "";
-    else if (h.includes("session") || h.includes("course") || h.includes("topic") || h.includes("tour")) val = fieldMap.sessionTitle || fieldMap.tourName || "";
-    else if (h.includes("date") || h.includes("วัน")) val = fieldMap.sessionDate || fieldMap.tourDate || "";
-    else if (h.includes("key") || h.includes("highlight")) val = fieldMap.topics || fieldMap.tourHighlights || "";
-    else if (h.includes("slide") || h.includes("guide")) val = fieldMap.slidesUrl || fieldMap.guideUrl || "";
-    else if (h.includes("web") || h.includes("lab") || h.includes("portfolio")) val = fieldMap.website || fieldMap.personalWebsite || fieldMap.labWebsite || "";
+    else if (h.includes("date") || h.includes("time") || h.includes("วัน") || h.includes("เวลา")) val = fieldMap.sessionDate || fieldMap.tourDate || "";
+    else if (h.includes("slide") || h.includes("presentation") || h.includes("guide")) val = fieldMap.slidesUrl || fieldMap.guideUrl || "";
+    else if (h.includes("web") || h.includes("lab") || h.includes("portfolio")) val = fieldMap.website || fieldMap.labWebsite || fieldMap.personalWebsite || "";
     else if (h.includes("note") || h.includes("other") || h.includes("ข้อความ")) val = fieldMap.message || "";
 
     rowData.push(val);
